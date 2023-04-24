@@ -92,7 +92,7 @@ router.post('/addnewm',async(req,res)=>{
     quantity:(Number(b.ps_c)+(Number(b.ps)*Number(b.ps_u))),
     unit:b.t,
     price:b.price,
-    date:b.schedule_date,
+    date:b.date,
   })
   await newM.save();
   console.log(newM);
@@ -138,16 +138,46 @@ router.post('/newtest',async (req,res)=>{
   res.send(newT);
 })
 
+//update medicine detail
+router.put('/updatetest/:value', async (req, res) => {
+  const name_ = req.body._id;
+  const value = req.params.value;
+  // console.log(name_,value,req.body[value]);
+  try {
+    const doc = await t_n.findOneAndUpdate({ _id: name_ }, { useFindAndModify: false });
+    console.log(doc);
+    doc[value]=req.body[value];
+    
+    await doc.save();
+    console.log(doc);
+    res.send((doc));
+  } catch (error) {
+    console.log(error);
+    res.status(500).send('Internal Server Error');
+  }
+});
 
 //Send All Tests to laboratory
 router.get('/alltest',async(req,res)=>{
-  const allT=await t_n.find();
-  res.send(allT);
+  try {
+    const allMedicines = await t_n.find();
+    res.send(allMedicines);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Internal server error');
+  }
 })
 
-//update Test
-router.put('/updatetest',async(req,res)=>{
-
+//delete medicine
+router.delete('/deletetest/:id',async(req,res)=>{
+  const id = req.params.id;
+  try {
+      const deletedMedicine = await t_n.findByIdAndDelete(id);
+      res.json({ message: 'Medicine deleted successfully', deletedMedicine });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: 'Error deleting medicine' });
+    }
 })
 
 //-----------------Tests-------------------------
@@ -165,7 +195,7 @@ router.post('/newpatienttest',async (req,res)=>{
     pat_details:body.pat_details,
     tname:body.name,
     n_range:body.normal,
-    date:body.schedule_date,
+    date:body.date,
   })
   
   await newT.save();
@@ -191,24 +221,24 @@ router.get('/updatedetails/:id',async(req,res)=>{
 });
 
 // Finish the test 
-router.put('/donetest', async (req, res) => {
+router.get('/donetest/:id/:value', async (req, res) => {
   try {
-    const b = req.body;
-    const nB = generateBill(
-      b.pid,
-      b.price,
-      b.aid,
-      b.tname,
-      "test",
-      true,
-      b.date
-    );
+  //   const b = req.body;
+  //   const nB = generateBill(
+  //     b.pid,
+  //     b.price,
+  //     b.aid,
+  //     b.tname,
+  //     "test",
+  //     true,
+  //     b.date
+  //   );
     const allT = await test.findByIdAndUpdate(
-      b._id,
-      { p_range: b.p_range, status: 'D' },
+      req.params.id,
+      { p_range: req.params.value, status: 'D' },
       { new: true, useFindAndModify: false }
     );
-    res.send({ updatedTest: allT, generatedBill: nB });
+    res.send({ updatedTest: allT });
   } catch (error) {
     console.error(error);
     res.status(500).send("Server error");

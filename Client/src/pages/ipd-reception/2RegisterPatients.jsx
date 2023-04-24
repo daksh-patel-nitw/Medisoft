@@ -21,32 +21,47 @@ export default function App()
 const [doctors, setDoctor] = useState([]);
 const [rooms, setRoom] = useState([]);
 
+const fetchRooms=async()=>await fetch(`http://localhost:5000/api/rooms`)
+.then((res) => res.json())
+.then((data) => { console.log(data); 
+  setRoom(data)
+  })
+.catch((err) => console.error(err));
+const getData=async()=>{
+  fetchRooms()
+  await fetch(`http://localhost:5000/api/getpatient`)
+          .then((res) => res.json())
+          .then((data) => { console.log(data); 
+            setPatients(data)
+            })
+          .catch((err) => console.error(err));
+
+  await fetch(`http://localhost:5000/api/getemployee/doctor`)
+          .then((res) => res.json())
+          .then((data) => { console.log(data); 
+            setDoctor(data)
+            })
+
+          .catch((err) => console.error(err));
+ 
+
+  await fetch(`http://localhost:5000/api/roomcategory`)
+          .then((res) => res.json())
+          .then((data) => { console.log(data); 
+            let tarr=[]
+            data.map(e=>{
+              tarr.push(e.type)
+            });
+            console.log(tarr);setCat(tarr);
+            })
+          .catch((err) => console.error(err));
+}
+ 
 useEffect(() => {
-  setRoom([
-    {_id:1,room_no:'1',type:'de',floor:'1',occupied:'y',dep:'b'},
-    {_id:2,room_no:'2',type:'ge',floor:'2',occupied:'n',dep:'b'},
-    {_id:3,room_no:'3',type:'de',floor:'3',occupied:'y',dep:'a'},
-    {_id:4,room_no:'4',type:'p',floor:'4',occupied:'n',dep:'a'},
-    {_id:5,room_no:'4',type:'p',floor:'4',occupied:'n',dep:'a'},
-    {_id:6,room_no:'4',type:'p',floor:'4',occupied:'n',dep:'a'},
-    {_id:7,room_no:'4',type:'p',floor:'4',occupied:'n',dep:'a'},
-    {_id:8,room_no:'4',type:'p',floor:'4',occupied:'n',dep:'a'},
-    {_id:9,room_no:'4',type:'p',floor:'4',occupied:'n',dep:'a'},
-    {_id:10,room_no:'4',type:'p',floor:'4',occupied:'n',dep:'a'}
-  ]);
-  setPatients([
-    {pid:"893",pname:'Pat1',mobile:'99292'},
-    {pid:"333",pname:'Pat2',mobile:'87592'},
-    {pid:"954",pname:'Pat3',mobile:'56592'},
-  ]);
-  
-  setDoctor([
-    {did:"900",dname:'Doc1',dep:'b'},
-    {did:"655",dname:'Doc2',dep:'a'},
-    {did:"874",dname:'Doc3',dep:'a'},
-  ]);
+  getData();
 }, []);
 
+const [cat,setCat]=useState([]);
 
 
   const [formValues, setFormValues] = useState({
@@ -61,25 +76,41 @@ useEffect(() => {
   const rArr=['room_no','type','floor','occupied'];
   const rArr2=["Room No","Room Type","Floor","Select"];
 
-  const handleFormSubmit = (event) =>
+  const handleFormSubmit = async(event) =>
   {
     event.preventDefault();
     alert(JSON.stringify(formValues));
+    let dat={};
+    await fetch('http://localhost:5000/api/newipdappointment', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(formValues)
+    })
+      .then(response => response.json())
+      .then(async(data) =>
+      {
+        console.log(data);
+        const updated={...data,aid:data._id,room:formValues.room_no}
+               await  fetch('http://localhost:5000/api/admitroom', {
+                      method: 'POST',
+                      headers: {
+                        'Content-Type': 'application/json'
+                      },
+                      body: JSON.stringify(updated)
+                    })
+                      .then(response => response.json())
+                      .then(data =>
+                      {
+                        console.log(data);
+                      })
+                      .catch(error => console.error(error));
 
-    // fetch('http://localhost:5000/api/newroomcategory', {
-    //   method: 'POST',
-    //   headers: {
-    //     'Content-Type': 'application/json'
-    //   },
-    //   body: JSON.stringify(catValues)
-    // })
-    //   .then(response => response.json())
-    //   .then(data =>
-    //   {
-    //     console.log(data);
-    //     setFormValues({ type:'',beds:'',price:'',sofa:'',tv:'',refrigator:'',bathroom:'',other:'' });
-    //   })
-    //   .catch(error => console.error(error));
+        setFormValues({ pid:'',pname:'',mobile:'',dname:'',dep:'',did:'',room_no:'',type:'',floor:'',occupied:'' });
+      })
+      .catch(error => console.error(error));
+      fetchRooms();
     setActiveStep(0);
   };
 
@@ -187,7 +218,7 @@ useEffect(() => {
       (m) =>(m.type.toLowerCase().includes(t.toLowerCase())
       )));
   }
-  const cat=['de','ge','p'];
+  // const cat=['de','ge','p'];
 
   function roomUI(){
     return (

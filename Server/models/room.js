@@ -39,7 +39,8 @@ const UserSchema=new Schema(
             default:'No'
         },
     },{
-        versionKey:false
+        versionKey:false,
+        timestamps:true
     }
 );
 

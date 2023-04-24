@@ -5,7 +5,7 @@ import P2 from "./pages/pharmacy/2medicines"
 import P3 from "./pages/pharmacy/3patients"
 import I1 from "./pages/ipd-reception/1newRoom"
 import I2 from "./pages/ipd-reception/2RegisterPatients"
-import I3 from "./pages/ipd-reception/3Patients"
+import I3 from "./pages/ipd-reception/3.1Patients"
 import I4 from "./pages/ipd-reception/4AddCharge"
 import OP1 from "./pages/opd-1-reception/1newRegister"
 import OP2 from "./pages/opd-1-reception/2bookAppointment"
@@ -65,7 +65,7 @@ function App() {
   //tests
   '/newtest',
   '/tests',
-  '/testpatients'
+  '/labpatients'
 ]
   return (
     <div className="container">

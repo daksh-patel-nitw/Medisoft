@@ -11,7 +11,7 @@ const PageLayout = ({children}) => {
   
   return (
     <>
-      <NavBar name="Main Reception" />
+      <NavBar name="Reception-2" />
       <Box height="45px" />
       <Box sx={{ display: 'flex' }}>
         <SideBar arr={arr} />

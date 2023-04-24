@@ -10,12 +10,18 @@ import Container from '@material-ui/core/Container';
 import Select from '@material-ui/core/Select';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import TextareaAutosize from '@material-ui/core/TextareaAutosize';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import Accordion from '@material-ui/core/Accordion';
+import AccordionSummary from '@material-ui/core/AccordionSummary';
+import AccordionDetails from '@material-ui/core/AccordionDetails';
 
 export default function App()
 {
+  
   const [check,setC]=useState(0);
     const[Ap,setAp]=useState([]);
     const[p,setP]=useState({});
+    const[A,setA]=useState({});
     const[M,setM]=useState([]);
     const[T,setT]=useState([]);
   //Categories data fetch
@@ -26,6 +32,7 @@ export default function App()
       console.log(data);
       setAp(data);
       fetchpData(data.pid);
+      fetchAData(data.pid,did);
     } catch (error) {
       console.log(error);
     }
@@ -36,6 +43,17 @@ export default function App()
       const data = await response.json();
       console.log(data);
       setP(data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const fetchAData = async (pid,eid) => {
+    try {
+      const response = await fetch(`http://localhost:5000/api/viewpatientapp/${pid}/${eid}`);
+      const data = await response.json();
+      console.log(data);
+      setA(data);
     } catch (error) {
       console.log(error);
     }
@@ -52,6 +70,7 @@ export default function App()
       console.log(error);
     }
   };
+  
   //Get Tests
   const fetchTest = async () => {
     try {
@@ -154,6 +173,7 @@ export default function App()
   const [autoComp1,setAuto] = useState('');
   const [autoComp2,setAuto2] = useState('');
   const autoComp = (property, label,index) => (
+    
         <Autocomplete
           freeSolo
           options={(index===1?M:T).map((option) => option[property])}
@@ -175,13 +195,12 @@ export default function App()
   function TestC(){
     return (
       
-      <Grid container spacing={1}>
-     
+      <Grid item xs alignItems="center" container spacing={1}>
         
-          <Grid item xs={8}>
+          <Grid item xs={10}>
               {autoComp('name','Test',0)}
           </Grid>
-          <Grid item xs={4}>
+          <Grid item xs={2}>
             <Button style={{margin:"auto"}}onClick={handleTSubmit} variant="contained" color="primary">
               Add
             </Button>
@@ -199,9 +218,9 @@ export default function App()
   //Medicine Form UI
   function medicineC(){
     return (
-     <Container>
+  
       <form onSubmit={handleMSubmit} autoComplete="off">
-        <Grid container spacing={1}>
+        <Grid container alignItems="center" spacing={1}>
             <Grid item sm={4}>
               {autoComp('name','Medicine',1)}
             </Grid>
@@ -245,26 +264,25 @@ export default function App()
           </Grid>
 
           <Grid item xs={12}>
-            <table>
+            <table style={{borderCollapse: 'collapse',border:'1px solid black'}}>
               <tr>
               { ['Name','Unit','Package Quantity','Free Quantity'].map((a)=>(
-                  <th style={{border:'1px solid black'}}>{a}</th>
+                  <th style={{borderCollapse: 'collapse',border:'1px solid black'}}>{a}</th>
                 ))}
               </tr>
               <tbody>
               {Ap.medicines && Ap.medicines.map(item=>(
               <tr>
-                <td style={{border:'1px solid black'}} >{item.name}</td>
-                <td style={{border:'1px solid black',padding:2}} >{item.t}</td>
-                <td style={{border:'1px solid black'}} >{item.ps_u}</td>
-                <td style={{border:'1px solid black'}} >{item.ps_c}</td>
+                <td style={{borderCollapse: 'collapse',padding:1,border:'1px solid black'}} >{item.name}</td>
+                <td style={{borderCollapse: 'collapse',padding:1,border:'1px solid black',padding:2}} >{item.t}</td>
+                <td style={{borderCollapse: 'collapse',padding:1,border:'1px solid black'}} >{item.ps_u}</td>
+                <td style={{borderCollapse: 'collapse',padding:1,border:'1px solid black'}} >{item.ps_c}</td>
               </tr>
               ))}</tbody>
             </table>
           </Grid>
         </Grid>
       </form>
-      </Container>
 )
   }
 
@@ -298,19 +316,15 @@ export default function App()
 
     <PageLayout>
       <Grid container spacing={2} >
-        <Grid item xs={5}>
-         
-            <Grid container direction="column">
-            <Card className="partition" style={{height:500}}>
-            <CardContent>
-              <Grid item xs={12}>Medicines:<hr/></Grid>
-              <Grid item xs={12}>{medicineC()}</Grid>
-              <Grid item xs={12}>Lab Test:<hr/></Grid>
-              <Grid item xs={12}>{TestC()}</Grid>
+        <Grid item container xs={5}>
+          <Card className="partition" style={{height:500}}>
+          <Grid item xs={12}><div style={{padding:8,fontWeight:'Bold',fontSize:'16px'}}>Medicines:</div> <hr style={{ margin: 0 }} /></Grid>
+            <CardContent style={{paddingTop:'9px'}}>
+              <Grid  item container justify="center" xs={12}>{medicineC()}</Grid></CardContent>
+            <Grid item xs={12}><div style={{padding:8,fontWeight:'Bold',fontSize:'16px'}}>Lab Tests:</div> <hr style={{ margin: 0 }} /></Grid>
+            <CardContent style={{paddingTop:'9px'}}><Grid  container justify="center" xs={12}>{TestC()}</Grid>
               </CardContent>
-          </Card>
-            </Grid>
-            
+          </Card>  
         </Grid>
         
         <Grid item xs={3}> 
@@ -318,15 +332,15 @@ export default function App()
             <CardContent>
                 
                   <div><h2>{Ap.pname }</h2></div>
-                  <div style={{fontSize:'17px'}}><b>Height:</b>{Ap.height}cm</div>
-                  <div style={{fontSize:'17px'}}><b>Weight:</b>{Ap.weight}Kg</div>
-                  <div style={{fontSize:'17px'}}><b>Allergy:</b> {p.allergy}</div>
-                  <div style={{fontSize:'17px'}}><b>Medical Conditions:</b> {p.conditions}</div>
-                  <div style={{fontSize:'17px'}}><b>Others:</b> {p.others}</div>
-                  <div style={{fontSize:'17px'}}><b>Doctor questions:</b><ul>
+                  <div style={{fontSize:'16px'}}><b>Height:</b>{Ap.height}cm</div>
+                  <div style={{fontSize:'16px'}}><b>Weight:</b>{Ap.weight}Kg</div>
+                  <div style={{fontSize:'16px'}}><b>Allergy:</b> {p.allergy}</div>
+                  <div style={{fontSize:'16px'}}><b>Medical Conditions:</b> {p.conditions}</div>
+                  <div style={{fontSize:'16px'}}><b>Others:</b> {p.others}</div>
+                  <div style={{fontSize:'16px'}}><b>Doctor questions:</b>
                 {Ap.doctor_qs&& Ap.doctor_qs[1].map((item,index) => (
-                  item===1 && <li>{Ap.doctor_qs[0][index]}</li>
-                ))}</ul></div>
+                  item===1 && <><span style={{padding:4,borderRadius:2,backgroundColor:"rgb(255, 137, 192)",fontWeight:"bold"}}>{Ap.doctor_qs[0][index]}</span> </>
+                ))}</div>
             </CardContent>
           </Card>
         </Grid>
@@ -342,11 +356,36 @@ export default function App()
                   onChange={handleN}
                   
                 />
+
+                {
+                  A.length&& A.map(e=>(
+                    <Accordion>
+        <AccordionSummary
+          expandIcon={<ExpandMoreIcon />}
+          aria-controls="panel1a-content"
+          id="panel1a-header"
+        >
+          <p>{e.notes}</p>
+        </AccordionSummary>
+        <AccordionDetails>
+        { e.medicines.map(m=>(
+                      <div style={{padding:4,borderRadius:2,backgroundColor:"rgb(255, 137, 192)",fontWeight:"bold"}}>{m.name} {m.type} </div>
+                    ))}
+                      {
+                        e.tests.map(t=>(
+                          <div style={{padding:4,borderRadius:2,backgroundColor:"rgb(255, 137, 192)",fontWeight:"bold"}}>{t.name}</div>
+                        ))
+                      }
+        </AccordionDetails>
+      </Accordion>
+                    
+                  ))
+                }
             </CardContent>
           </Card>
         </Grid>
         <Grid item xs={12}>
-          <Button variant="contained" size="large" color="secondary" onClick={handleSubmit}> Next </Button>
+          <Button style={{width:'500px'}} variant="contained" size="medium" color="secondary" onClick={handleSubmit}> Next </Button>
         </Grid>
       </Grid>
     </PageLayout>

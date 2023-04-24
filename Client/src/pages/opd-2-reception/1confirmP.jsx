@@ -34,13 +34,13 @@ export default function App()
   // Patient Values
   const [patValues, setPat] = useState(initialValues);
   const[pData,setD]=useState([]);
+  const fetchData = async (dep) => {
+    const response1 = await fetch("http://localhost:5000/api/getapp/"+dep.toString());
+    const data1 = await response1.json();
+    setD(data1);
+  };
+
   useEffect(()=>{
-    const fetchData = async (dep) => {
-      const response1 = await fetch("http://localhost:5000/api/getapp/"+dep.toString());
-      const data1 = await response1.json();
-      setD(data1);
-    };
-  
     fetchData('orthopedic');
   },[]);
   //clear Values
@@ -68,7 +68,7 @@ export default function App()
   };
 
   const autoComp = (arrS,property, label,index) => (
-    <Grid item xs={6}>
+
       <Autocomplete
         freeSolo
         options={arrS.map((option) => option[property])}
@@ -84,34 +84,8 @@ export default function App()
           />
         )}
       />
-    </Grid>
+   
   );
-
-//   Handle Patient Form Submit
-  const handlePatSubmit = async (event,tracker) =>
-  {
-    event.preventDefault();
-    const formV=patValues;
-    alert(JSON.stringify(formV));
-    const link='http://localhost:5000/api/'+(tracker===1?'newpatient':'newemployee');
-    
-    // alert(link);
-    await fetch(link, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(formV)
-    })
-      .then(response => response.json())
-      .then(data =>
-      {
-        console.log(data);
-       clearValues(tracker);
-      })
-      .catch(error => console.error(error));
-    // await fetchData();
-  };
 
     const [openEditModal, setOpenEditModal] = useState(false);
     const [selectedApp, setSelectedApp] = useState(null);
@@ -215,11 +189,16 @@ export default function App()
     return (
     <PageLayout>
       <Grid container spacing={2} >
-        <Grid item xs={12}>
+        <Grid item  xs={12}>
           <Card className="partition" style={{height:500}}>
-           {autoComp(pData,'pid',"Patient ID",1)}
-           {autoComp(pData,'pname',"Patient Name",0)}
-            {getTable()}
+            <CardContent>
+              <Grid container spacing={2}>
+              <Grid item xs={6}> {autoComp(pData,'pid',"Patient ID",1)}</Grid>
+              <Grid item xs={6}> {autoComp(pData,'pname',"Patient Name",0)}</Grid>
+              
+              <Grid item xs={12}>{getTable()}</Grid>
+              </Grid>
+            </CardContent>
           </Card>
         </Grid>
       </Grid>

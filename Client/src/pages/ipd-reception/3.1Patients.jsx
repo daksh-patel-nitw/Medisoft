@@ -21,8 +21,8 @@ import Autocomplete from '@material-ui/lab/Autocomplete';
 export default function App()
 {
 
-    const arr2 = ["Room No","Floor","Patient Id", "Patient Name","Admit Date","Mobile","Doctor name", "Department",];
-    const arr=['room_no','floor','pid','pname','admitted_date','mobile','dname','dep']
+    const arr2 = ["Room No","Floor","Patient Id", "Patient Name","Admit Date","Mobile","Doctor ID", "Department",];
+    const arr=['room_no','floor','pid','pname','date','mobile','did','dep']
     
     const [order, setOrder] = useState('asc');
     const [orderBy, setOrderBy] = useState('');
@@ -41,18 +41,24 @@ export default function App()
         }
       }));
     };
+
+    const fetchdata=async()=>await fetch(`http://localhost:5000/api/occupiedroom`)
+          .then((res) => res.json())
+          .then((data) => { console.log(data); 
+            setRoom(data)
+            })
+          .catch((err) => console.error(err));
     const[rooms,setRoom]=useState([]);
     const [dep,setDepart]=useState([]);
     useEffect(() => {
-        setRoom([
-            {  room_no:'301'  ,  floor:'2'  ,  pid:'21'  ,  pname:'dj'  ,  admitted_date:'1632346771483'  ,  mobile:'23'  ,  dname:'32'  ,  dep:'xyz'  },
-            {  room_no:'302'  ,  floor:'2'  ,  pid:'21'  ,  pname:'dj'  ,  admitted_date:'1457367641483'  ,  mobile:'23'  ,  dname:'32'  ,  dep:'xyz'  },
-            {  room_no:'302'  ,  floor:'2'  ,  pid:'21'  ,  pname:'mj'  ,  admitted_date:'1619821667483'  ,  mobile:'23'  ,  dname:'32'  ,  dep:'abc'  },
-            {  room_no:'303'  ,  floor:'2'  ,  pid:'21'  ,  pname:'kj'  ,  admitted_date:'1213445671483'  ,  mobile:'23'  ,  dname:'32'  ,  dep:'xyz'  },
-            {  room_no:'304'  ,  floor:'2'  ,  pid:'21'  ,  pname:'vd'  ,  admitted_date:'1681927341483'  ,  mobile:'23'  ,  dname:'32'  ,  dep:'abc'  },
-        ]);
-        setDepart(['xyz','abc']);
-        
+      
+
+      setDepart( [ 'orthopedic',
+      'neurologist',
+      'cardiologist',
+      'endocrinologist',
+      'gynecologist' ]);
+        fetchdata();
     },[]);
     console.log(dep);
     const[selectValue,setFValue]=useState('');
@@ -82,7 +88,20 @@ export default function App()
     
     
     const handleClick = (value) => {
-      alert(JSON.stringify(value));
+      const dischargedata = async () => {
+        try {
+            console.log(value,value.room);
+          const response = await fetch(`http://localhost:5000/api/dischargeipd/${value.room_no}/${value.dep}`);
+          const data = await response.json();
+          console.log(data);
+          fetchdata();
+        } catch (err) {
+          console.error(err);
+        }
+      };
+    
+      dischargedata();
+     
     };
 
      const handleSearch = (newValue, property) => {

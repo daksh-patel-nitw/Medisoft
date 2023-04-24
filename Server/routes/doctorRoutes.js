@@ -5,11 +5,11 @@ const emp=require('../models/employee')
 const bodyParser=require("body-parser");
 const helperF =require('./helper');
 const helper=require('../models/helper');
-const timings=require('../models/timings');
+const timings_=require('../models/timings');
 
 const twilio = require('twilio');
-const { updateOne } = require('../models/timings');
 
+//Register New employee
 router.post('/newemployee',async(req,res)=>{
     const body=req.body;
     const doc=await helper.findOneAndUpdate({name:'eid'})
@@ -55,19 +55,20 @@ router.get('/getemployee/:role',async(req,res)=>{
     const allT=await emp.find({role:param.role},{fname:1, lname:1,dep:1, eid:1,timings:1,questions:1});
     const newT=[];
     allT.map((e)=>{
-      console.log(e.questions);
+      // console.log(e.questions);
         const t={dname:e.fname+" "+e.lname,dep:e.dep,did:e.eid,timings:e.timings,qs:e.questions};
         newT.push(t);
     })
     res.send(newT);
 })
 
+//get Doctor timings
 router.get('/getdtimings/:date_no/:did',async(req,res)=>{
     const param=req.params;
     console.log(param.date_no,param.did);
     const d=(new Date(Number(param.date_no))).toLocaleString('en-US', { timeZone: 'Asia/Kolkata', month: 'long', day: 'numeric', year: 'numeric'  });
     console.log(d);
-    const t=timings.aggregate([
+    const t=timings_.aggregate([
         // Match the documents with the given date
         {
           $match: { date: d ,did: param.did}
@@ -133,17 +134,58 @@ router.post('/make_login',async(req,res)=>{
     res.send(newl);
 })
 
-//add doctor timings
-router.post('/addtimings',async(req,res)=>{
-    const b=req.body;
-    const c= await updateOne({eid:b.did},{$set:{timings:b.timings}})
-    
+//get doctor timings
+router.get('/getempwithid/:id',async(req,res)=>{
+    const b=req.params.id;
+    console.log(b);
+    const c= await emp.findOne({eid:b})
+    // console.log(c);
     res.send(c);
 })
 
+//add doctor timings
+router.post('/addtimings',async(req,res)=>{
+    const {eid,timings}=req.body;
+    console.log(eid,timings);
+    // console.log('Request body:', req.body);
+
+  try {
+    const result = await emp.findOneAndUpdate({ eid: eid }, { $addToSet: { timings: timings } });
+
+    console.log('Update result:', result);
+    res.send(result);
+  } catch (error) {
+    console.error('Update error:', error);
+    res.status(500).send('Error updating employee timings');
+  }
+})
+
+router.post('/deletetimings', async (req, res) => {
+  const { eid, timings } = req.body;
+  console.log(eid, timings);
+  const result = await emp.UpdateOne(
+    { eid: eid },
+    { $pull: { timings: timings } },
+    { useFindAndModify: false }
+  );
+  console.log(result);
+});
+
+
+
 router.get('/allDoctors/:dep',async(req,res)=>{
   const d=req.params.dep;
-  const arr=await emp.find({dep:d,role:"doctor"},{eid:1});
+  const arr = await emp.aggregate([
+    { $match: { dep: d, role: "doctor" } },
+    {
+      $addFields: {
+        fullName: { $concat: ["$fname", " ", "$lname"] }
+      }
+    },
+    { $project: { eid: 1, name: "$fullName" } }
+  ]);
+  
+
   console.log(arr);
   res.send(arr);
 })

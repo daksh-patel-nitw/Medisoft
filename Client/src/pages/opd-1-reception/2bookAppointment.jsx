@@ -134,7 +134,7 @@ const handleDateClick =async (date) => {
       console.log("Count:==",data["10-11"]);
       const result = {};
 
-      for (const elem of T[0]) {
+      for (const elem of T) {
         if (data.hasOwnProperty(elem)) {
           result[elem] = data[elem];
         } else {
@@ -146,7 +146,7 @@ const handleDateClick =async (date) => {
       // process data
     } else {
      
-     const newCount = (T.length) ? Object.assign({}, ...T[0].map(e => ({[e]: 6}))):{};
+     const newCount = (T.length) ? Object.assign({}, ...T.map(e => ({[e]: 6}))):{};
       console.log("Count:-----",count,"NewCount ",newCount);
       
       setC(newCount);
@@ -181,7 +181,7 @@ const events = [
       <Grid item sm={4}>
           <Grid> <h2>Date: {(new Date(formV.schedule_date)).toLocaleString('en-US', { timeZone: 'Asia/Kolkata', month: 'long', day: 'numeric', year: 'numeric'  })} <br/><br/> Select Timings:</h2></Grid>
           <RadioGroup required name='time' value={formV.time} onChange={handleInputChange}>
-              {  T.length ? Object.keys(count).length ? T[0].map(str => {
+              {  T.length ? Object.keys(count).length ? T.map(str => {
                 // console.log("rdio",str,count[str]);
                         const [start, end] = str.split('-');
                         const labelText = `${showLabel(start)} - ${showLabel(end)} Available Slots: ${count[str]}`;

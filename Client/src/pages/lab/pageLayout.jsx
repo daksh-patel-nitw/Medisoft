@@ -7,7 +7,7 @@ import Box from '@material-ui/core/Box';
 const  arr=[
   {label:'New Test',path:'/newtest',icon:'AddBox'},
   {label:'Test List',path:'/tests',icon: 'TableChart'},
-  {label:'Patients',path:'/testpatients',icon:'AccountBox'},
+  {label:'Patients',path:'/labpatients',icon:'AccountBox'},
   ]
 const PageLayout = ({children}) => {
   

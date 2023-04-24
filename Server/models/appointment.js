@@ -62,7 +62,7 @@ const UserSchema=new Schema(
         ctime:Number,
         height:Number
     },{
-        versionKey:false
+        versionKey:false,timestamps:true
     }
 );
 

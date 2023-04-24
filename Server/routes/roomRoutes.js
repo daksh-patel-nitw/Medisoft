@@ -3,6 +3,7 @@ const router = express.Router();
 const room = require('../models/room');
 const r_C = require('../models/room_category');
 const bodyParser = require("body-parser");
+const {generateBill}=require('./helper')
 
 //------Book new Room Category
 router.post("/newroomcategory",async (req,res)=>{
@@ -53,7 +54,7 @@ router.post('/newroom',async (req,res)=>{
 //------Get All Rooms
 router.get('/rooms',async (req,res)=>{
     try {
-        const rooms = await room.find({}, 'type dep floor room_no price occupied');
+        const rooms = await room.find({occupied:'No'}, 'type dep floor room_no price occupied');
         res.send(rooms);
     } catch (err) {
         console.log(err);
@@ -75,12 +76,12 @@ router.get('/roomcount',async (req,res)=>{
 //Book Room 
 router.post('/admitroom',async(req,res)=>{
     const body=req.body;
-
+    console.log("This is room:",body)
     const updatedRoom = await room.findOneAndUpdate(
     { room_no: body.room,dep:body.dep },
-    { mobile:body.mobile,did: body.did, pid: body.pid, pname: body.pname, occupied: true },
-    { new: true }, { useFindAndModify: false });
-    res.send("Successful.",updatedRoom);
+    { mobile:body.mobile,did: body.did, pid: body.pid,aid:body._id, pname: body.pname, occupied: "Yes" },
+    { new: true ,useFindAndModify: false });
+    res.send("Successful."+updatedRoom);
 })
 
 //Free or discharge room
@@ -88,16 +89,16 @@ router.get('/dischargeipd/:room/:dep',async(req,res)=>{
     const par=req.params;
     const updatedRoom = await room.findOneAndUpdate(
         { room_no: par.room,dep: par.dep },
-        { did:"", pid:"", pname:"",mobile:"", occupied: false },
-        { new: true },{ useFindAndModify: false });
-        res.send("Successful.",updatedRoom);
+        { did:"", pid:"", pname:"",mobile:"", occupied: "No" },
+        { new: true , useFindAndModify: false });
+        res.send(updatedRoom);
         //***********************************************ADD BILL
 });
 
 //Get all occupied rooms
 router.get('/occupiedroom',async(req,res)=>{
     try {
-        const rooms = await room.find({occupied:true}, 'type dep floor room_no pid pname mobile');
+        const rooms = await room.find({occupied:"Yes"});
         //   console.log("Route is working");
         res.send(rooms);
     } catch (err) {

@@ -39,6 +39,36 @@ router.post('/newappointment',async (req,res)=>{
 
 });
 
+//Ipd Appointment
+router.post('/newipdappointment',async (req,res)=>{
+    const b=req.body
+    
+    const newA= new appointment({
+        pid:b.pid,
+        did:b.did,
+        pname:b.pname,
+        mobile:b.mobile,
+        dname:b.dname,
+        status:'I',
+        schedule_date:Date.now(),
+        time:'n',
+        dep:b.dep,
+    });
+    await newA.save();
+    console.log(newA);
+
+    res.send(newA);
+});
+
+router.get('/viewpatientapp/:pid/:did',async(req,res)=>{
+    const d=await appointment.find({pid:req.params.pid,did:req.params.did,status:'D'});
+    res.send(d);
+})
+
+router.get('/getdoctorapp/:did',async(req,res)=>{
+    const d=await appointment.find({did:req.params.did}).sort({createdAt:1});
+    res.send(d);
+})
 
 //Confirm Appointment on Counter-2
 router.put('/updatecapp', async (req, res) => {
@@ -103,12 +133,18 @@ router.get('/getappointment/:did/',async(req,res)=>{
 
 router.get('/queuescreen/:id',async(req,res)=>{
   const did=req.params.id;
-  const app1=await appointment.findOne({ did: did, status: 'progress' },{pname:1,ctime:1}).sort({ ctime: 1 });
+  const app1=await appointment.findOne({ did: did, status: 'progress' },{pname:1,pid:1,status:1,ctime:1}).sort({ ctime: 1 });
   console.log(did)
-  const app = await appointment.find({ did: did, status: 'confirm' },{pname:1,ctime:1}).sort({ ctime: 1 });
+  const app = await appointment.find({ did: did, status: 'confirm' },{pname:1,pid:1,status:1,ctime:1}).sort({ ctime: 1 });
   console.log(app1)
-    const t=[app1,...app];
-    console.log(1)
+  let t;
+  if(app1){
+     t=[app1,...app];
+  }else{
+     t=app;
+  }
+    
+    console.log(did,t);
     res.send(t);
 })
 
