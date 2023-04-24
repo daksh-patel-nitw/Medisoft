@@ -1,0 +1,37 @@
+{
+  "name": "medisoft",
+  "version": "1.0.0",
+  "description": "",
+  "keywords": [],
+  "main": "src/index.js",
+  "dependencies": {
+    "@material-ui/core": "^4.12.4",
+    "@material-ui/icons": "^4.11.3",
+    "@material-ui/lab": "^4.0.0-alpha.61",
+    "fullcalendar": "^6.1.5",
+    "react": "16.8.6",
+    "react-calendar": "^3.9.0",
+    "react-countup": "^6.4.2",
+    "react-dom": "16.8.6",
+    "react-router-dom": "^6.10.0",
+    "react-scripts": "3.2.0",
+    "react-toastify": "^4.0.0",
+    "socket.io": "^4.6.1",
+    "zustand": "^4.3.7"
+  },
+  "devDependencies": {
+    "typescript": "3.3.3"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test --env=jsdom",
+    "eject": "react-scripts eject"
+  },
+  "browserslist": [
+    ">0.2%",
+    "not dead",
+    "not ie <= 11",
+    "not op_mini all"
+  ]
+}
