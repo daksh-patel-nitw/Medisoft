@@ -1,8 +1,6 @@
 const bill=require('../models/bill');
-const app=require('../models/appointment');
 
 const generateBill=async(pid,price,aid,des,type,status,date)=>{
-  const a = await appointment.findById(id,{schedule_date:1});
   const newB=new bill({
     pid:pid,
     price:price,
@@ -13,7 +11,7 @@ const generateBill=async(pid,price,aid,des,type,status,date)=>{
     date:date
   })
   await newB.save();
-  console.log(newB);
+  console.log('Bill in Helper:',newB);
   return newB;
 }
 

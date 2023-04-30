@@ -18,7 +18,7 @@ const UserSchema=new Schema(
         },
         //package_size
         ps:{
-            type:String,
+            type:Number,
             required:true
         },
         //package quantity

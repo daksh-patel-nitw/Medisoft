@@ -5,9 +5,9 @@ import Lab from "./lab/1newtest";
 import OPD1 from "./opd-1-reception/1newRegister";
 import OPD2 from "./opd-2-reception/1confirmP";
 import Doc from "./doctor/2.patDoc";
-// import Bill from "./billDesk";
+import Bill from "./billDesk/1billshow";
 import Admin from "./admin/1newAdmin";
-// import Patient from "./ipd-reception/1newRoom";
+import Patient from "./patient/1view";
 
 
 import Grid from '@material-ui/core/Grid';
@@ -42,10 +42,10 @@ function LoginWithLocalStorage(){
               return <Lab/>;
             case "admin":
               return <Admin/>;
-            // case "patient":
-            //   return <Patient/>;
-            // case "bill":
-            //   return <Bill/>;
+            case "patient":
+              return <Patient/>;
+            case "bill":
+              return <Bill/>;
             default:
               return alert('This is default');
           }

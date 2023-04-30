@@ -90,7 +90,7 @@ export default function App()
                                     </TableHead>
                                     <TableBody>
                                         { medicines[value]&&(filtered.length ? filtered:medicines[value]).map((m) => (
-                                            <TableRow key={m._id}>
+                                            <TableRow>
                                                 
                                                 <TableCell>{m.pid}</TableCell>
                                                 <TableCell>{(new Date(m.createdAt).toLocaleDateString('en', { timeZone: 'Asia/Kolkata',day: 'numeric', month: 'long', year: 'numeric' }))}</TableCell>
@@ -140,6 +140,7 @@ export default function App()
                                     )}
                                 />
     )
+    const [total,setTotal]=useState(0)
     const handleBill = () => {
         // Create table header
         let table = "<table style='width: 100%; border-collapse: collapse;'>";
@@ -165,13 +166,34 @@ export default function App()
           });
         // Print the window
         newWindow.print();
-      
+        // pid,price,aid,des,type,status,date
+
+        const updated=[...billed,table,total];
+        fetch('http://localhost:5000/api/finishmedopd', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(updated)
+        })
+        .then(response => response.json())
+        .then(data => {
+        console.log(data);
         
+        })
+        .catch(error => console.error(error));
+        setMedicines([medicines[0].filter((num) => !billed.includes(num)),[...medicines[1],...billed]])
+        setFilter([]);
+        setTotal(0);
       }
     
+      useEffect(()=>{
+          if(billed){
+            setTotal(billed.reduce((acc, m) => acc + (m.price*m.quantity), 0).toFixed(2))
+          }
+      },[billed])
       
       
-
     return (
 
         <PageLayout>
@@ -188,6 +210,7 @@ export default function App()
                             <Tab label="Remaining" />
                             <Tab label="Done" />
                             </Tabs>
+                            
                         <CardContent>
                         <Grid item xs container spacing={2}>
                             <Grid item xs={4}>
@@ -198,10 +221,10 @@ export default function App()
                             </Grid>
                             {value===0 && <><Grid item xs={2}>
                                 <div style={{margin:'auto'}}>
-                                    <h2>Total:{billed && billed.reduce((acc, m) => acc + (m.price*m.quantity), 0).toFixed(2)}</h2>
+                                    <h2>Total:{total}</h2>
                                 </div>
                             </Grid>
-                            <Grid item alignItems="center" xs={2}>
+                            <Grid item xs={2}>
                             {billed.length && <div style={{margin:'auto'}}><Button
                             style={{margin:'auto'}}
                              variant="contained"

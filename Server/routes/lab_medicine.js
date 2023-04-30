@@ -110,11 +110,26 @@ router.get('/getmedicines',async(req,res)=>{
 //Finish medicine
 router.post('/finishmedopd', async (req, res) => {
   try {
-    const { _id, pid, quantity, price, aid, mname, unit, date } = req.body;
-    const priceTotal = quantity * price;
-    const update = await medicine.findByIdAndUpdate(_id, { status: 'D' }, { new: true });
-    const newBill = generateBill(pid, priceTotal, aid, `${mname} ${quantity} ${unit}`, "medicine", true, date);
-    res.send({ update, newBill });
+    const data=req.body;
+    const priceTotal = data.pop();
+    const des = data.pop();
+    console.log("After Slice data",data);
+    data.forEach(async(m,index) => {
+      const update = await medicine.findByIdAndUpdate(m._id, { status: 'D' }, { new: true });
+      console.log("Updating medicine ",index,update);
+      
+      const med = await m_n.findOne({name: m.mname, t: m.unit});
+      console.log("Medicine:",index,med)
+      med.ps_u = med.ps_u - Math.floor(m.quantity / Number(med.ps));
+      med.ps_c = med.ps_c + (m.quantity % Number(med.ps));
+      await med.save();
+      console.log("Medicine After:",med)
+    });
+    console.log(data[0]);
+    const newBill = await generateBill(data[0].pid, priceTotal, data[0].aid, des, "medicine", true, data[0].createdAt);
+    console.log("Bill in Route:",newBill)
+    // pid,price,aid,des,type,status,date
+    res.send({ update: newBill });
   } catch (error) {
     console.error(error);
     res.status(500).send('Server Error');

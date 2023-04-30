@@ -190,5 +190,24 @@ router.get('/allDoctors/:dep',async(req,res)=>{
   res.send(arr);
 })
 
+router.get('/admingetemp',async(req,res)=>{
+
+  const arr = await emp.aggregate([
+    {
+      $project: {
+        eid:1,
+        mobile:1,
+        dep:1,
+        role:1,
+        name: {
+          $concat: ['$fname', ' ', '$lname']
+        }
+      }
+    }
+  ]);
+
+  res.send(arr);
+})
+
 module.exports = router;
 

@@ -79,6 +79,10 @@ router.get('/viewpatientapp/:pid/:did',async(req,res)=>{
     const d=await appointment.find({pid:req.params.pid,did:req.params.did,status:'D'});
     res.send(d);
 })
+router.get('/onlypatientapp/:pid',async(req,res)=>{
+    const d=await appointment.find({pid:req.params.pid});
+    res.send(d);
+})
 
 router.get('/getdoctorapp/:did',async(req,res)=>{
     const d=await appointment.find({did:req.params.did}).sort({createdAt:1});

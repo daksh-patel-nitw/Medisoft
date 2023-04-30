@@ -7,12 +7,16 @@ const UserSchema=new Schema(
             type:String,
             required:true
         },
-        price:{
-            type:Number,
-            required:true
-        },
         aid:{
             type:String,
+            required:true
+        },
+        date:{
+            type:Date,
+            required:true
+        },
+        price:{
+            type:Number,
             required:true
         },
         description:{

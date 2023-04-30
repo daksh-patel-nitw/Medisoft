@@ -6,8 +6,8 @@ import React,{useState, useEffect} from 'react';
 import { useNavigate } from 'react-router-dom';
 
 const  arr=[
-  {label:'My Stats',path:'/admin',icon:'AddBox'},
-  {label:'See All',path:'/viewemps',icon:'AddBox'},
+  {label:'All Bills',path:'/bill',icon:'AddBox'},
+ 
   
   ]
 
@@ -19,7 +19,7 @@ const PageLayout = ({children}) => {
     const handleLoad = async () => {
       const getType = await localStorage.getItem('type');
   
-      if (getType !== 'admin') {
+      if (getType !== 'bill') {
         navigate('/');
       } else {
         setLoad(true);
@@ -31,7 +31,7 @@ const PageLayout = ({children}) => {
 
   return (
     checkLoad &&<>
-      <NavBar name="Admin"/>
+      <NavBar name="Bill"/>
       <Box height="45px" />
       <Box sx={{ display: 'flex' }}>
         <SideBar arr={arr} />

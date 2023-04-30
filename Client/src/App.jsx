@@ -19,6 +19,9 @@ import T2 from './pages/lab/2tests'
 import T3 from './pages/lab/3patients'
 import L from './pages/login'
 import A1 from './pages/admin/1newAdmin'
+import A2 from './pages/admin/2showCategory'
+import B1 from './pages/billDesk/1billshow'
+import Pat1 from './pages/patient/1view'
 
 
 function App() {
@@ -48,7 +51,12 @@ function App() {
   //login,
   <L/>,
   //Admin,
-  <A1/>
+  <A1/>,
+  <A2/>,
+  //bill
+  <B1/>,
+  //patient,
+  <Pat1/>,
   ]
   const arr1=['/newmedicine',
   "/medicine",
@@ -76,7 +84,13 @@ function App() {
   //login,
   '/',
   //admin,
-  '/admin'
+  '/admin',
+  '/viewemps',
+  //bill,
+  '/bill',
+  //patients,
+  '/patientView',
+
 ]
   return (
     <div className="container">
