@@ -28,28 +28,28 @@ const useStyles = makeStyles({
 
 export default function App()
 {
-    const [medicines, setMedicines] = useState([]);
+    const [tests, setTests] = useState([]);
     const [openEditModal, setOpenEditModal] = useState(false);
     const [selectedMedicine, setSelectedMedicine] = useState(null);
     const [colname, setColname] = useState('');
     useEffect(() =>
     {
-        fetch('http:/localhost:5000/api/alltest')
+        fetch('http://localhost:5000/api/alltest')
             .then((res) => res.json())
-            .then((data) => { console.log(data); setMedicines(data) })
+            .then((data) => { console.log(data); setTests(data) })
             .catch((err) => console.error(err));
     }, []);
 
-
+    console.log(tests)
     const classes = useStyles();
     const handleDelete = async (id) =>
     {
         console.log(id);
-        await fetch(`http:/localhost:5000/api/deletetest/${id}`, {
+        await fetch(`http://localhost:5000/api/deletetest/${id}`, {
             method: 'DELETE'
         })
             .then((res) => res.json())
-            .then((data) => { console.log(data); setMedicines(medicines.filter((m) => m._id !== id)) })
+            .then((data) => { console.log(data); setTests(tests.filter((m) => m._id !== id)) })
             .catch((err) => console.error(err));
 
     };
@@ -57,7 +57,7 @@ export default function App()
     const handleEdit = (id, updatedMedicine, column) =>
     {
         console.log(id);
-        setMedicines((prevMedicines) => prevMedicines.map((m) =>
+        setTests((prevMedicines) => prevMedicines.map((m) =>
         {
             if (m._id === id) {
                 return { ...m, [column]: updatedMedicine };
@@ -83,8 +83,13 @@ export default function App()
 
     const handleSearch = (event, newValue) =>
     {
+        console.log(tests);
         setSearchValue(newValue ? newValue : '');
     };
+
+    const handleMe=()=>{
+        console.log(tests);
+    }
     return (
 
         <PageLayout>
@@ -94,7 +99,7 @@ export default function App()
                         <CardContent>
                             <Autocomplete
                                 freeSolo
-                                options={medicines.map((option) => option.name)}
+                                options={tests && tests.map((option) => option.name)}
                                 onChange={handleSearch}
                                 renderInput={(params) => (
                                     <TextField
@@ -117,7 +122,7 @@ export default function App()
                                         </TableRow>
                                     </TableHead>
                                     <TableBody>
-                                        {medicines.filter((m) => m.name.toLowerCase().includes(searchValue.toLowerCase())).map((m) => (
+                                        {tests && tests.filter((m) => m.name.toLowerCase().includes(searchValue.toLowerCase())).map((m) => (
                                             <TableRow key={m._id}>
                                                 <TableCell>{m.name}</TableCell>
                                                 <TableCell>{m.price} <IconButton

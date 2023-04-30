@@ -11,7 +11,7 @@ import {
 const EditModal =({ open, column,handleClose, handleEdit, medicine }) => {
   const m=medicine;
   const [f, updateValue] = useState("");
-    const title=medicine.name+"("+medicine.t+")";
+    const title=medicine.name;
   
    const handleInputChange = (event) =>
   {
@@ -19,7 +19,7 @@ const EditModal =({ open, column,handleClose, handleEdit, medicine }) => {
     updateValue(event.target.value);
   };
 
-  const arr2 = {'pat_details':"Patient Details",'normal':"Normal","price":"Price"};
+  const arr2 = {pat_details:"Patient Details",normal:"Normal",price:"Price"};
 
   const handleSubmit = async() => {
     m[column]=f;

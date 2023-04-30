@@ -285,10 +285,11 @@ export default function App()
       </form>
 )
   }
-
+  const [checkErr,setErr]=useState(0);
   const handleSubmit=async()=>{
     const updated={...Ap,notes:notes}
     console.log(updated);
+    try{
     await fetch('http://localhost:5000/api/diagnoseopd', {
       method: 'POST',
       headers: {
@@ -302,7 +303,10 @@ export default function App()
         console.log(data);
         fetchData('E000000C');
       })
-      .catch(error => console.error(error));
+      .catch(error => console.error(error));}
+      catch{
+          setErr(1);
+      }
       setNotes('');
   }
 
@@ -315,19 +319,10 @@ export default function App()
   return (
 
     <PageLayout>
-      <Grid container spacing={2} >
-        <Grid item container xs={5}>
-          <Card className="partition" style={{height:500}}>
-          <Grid item xs={12}><div style={{padding:8,fontWeight:'Bold',fontSize:'16px'}}>Medicines:</div> <hr style={{ margin: 0 }} /></Grid>
-            <CardContent style={{paddingTop:'9px'}}>
-              <Grid  item container justify="center" xs={12}>{medicineC()}</Grid></CardContent>
-            <Grid item xs={12}><div style={{padding:8,fontWeight:'Bold',fontSize:'16px'}}>Lab Tests:</div> <hr style={{ margin: 0 }} /></Grid>
-            <CardContent style={{paddingTop:'9px'}}><Grid  container justify="center" xs={12}>{TestC()}</Grid>
-              </CardContent>
-          </Card>  
-        </Grid>
-        
-        <Grid item xs={3}> 
+      
+     { checkErr?<h1>No More Patients</h1>:<Grid container spacing={2} >
+
+      <Grid item xs={3}> 
           <Card className="partition" >
             <CardContent>
                 
@@ -344,6 +339,19 @@ export default function App()
             </CardContent>
           </Card>
         </Grid>
+
+        <Grid item container xs={5}>
+          <Card className="partition" style={{height:500}}>
+          <Grid item xs={12}><div style={{padding:8,fontWeight:'Bold',fontSize:'16px'}}>Medicines:</div> <hr style={{ margin: 0 }} /></Grid>
+            <CardContent style={{paddingTop:'9px'}}>
+              <Grid  item container justify="center" xs={12}>{medicineC()}</Grid></CardContent>
+            <Grid item xs={12}><div style={{padding:8,fontWeight:'Bold',fontSize:'16px'}}>Lab Tests:</div> <hr style={{ margin: 0 }} /></Grid>
+            <CardContent style={{paddingTop:'9px'}}><Grid  container justify="center" xs={12}>{TestC()}</Grid>
+              </CardContent>
+          </Card>  
+        </Grid>
+        
+        
         
         <Grid item xs={4}>
           <Card className="partition" >
@@ -365,17 +373,19 @@ export default function App()
           aria-controls="panel1a-content"
           id="panel1a-header"
         >
-          <p>{e.notes}</p>
+          <p>{(new Date(e.admitted_date)).toLocaleString('en-US', { timeZone: 'Asia/Kolkata', month: 'long', day: 'numeric', year: 'numeric'  })} <br/>{e.notes}</p>
         </AccordionSummary>
         <AccordionDetails>
+        <div>
+        <p>Medicines:</p>
         { e.medicines.map(m=>(
-                      <div style={{padding:4,borderRadius:2,backgroundColor:"rgb(255, 137, 192)",fontWeight:"bold"}}>{m.name} {m.type} </div>
-                    ))}
+                      <div style={{margin:4,padding:4,borderRadius:2,backgroundColor:"rgb(255, 137, 192)",fontWeight:"bold"}}>{m.name} {m.type} </div>
+                    ))}<br/><p>Tests:</p>
                       {
                         e.tests.map(t=>(
-                          <div style={{padding:4,borderRadius:2,backgroundColor:"rgb(255, 137, 192)",fontWeight:"bold"}}>{t.name}</div>
+                          <div style={{margin:4,padding:4,borderRadius:2,backgroundColor:"rgb(255, 137, 192)",fontWeight:"bold"}}>{t.name}</div>
                         ))
-                      }
+                      }</div>
         </AccordionDetails>
       </Accordion>
                     
@@ -387,7 +397,7 @@ export default function App()
         <Grid item xs={12}>
           <Button style={{width:'500px'}} variant="contained" size="medium" color="secondary" onClick={handleSubmit}> Next </Button>
         </Grid>
-      </Grid>
+      </Grid>}
     </PageLayout>
 
   );

@@ -82,10 +82,10 @@ router.post('/newpatient', async (req, res) =>
     });
 
     await newl.save();
-    
+    const msg='\nMEDISOFT-HMS\n'+body.fname+' registered Successfully\nUsername:'+'P'+pid+'\nPassword:'+password;
     await client.messages
     .create({
-        body: '\nMEDISOFT-HMS\n'+'body.fname'+' registered Successfully\nUsername:'+pid+'\nPassword:'+password,
+        body: msg,
         from: '+16204079430',
         to: '+919510836469'
     })

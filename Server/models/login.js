@@ -14,7 +14,12 @@ const UserSchema=new Schema(
         type:{
             type:String,
             required:true
-        }      
+        },
+        dep:{
+            type:String,
+            required:true
+        },
+             
     },{
         versionKey:false
     }

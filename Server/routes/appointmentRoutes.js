@@ -4,6 +4,11 @@ const appointment=require('../models/appointment')
 const tt=require('../models/timings')
 const bodyParser=require("body-parser");
 
+// const twilio = require('twilio');
+// const accountSid = 'AC68eaa778b2a20e63ece41712af3584ed';
+// const authToken = 'ff960610dd1d9e9ab52915683345f96b';
+// const client = new twilio(accountSid, authToken);
+
 router.use(bodyParser.urlencoded({extended:true}));
 router.use(bodyParser.json());
 
@@ -35,6 +40,16 @@ router.post('/newappointment',async (req,res)=>{
 
     await newT.save()
     
+    // const msg='\nMEDISOFT-HMS\n'+b.pname+' Appointment Booked Successful\nDate:'+b.schedule_date+'\nTimings:'+b.time;
+    // await client.messages
+    // .create({
+    //     body: msg,
+    //     from: '+16204079430',
+    //     to: '+919510836469'
+    // })
+    // .then(message => console.log(message.sid))
+    // .done();
+
     res.send(newT);
 
 });
@@ -113,7 +128,9 @@ router.get('/getapp/:dep',async(req,res)=>{
 //doctor_appointment
 router.get('/getappointment/:did/',async(req,res)=>{
   const did = req.params.did;
+  console.log(did);
   const appointmentToUpdate = await appointment.findOne({ did: did, status: 'confirm' }).sort({ ctime: 1 });
+  console.log(appointmentToUpdate)
   const inProgress = await appointment.findOne({ did: did, status: 'progress' }).sort({ ctime: 1 });
   if(inProgress){
     res.send(inProgress);

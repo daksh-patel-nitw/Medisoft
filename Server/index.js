@@ -6,6 +6,7 @@ const labMedicine = require('./routes/lab_medicine');
 const room = require('./routes/roomRoutes');
 const doc = require('./routes/doctorRoutes');
 const ap = require('./routes/appointmentRoutes');
+const login = require('./routes/loginRoute');
 const cors = require('cors');
 const app = Express();
 
@@ -17,6 +18,7 @@ app.use('/api', labMedicine);
 app.use('/api', room);
 app.use('/api', doc);
 app.use('/api', ap);
+app.use('/api', login);
 
 const options = {
     useNewUrlParser: true,

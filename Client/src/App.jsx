@@ -17,6 +17,9 @@ import D3 from "./pages/doctor/3myapps"
 import T1 from './pages/lab/1newtest'
 import T2 from './pages/lab/2tests'
 import T3 from './pages/lab/3patients'
+import L from './pages/login'
+import A1 from './pages/admin/1newAdmin'
+
 
 function App() {
   const arr2=[<P1/>,
@@ -42,6 +45,10 @@ function App() {
   <T1/>,
   <T2/>,
   <T3/>,
+  //login,
+  <L/>,
+  //Admin,
+  <A1/>
   ]
   const arr1=['/newmedicine',
   "/medicine",
@@ -65,7 +72,11 @@ function App() {
   //tests
   '/newtest',
   '/tests',
-  '/labpatients'
+  '/labpatients',
+  //login,
+  '/',
+  //admin,
+  '/admin'
 ]
   return (
     <div className="container">

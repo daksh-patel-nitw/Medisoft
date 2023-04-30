@@ -1,8 +1,9 @@
-import React from 'react';
+
 import NavBar from '../../components/Navbar';
 import SideBar from '../../components/sidebar';
 import Box from '@material-ui/core/Box';
-
+import React,{useState, useEffect} from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const  arr=[
   {label:'New Room',path:'/newroom'
@@ -15,10 +16,27 @@ const  arr=[
   ,icon:'AccountBalanceWallet'},
   ]
 const PageLayout = ({children}) => {
+  const navigate = useNavigate();
+  const [checkLoad,setLoad]=useState(false);
+
+  useEffect(() => {
+    const handleLoad = async () => {
+      const getType = await localStorage.getItem('type');
   
+      if (getType !== 'ipd') {
+        navigate('/');
+      } else {
+        setLoad(true);
+      }
+    }
+
+    handleLoad();
+  }, [navigate]);
+
+
   return (
-    <>
-      <NavBar name="IPD" />
+    checkLoad &&<>
+       <NavBar name="IPD"  />
       <Box height="45px" />
       <Box sx={{ display: 'flex' }}>
         <SideBar arr={arr} />

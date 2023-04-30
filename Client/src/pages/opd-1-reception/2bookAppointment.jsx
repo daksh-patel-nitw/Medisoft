@@ -198,7 +198,8 @@ const events = [
           </RadioGroup>
 
       </Grid>
-      <Button variant="outlined" color="primary" type='submit'>Book Appointment</Button>
+      <Grid item>
+      <Button variant="contained" color="primary" type='submit'>Book Appointment</Button></Grid>
   </Grid>
     )
   }
@@ -270,7 +271,14 @@ const events = [
     <PageLayout>
      
       <form onSubmit={handleFormSubmit}>
-      <Grid container spacing={2} >
+      <Grid style={{width:'800px'}} container spacing={2} >
+      <Grid item  xs={12}>
+          <Card className="partition" >
+          <CardContent>
+          {partO()}
+          </CardContent>
+          </Card>
+        </Grid>
         <Grid item xs={12}>
           <Card className="partition" >
             <CardContent>
@@ -278,15 +286,7 @@ const events = [
                 </CardContent>
           </Card>
         </Grid>
-
-
-        <Grid item xs={12}>
-          <Card className="partition" >
-          <CardContent>
-          {partO()}
-          </CardContent>
-          </Card>
-        </Grid>
+        
         </Grid>
         </form>
      

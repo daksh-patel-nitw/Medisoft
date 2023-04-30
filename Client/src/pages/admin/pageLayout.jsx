@@ -6,10 +6,10 @@ import React,{useState, useEffect} from 'react';
 import { useNavigate } from 'react-router-dom';
 
 const  arr=[
-  {label:'New Medicine',path:'/newmedicine',icon:'AddBox'},
-  {label:'Medicine List',path:'/medicine',icon: 'TableChart'},
-  {label:'Patients',path:'/medpatients',icon:'AccountBox'},
+  {label:'My Stats',path:'/admin',icon:'AddBox'},
+  
   ]
+
 const PageLayout = ({children}) => {
   const navigate = useNavigate();
   const [checkLoad,setLoad]=useState(false);
@@ -18,7 +18,7 @@ const PageLayout = ({children}) => {
     const handleLoad = async () => {
       const getType = await localStorage.getItem('type');
   
-      if (getType !== 'pharmacy') {
+      if (getType !== 'admin') {
         navigate('/');
       } else {
         setLoad(true);
@@ -29,14 +29,13 @@ const PageLayout = ({children}) => {
   }, [navigate]);
 
   return (
-    checkLoad &&
-    <>
-      <NavBar name="Pharmacy" navigate={navigate}/>
+    checkLoad &&<>
+      <NavBar name="Doctor"/>
       <Box height="45px" />
       <Box sx={{ display: 'flex' }}>
         <SideBar arr={arr} />
         <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
-          {children}
+          {children} 
         </Box>
       </Box>
     </>

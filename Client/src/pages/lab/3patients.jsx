@@ -50,47 +50,30 @@ export default function App()
 
     console.log(dep);
 
-    const [T,setr]=useState([]);
+    const [filtered,setFilter]=useState([]);
    
-      
-    useEffect(()=>{
-      setr(test[value])
-    },[value])
-    
-    const handleClick = (value) => {
-      const dischargedata = async () => {
-        try {
-            console.log(value,value.room);
-          const response = await fetch(`http://localhost:5000/api/dischargeipd/${value.room_no}/${value.dep}`);
-          const data = await response.json();
-          console.log(data);
-          fetchdata();
-        } catch (err) {
-          console.error(err);
-        }
-      };
-    
-      dischargedata();
-     
-    };
-
      const handleSearch = (newValue, property) => {
         if (newValue) {
-          setr(
+          const t=test[value].find((e)=>e[property]===newValue);
+          setFval({pid:t.pid,pname:t.pname});
+          setFilter(
             test[value].filter((m) =>
               m[property].toLowerCase().includes(newValue.toLowerCase())
             )
           );
         } else {   
-          setr([]);
+          setFilter([]);
+          setFval({pid:'',pname:''});
         }
       };
+    const [fval,setFval]=useState({pid:'',pname:''})
     const autoComp = (property, label) => (
         <Grid item xs={4}>
           <Autocomplete
             freeSolo
             options={test[value]&&test[value].map((option) => option[property])}
             onChange={(event, newValue) => handleSearch(newValue, property)}
+            value={fval[property]}
             renderInput={(params) => (
               <TextField
                 {...params}
@@ -103,6 +86,7 @@ export default function App()
         </Grid>
       );
     
+     
     //Check Tabs 
   const [value, setValue] = useState(0);
     
@@ -110,6 +94,11 @@ export default function App()
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
+  useEffect(() => {
+    console.log("value",value);
+    setFval({pid:'',pname:''});
+    setFilter([]);
+  }, [value]);
 
   const confirmT=async(id)=>{
     await fetch(`http://localhost:5000/api/updatedetails/${id}`)
@@ -189,10 +178,11 @@ export default function App()
                                         }
                                       
                                        {value!==2 && <TableCell>Action</TableCell>}
+                                       {value===2 && <TableCell>Patient Result</TableCell>}
                                     </TableRow>
                                 </TableHead>
                                 <TableBody>
-                                {test[value] && test[value].map((e,index)=> (
+                                {test[value] &&(filtered.length?filtered:test[value]).map((e,index)=> (
                                       <TableRow>
                                         <TableCell>{e.tname}</TableCell>
                                           <TableCell>{e.n_range} </TableCell>
@@ -210,6 +200,7 @@ export default function App()
                                             Add Results
                                           </Button>
                                           }
+                                          {value===2 && e.p_range}
                                         </TableCell>
                                       </TableRow>
                                     ))}
