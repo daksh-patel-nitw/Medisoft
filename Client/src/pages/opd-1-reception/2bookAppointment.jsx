@@ -7,11 +7,7 @@ import CardContent from '@material-ui/core/CardContent';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
 import PageLayout from './pageLayout';
-import { InputLabel,FormControl,FormControlLabel, Radio, RadioGroup } from '@material-ui/core';
-import Select from '@material-ui/core/Select';
-import Tabs from '@material-ui/core/Tabs';
-import Tab from '@material-ui/core/Tab';
-import Chip from '@material-ui/core/Chip';
+import { FormControlLabel, Radio, RadioGroup } from '@material-ui/core';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import Calendar from 'react-calendar';
 
@@ -154,11 +150,7 @@ const handleDateClick =async (date) => {
   }
 };
 
-const events = [
-  // { title: 'Event 1', date: new Date(2023, 3, 22) },
-  // { title: 'Event 2', date: new Date(2023, 3, 23) },
-  // { title: 'Event 3', date: new Date(2023, 3, 24) },
-];
+
 //======================
   const cUI=()=>{
     return(

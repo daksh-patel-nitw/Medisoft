@@ -34,6 +34,7 @@ export default function App()
       fetchpData(data.pid);
       fetchAData(data.pid,did);
     } catch (error) {
+      setErr(1);
       console.log(error);
     }
   };

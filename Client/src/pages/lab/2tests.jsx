@@ -78,7 +78,7 @@ export default function App()
     {
         setOpenEditModal(false);
     };
-    const arr = ["Test Name", "Price","Patient Details","Normal Range","Delete"];
+    const arr = ["Test Name", "Price","Required Details","Normal Range","Delete"];
     const [searchValue, setSearchValue] = useState('');
 
     const handleSearch = (event, newValue) =>
@@ -104,7 +104,7 @@ export default function App()
                                 renderInput={(params) => (
                                     <TextField
                                         {...params}
-                                        label='Search by Medicine'
+                                        label='Search by Test'
                                         margin='normal'
                                         variant='outlined'
                                     />

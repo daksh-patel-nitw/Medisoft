@@ -60,85 +60,88 @@ export default function App()
    
       return (
         <PageLayout>
-          <Grid container spacing={2} style={{height:'500px'}}>
-            <Grid item xs={12}>
-            <Grid container spacing={2}>
-              
-                  
+          <Grid container direction="column" spacing={2}>
+
             {appointments.length && appointments.map((e) => (
-  <Card className="partition" style={{ width: "700px", margin: "auto" }}>
-    <CardContent>
-      <Accordion>
-        <AccordionSummary
-          expandIcon={<ExpandMoreIcon />}
-          aria-controls="panel1a-content"
-          id="panel1a-header"
-        >
-          <p>
-            {new Date(e.admitted_date).toLocaleString("en-US", {
-              timeZone: "Asia/Kolkata",
-              month: "long",
-              day: "numeric",
-              year: "numeric",
-            })}{" "} 
-          </p>
-        </AccordionSummary>
-        <AccordionDetails>
-          <div>
-            <p>Doctor Notes:</p>
-            <div>
-            {e.notes}
-            </div>
-          </div>
-          <div>
-            <p>Medicines:</p>
-            {e.medicines.map((m) => (
-              <div
-                style={{
-                  margin: 4,
-                  padding: 4,
-                  borderRadius: 2,
-                  backgroundColor: "rgb(255, 137, 192)",
-                  fontWeight: "bold",
-                }}
-              >
-                {m.name} {m.type}{" "}
-              </div>
-            ))}
-            <br />
-            <p>Tests:</p>
-            {e.tests.map((t) => (
-              <div
-                style={{
-                  margin: 4,
-                  padding: 4,
-                  borderRadius: 2,
-                  backgroundColor: "rgb(255, 137, 192)",
-                  fontWeight: "bold",
-                }}
-              >
-                {t.name}
-              </div>
-            ))}
-          </div>
-          <div>
-          {bills.filter(b => b.aid === e._id).map(bill => (
-              <div>
-                <p>{bill.type}</p>
-                {Order(bill.description)}
-              </div>
-            ))}
-          </div>
-        </AccordionDetails>
-      </Accordion>
-    </CardContent>
-  </Card>
-))}
+               <Grid item xs={12}>
+                      <Card className="partition" style={{ width: "700px", margin: "auto" }}>
+                        <CardContent>
+                          <Accordion>
+                            <AccordionSummary
+                              expandIcon={<ExpandMoreIcon />}
+                              aria-controls="panel1a-content"
+                              id="panel1a-header"
+                            >
+                              <p>
+                                {new Date(e.admitted_date).toLocaleString("en-US", {
+                                  timeZone: "Asia/Kolkata",
+                                  month: "long",
+                                  day: "numeric",
+                                  year: "numeric",
+                                })}{" "} 
+                              </p>
+                            </AccordionSummary>
+                            <AccordionDetails>
+                              <Grid container direction="column" spacing={2}>
+                                <Grid item>
+                                  <h4>Doctor Notes:</h4>
+                                  <span>
+                                    {e.notes}
+                                  </span>
+                                </Grid>
+                                <Grid item>
+                                  <p>Medicines:</p>
+                                  {e.medicines.map((m) => (
+                                    <div
+                                      style={{
+                                        margin: 4,
+                                        padding: 4,
+                                        borderRadius: 2,
+                                        backgroundColor: "rgb(255, 137, 192)",
+                                        fontWeight: "bold",
+                                      }}
+                                    >
+                                      {m.name} {m.t}{" "}
+                                    </div>
+                                  ))}
+                                </Grid>
+
+                                <Grid item>
+                                  <p>Tests:</p>
+                                  {e.tests.map((t) => (
+                                    <div
+                                      style={{
+                                        margin: 4,
+                                        padding: 4,
+                                        borderRadius: 2,
+                                        backgroundColor: "rgb(255, 137, 192)",
+                                        fontWeight: "bold",
+                                      }}
+                                    >
+                                      {t.name}
+                                    </div>
+                                  ))}
+                                </Grid>
+                                <Grid item>
+                                  {bills.filter(b => b.aid === e._id).map(bill => (
+                                    <div>
+                                      <p>{bill.type}</p>
+                                      {Order(bill.description)}
+                                    </div>
+                                  ))}
+                                </Grid>
+                              </Grid>
+                              
+                            
+                            </AccordionDetails>
+                          </Accordion>
+                        </CardContent>
+                      </Card>
+                      </Grid>
+                    ))}
 
                
-                </Grid>
-              
-            </Grid>
+                
           </Grid>
         </PageLayout>
       );

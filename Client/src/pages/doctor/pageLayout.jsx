@@ -6,12 +6,12 @@ import React,{useState, useEffect} from 'react';
 import { useNavigate } from 'react-router-dom';
 
 const  arr=[
-  {label:'My Stats',path:'/doctorstats'
-  ,icon:'AddBox'},
-  {label:'Get Patient',path:'/doctoropdpatient'
-  ,icon: 'TableChart'},
+  {label:'IPD Patients',path:'/doctorstats'
+  ,icon:'Hotel'},
+  {label:'OPD Patients',path:'/doctoropdpatient'
+  ,icon: 'Person'},
   {label:'My Appointments',path:'/doctorappointments'
-  ,icon:'AccountBox'},
+  ,icon:'ListAlt'},
   ]
 
 const PageLayout = ({children}) => {

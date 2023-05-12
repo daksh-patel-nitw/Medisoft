@@ -12,8 +12,8 @@ const  arr=[
   ,icon: 'TableChart'},
   {label:'Patients',path:'/testpatients'
   ,icon:'AccountBox'},
-  {label:'Add Charges',path:'/addipdcharge'
-  ,icon:'AccountBalanceWallet'},
+  // {label:'Add Charges',path:'/addipdcharge'
+  // ,icon:'AccountBalanceWallet'},
   ]
 const PageLayout = ({children}) => {
   const navigate = useNavigate();

@@ -6,7 +6,7 @@ const express = require('express');
 const router = express.Router();
 const bodyParser = require("body-parser");
 const {generateBill}=require("./helper");
-
+const patient = require('../models/appointment');
 // ===========================Medicine_Name=========================
 
 //Add new medicine
@@ -232,28 +232,43 @@ router.get('/getlabtests',async(req,res)=>{
 router.get('/updatedetails/:id',async(req,res)=>{
     const id=req.params.id
     const allT = await test.findByIdAndUpdate(id,{details:'D'}, { useFindAndModify: false });
+    const status=allT.patStatus==='IPD'?false:true;
+    
+    const des=`<table style='width: 100%; border-collapse: collapse;'>
+        <tr><th style='border: 1px solid black; padding: 5px;'>Description</th><th style='border: 1px solid black; padding: 5px;'>Quantity</th><th style='border: 1px solid black; padding: 5px;'>Price</th></tr><tr><td style='border: 1px solid black; padding: 5px;'>${allT.tname}</td><td style='border: 1px solid black; padding: 5px;'>1</td><td style='border: 1px solid black; padding: 5px;'>${allT.price}</td></tr></table><h2>Total: ${allT.price}</h2>`;
+
+    const newBill = await generateBill(allT.pid, allT.price, allT.aid, des, 'Lab', status, allT.createdAt);
+    console.log("Bill in Route:",newBill)
+
     res.send(allT);
 });
 
 // Finish the test 
 router.get('/donetest/:id/:value', async (req, res) => {
   try {
-  //   const b = req.body;
-  //   const nB = generateBill(
-  //     b.pid,
-  //     b.price,
-  //     b.aid,
-  //     b.tname,
-  //     "test",
-  //     true,
-  //     b.date
-  //   );
     const allT = await test.findByIdAndUpdate(
       req.params.id,
       { p_range: req.params.value, status: 'D' },
       { new: true, useFindAndModify: false }
     );
-    res.send({ updatedTest: allT });
+    console.log('test:',allT);
+    const patient_ = await patient.findOne({ _id: allT.aid });
+    if (!patient_) {
+      return res.status(404).json({ message: 'Patient not found' });
+    }
+
+    console.log(patient_)
+    const uptest = patient_.tests.find((t) => t.name === allT.tname);
+
+    if (!uptest) {
+      return res.status(404).json({ message: 'Test not found' });
+    }
+
+    uptest.p_range = allT.p_range;
+
+    await patient_.save();
+    
+    res.send({ updatedTest: allT,newapp:patient_ });
   } catch (error) {
     console.error(error);
     res.status(500).send("Server error");

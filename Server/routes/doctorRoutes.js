@@ -144,34 +144,19 @@ router.get('/getempwithid/:id',async(req,res)=>{
 })
 
 //add doctor timings
-router.post('/addtimings',async(req,res)=>{
-    const {eid,timings}=req.body;
-    console.log(eid,timings);
-    // console.log('Request body:', req.body);
-
+router.post('/addtimings', async (req, res) => {
+  const { eid } = req.body;
+  const updatedEmployee = req.body;
+  delete updatedEmployee.eid; // Remove the employee ID from the updated object
   try {
-    const result = await emp.findOneAndUpdate({ eid: eid }, { $addToSet: { timings: timings } });
-
+    const result = await emp.findOneAndUpdate({ eid: eid }, { $set: updatedEmployee }, { new: true });
     console.log('Update result:', result);
     res.send(result);
   } catch (error) {
     console.error('Update error:', error);
-    res.status(500).send('Error updating employee timings');
+    res.status(500).send('Error updating employee');
   }
 })
-
-router.post('/deletetimings', async (req, res) => {
-  const { eid, timings } = req.body;
-  console.log(eid, timings);
-  const result = await emp.UpdateOne(
-    { eid: eid },
-    { $pull: { timings: timings } },
-    { useFindAndModify: false }
-  );
-  console.log(result);
-});
-
-
 
 router.get('/allDoctors/:dep',async(req,res)=>{
   const d=req.params.dep;

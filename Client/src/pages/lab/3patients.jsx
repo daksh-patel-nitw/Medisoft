@@ -171,14 +171,14 @@ export default function App()
                                 <TableHead  style={{ backgroundColor: '#1F3F49' }}>
                                     <TableRow>
                                       {arr2.map(e=>(
-                                        <TableCell>
+                                        <TableCell style={{ color: 'white', fontWeight: 'bold' }}>
                                           {e}
                                         </TableCell>
                                       ))
                                         }
                                       
-                                       {value!==2 && <TableCell>Action</TableCell>}
-                                       {value===2 && <TableCell>Patient Result</TableCell>}
+                                       {value!==2 && <TableCell style={{ color: 'white', fontWeight: 'bold' }}>Action</TableCell>}
+                                       {value===2 && <TableCell style={{ color: 'white', fontWeight: 'bold' }}>Patient Result</TableCell>}
                                     </TableRow>
                                 </TableHead>
                                 <TableBody>

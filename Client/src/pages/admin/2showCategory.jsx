@@ -103,10 +103,10 @@ export default function App()
                     <Table size="small">
                       <TableHead style={{ backgroundColor: '#1F3F49' }}>
                         <TableRow>
-                          <TableCell>Employee ID</TableCell>
-                          <TableCell>Panel</TableCell>
-                          <TableCell>Department</TableCell>
-                          <TableCell>Action</TableCell>
+                          <TableCell style={{ color: 'white', fontWeight: 'bold' }}>Employee ID</TableCell>
+                          <TableCell style={{ color: 'white', fontWeight: 'bold' }}>Panel</TableCell>
+                          <TableCell style={{ color: 'white', fontWeight: 'bold' }}>Department</TableCell>
+                          <TableCell style={{ color: 'white', fontWeight: 'bold' }}>Action</TableCell>
                         </TableRow>
                       </TableHead>
                       <TableBody>

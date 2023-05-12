@@ -3,7 +3,7 @@ const router=express.Router();
 const appointment=require('../models/appointment')
 const tt=require('../models/timings')
 const bodyParser=require("body-parser");
-
+const {generateBill}=require("./helper");
 // const twilio = require('twilio');
 // const accountSid = 'AC68eaa778b2a20e63ece41712af3584ed';
 // const authToken = 'ff960610dd1d9e9ab52915683345f96b';
@@ -100,6 +100,13 @@ router.put('/updatecapp', async (req, res) => {
         { new: true }
       );
     console.log(updatedP);
+
+    const des=`<table style='width: 100%; border-collapse: collapse;'>
+    <tr><th style='border: 1px solid black; padding: 5px;'>Description</th><th style='border: 1px solid black; padding: 5px;'>Quantity</th><th style='border: 1px solid black; padding: 5px;'>Price</th></tr><tr><td style='border: 1px solid black; padding: 5px;'>${updatedP.dname} appointment charge</td><td style='border: 1px solid black; padding: 5px;'>1</td><td style='border: 1px solid black; padding: 5px;'>500</td></tr></table><h2>Total: 500</h2>`;
+    const newBill = await generateBill(updatedP.pid,500, updatedP._id, des, 'Appointment', true, updatedP.admitted_date);
+    console.log("Bill in Route:",newBill)
+
+
       res.send(updatedP);
     } catch (error) {
       console.error(error);
@@ -150,6 +157,28 @@ router.get('/getappointment/:did/',async(req,res)=>{
     res.status(404).send('No confirmed appointments found for this doctor');
   }
 
+})
+
+//doctor IPD appointment
+// localhost:5000/api/getIpdappointment/E000000G
+router.get('/getIpdappointment/:did',async(req,res)=>{
+  const app=await appointment.find({did:req.params.did,status:'I'});
+  res.send(app);
+})
+
+//Update appointment details iPD
+router.put('/updateIPDpat',async(req,res)=>{
+  const updatedEmployee = req.body;
+  
+  try {
+    const result = await appointment.findOneAndUpdate({ _id: updatedEmployee._id }, { $set: updatedEmployee }, { new: true });
+    console.log('Update result:', result);
+    res.send(result);
+  } catch (error) {
+    console.error('Update error:', error);
+    res.status(500).send('Error updating employee');
+  }
+  
 })
 
 router.get('/queuescreen/:id',async(req,res)=>{

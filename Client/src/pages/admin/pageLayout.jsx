@@ -6,8 +6,8 @@ import React,{useState, useEffect} from 'react';
 import { useNavigate } from 'react-router-dom';
 
 const  arr=[
-  {label:'My Stats',path:'/admin',icon:'AddBox'},
-  {label:'See All',path:'/viewemps',icon:'AddBox'},
+  {label:'Add New',path:'/admin',icon:'AddBox'},
+  {label:'View All',path:'/viewemps',icon:'AddBox'},
   
   ]
 

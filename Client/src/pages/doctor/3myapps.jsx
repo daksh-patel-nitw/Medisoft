@@ -7,6 +7,7 @@ import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
 import PageLayout from './pageLayout';
 import Autocomplete from '@material-ui/lab/Autocomplete';
+import DeleteIcon from '@material-ui/icons/Delete';
 
 export default function App()
 {
@@ -31,21 +32,9 @@ export default function App()
 
   const arr1=["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24"];
 
-  const deleteTimings=async(updated)=>{await fetch('http://localhost:5000/api/deletetimings', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(updated)
-      })
-      .then(response => response.json())
-      .then(data =>
-      {
-        console.log(data.timings);
-      })
-      .catch(error => console.error(error));
-}
-  const updateTimings=async(updated)=>{await fetch('http://localhost:5000/api/addtimings', {
+  const updateTimings=async(updated)=>{
+    console.log(updated);
+    await fetch('http://localhost:5000/api/addtimings', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -65,26 +54,35 @@ export default function App()
       if(autoComp2){
         const updated={...e,timings:[...e.timings,`${autoComp2}-${Number(autoComp2)+1}`]}
     setT(updated);
-    const send={...e,timings:`${autoComp2}-${Number(autoComp2)+1}`};
-      console.log(send);
-      updateTimings(send);
+    // const send={...e,timings:`${autoComp2}-${Number(autoComp2)+1}`};
+      
+      updateTimings(updated);
     //   
       }else{
           alert("Select Date before adding.");
       }
       
   };
+
+  const updatePatients=()=>{
+    console.log(e.pph);
+    updateTimings(e);
+  }
+
   const handledelete=(dl)=>{
       const updated={...e,timings:e.timings.filter(t=>t!==dl)}
       alert(JSON.stringify(updated));
-      const send={...e,timings:dl};
-      updateTimings(send);
+      updateTimings(updated);
       setT(updated);
-    console.log(e)     
+      console.log(e)     
   }
   const handleSearch=(event,newValue)=>{
       setAuto2(newValue);
       setl((Number(newValue)+1)%24);
+  }
+
+  const handleChng=(event)=>{
+    setT({...e,pph:event.target.value})
   }
 
   const[l,setl]=useState('');
@@ -99,7 +97,7 @@ export default function App()
       renderInput={(params) => (
         <TextField
           {...params}
-          label='Select Time'
+          label='Select'
           margin='normal'
           variant='outlined'
         />
@@ -110,27 +108,74 @@ export default function App()
   return (
 
       <PageLayout>
-         
           <Grid container spacing={2}>
-            <Grid item xs={12} sm={6}>
+            <Grid item xs={4}>
               <Card className="partition" >
                 <CardContent>
                   <h2>Timings</h2>
-                    From {autoComp()} to {l}
-                      <Button
-                       onClick={handleClick}
-                        variant="contained"
-                        color="primary"
-                      >
-                        Add Timings
-                      </Button>
-                  <ul>
-                      {e.timings && e.timings.map(t=>(
-                          <><li>{t}</li> <button onClick={()=>handledelete(t)}>delete</button></>
+                  <Grid container spacing={2}>
+                    <Grid item xs={12}>
+                      <Grid container   justifyContent="flex-start"
+  alignItems="center" spacing={2}>
+                        <Grid item xs={2}><h3>From</h3></Grid>
+                        <Grid item xs={4}>{autoComp()}</Grid>
+                        <Grid item xs={2}><h3>to {l}</h3></Grid>
+                        <Grid item xs={2}>
+                            <Button
+                            onClick={handleClick}
+                              variant="contained"
+                              color="primary"
+                            >
+                              Add
+                           </Button>
+                        </Grid>
+                      </Grid>
+                    </Grid>
+
+                    {e.timings && e.timings.map(t => (
+                        <React.Fragment key={t}>
+                          <Grid item xs={4}>{t}</Grid>
+                          <Grid item xs={8}>
+                            <DeleteIcon onClick={() => handledelete(t)}/>
+                          </Grid>
+                        </React.Fragment>
                       ))}
-                  </ul>
+
+
+                    
+                  </Grid>
+                    
+                  
                 </CardContent>
               </Card>
+            </Grid>
+          
+            <Grid item xs={6}>
+
+            </Grid>
+            <Grid item xs={4}>
+              <Card>
+                <CardContent>
+                    <h3>Patients per Hour</h3>
+                    <TextField
+                    label='PPH'
+                    defaultValue={e.pph}
+                    value={e.pph}
+                    onChange={handleChng}
+                    InputLabelProps={{
+                      shrink: true,
+                    }}
+                  /><br/><br/>
+                  <Button
+                    onClick={updatePatients}
+                      variant="contained"
+                      color="primary"
+                    >
+                        Update
+                    </Button>
+                </CardContent>
+              </Card>
+              
             </Grid>
           </Grid>
       </PageLayout>

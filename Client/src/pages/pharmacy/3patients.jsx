@@ -73,18 +73,18 @@ export default function App()
     const tableUI=()=>(
         <TableContainer >
                                 <Table >
-                                    <TableHead>
+                                    <TableHead style={{ backgroundColor: '#1F3F49' }}>
                                         <TableRow>
-                                            
-                                            <TableCell>Patient Id</TableCell>
-                                            <TableCell>Appointment Date</TableCell>
-                                            <TableCell>Medicine Name</TableCell>
-                                            <TableCell>Units Required</TableCell>
-                                            <TableCell>Unit</TableCell>
-                                            <TableCell>Price</TableCell>
+                                     
+                                            <TableCell style={{ color: 'white', fontWeight: 'bold' }}>Patient Id</TableCell>
+                                            <TableCell style={{ color: 'white', fontWeight: 'bold' }}>Appointment Date</TableCell>
+                                            <TableCell style={{ color: 'white', fontWeight: 'bold' }}>Medicine Name</TableCell>
+                                            <TableCell style={{ color: 'white', fontWeight: 'bold' }}>Units Required</TableCell>
+                                            <TableCell style={{ color: 'white', fontWeight: 'bold' }}>Unit</TableCell>
+                                            <TableCell style={{ color: 'white', fontWeight: 'bold' }}>Price</TableCell>
                                             {value===0 &&<>
-                                            <TableCell>Amount</TableCell>
-                                            <TableCell>Action</TableCell>
+                                            <TableCell style={{ color: 'white', fontWeight: 'bold' }}>Amount</TableCell>
+                                            <TableCell style={{ color: 'white', fontWeight: 'bold' }}>Action</TableCell>
                                             </>}
                                         </TableRow>
                                     </TableHead>
@@ -150,9 +150,9 @@ export default function App()
         billed.forEach(item => {
           table += `<tr><td style='border: 1px solid black; padding: 5px;'>${item.mname}</td><td style='border: 1px solid black; padding: 5px;'>${(item.price*item.quantity).toFixed(2)}</td><td style='border: 1px solid black; padding: 5px;'>${item.quantity}</td></tr>`;
         });
-      
+        
         // Close the table
-        table += "</table>";
+        table += `</table><h2>Total:${total}</h2>`;
       
         // Open new window and write table into it
         const newWindow = window.open("", "", "height=500,width=700");
