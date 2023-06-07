@@ -13,7 +13,7 @@ export default function App()
 {
 
     const[e,setT]=useState({});
-
+    const[ques,setQ]=useState('');
   //Medicines data fetch
   const fetchTimings = async (id) => {
     try {
@@ -57,12 +57,24 @@ export default function App()
     // const send={...e,timings:`${autoComp2}-${Number(autoComp2)+1}`};
       
       updateTimings(updated);
-    //   
+     
       }else{
           alert("Select Date before adding.");
       }
       
   };
+
+  const handleBClick = () =>
+  {
+      const updated={...e,questions:[...e.questions,ques]}
+      console.log(updated);
+      setT(updated);
+      updateTimings(updated); 
+  };
+
+  const onQuesChange=(event)=>{
+    setQ(event.target.value);
+  }
 
   const updatePatients=()=>{
     console.log(e.pph);
@@ -150,9 +162,35 @@ export default function App()
               </Card>
             </Grid>
           
-            <Grid item xs={6}>
-
+            <Grid item container xs={6}>
+            <Card className="partition" >
+                <CardContent>
+              <Grid xs={12}><h3>Yes/No Questions</h3></Grid>
+                    <Grid item><TextField
+                    label='Question'
+                    value={ques}
+                    onChange={onQuesChange}
+                  />
+                   <Button
+                    onClick={handleBClick}
+                      variant="contained"
+                      color="primary"
+                    >
+                        Add
+                    </Button></Grid>
+                    {e.questions && e.questions.map(t => (
+                        <React.Fragment key={t}>
+                          <Grid item xs={4}>{t}</Grid>
+                          <Grid item xs={8}>
+                            {/* <DeleteIcon onClick={() => handledelete(t)}/> */}
+                          </Grid>
+                        </React.Fragment>
+                      ))}
+               
+                </CardContent>
+                </Card>
             </Grid>
+            
             <Grid item xs={4}>
               <Card>
                 <CardContent>

@@ -46,8 +46,10 @@ router.get('/getpatient', async (req, res) =>
 });
 
 router.post('/newpatient', async (req, res) =>
-{
+{ 
+
     const body=req.body;
+    console.log(body);
     const doc=await uniqueN.findOneAndUpdate({name:'pid'})
     num=doc.content.pop();
     pid=await helper.generateId(num)
@@ -78,19 +80,20 @@ router.post('/newpatient', async (req, res) =>
     const newl=new login({
         uname:pid,
         password:password,
+        dep:'patient',
         type:'patient'
     });
 
     await newl.save();
-    const msg='\nMEDISOFT-HMS\n'+body.fname+' registered Successfully\nUsername:'+'P'+pid+'\nPassword:'+password;
-    await client.messages
-    .create({
-        body: msg,
-        from: '+16204079430',
-        to: '+919510836469'
-    })
-    .then(message => console.log(message.sid))
-    .done();
+    // const msg='\nMEDISOFT-HMS\n'+body.fname+' registered Successfully\nUsername:'+'P'+pid+'\nPassword:'+password;
+    // await client.messages
+    // .create({
+    //     body: msg,
+    //     from: '+16204079430',
+    //     to: '+919510836469'
+    // })
+    // .then(message => console.log(message.sid))
+    // .done();
 
     res.json({
         message: "Successfully Added patient",
@@ -109,5 +112,15 @@ router.get('/test', async (req, res) => {
       res.status(500).send('Server Error');
     }
   });
+
+router.get('/patient/:id',async(req,res)=>{
+    try {
+        const appointmentData = await patient.findOne({ pid: req.params.id }, 'pid fname lname mobile');
+        res.send(appointmentData);
+      } catch (error) {
+        console.error(error);
+        res.status(500).send('Server Error');
+      }
+})
   
 module.exports = router;

@@ -8,6 +8,7 @@ import Doc from "./doctor/2.patDoc";
 import Bill from "./billDesk/1billshow";
 import Admin from "./admin/1newAdmin";
 import Patient from "./patient/1view";
+import { useNavigate } from 'react-router-dom';
 
 
 import Grid from '@material-ui/core/Grid';
@@ -25,15 +26,18 @@ function LoginWithLocalStorage(){
     const getId=localStorage.getItem("id")
     const getType=localStorage.getItem("type")
     const [formValues, setFormValues] = useState({ uname: '',  password: '',  });
-    
+    const navigate = useNavigate();
+
     const getTarget=()=>{
         switch (getType) {
             case 'pharmacy':
-              return <Pharmacy/>;
+              // history.push('/pharmacy');
+              return 1;
             case 'ipd':
               return <IPD/>;
             case "opd1":
-              return <OPD1/>;
+              navigate('/newregister');
+              // return <OPD1/>;
             case "opd2":
               return <OPD2/>;
             case "doctor":
@@ -52,6 +56,7 @@ function LoginWithLocalStorage(){
     }
     const handleSubmit=async(e)=>{
         e.preventDefault();
+        console.log(e);
         const response = await fetch('http://localhost:5000/api/login', {
             method: 'POST',
             headers: {
@@ -127,3 +132,4 @@ function LoginWithLocalStorage(){
     )
 }
 export default LoginWithLocalStorage;
+

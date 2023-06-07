@@ -22,6 +22,7 @@ import A1 from './pages/admin/1newAdmin'
 import A2 from './pages/admin/2showCategory'
 import B1 from './pages/billDesk/1billshow'
 import Pat1 from './pages/patient/1view'
+import Pat2 from './pages/patient/patientBookApp'
 
 
 function App() {
@@ -57,6 +58,7 @@ function App() {
   <B1/>,
   //patient,
   <Pat1/>,
+  <Pat2/>,
   ]
   const arr1=['/newmedicine',
   "/medicine",
@@ -90,6 +92,7 @@ function App() {
   '/bill',
   //patients,
   '/patientView',
+  '/patientBook',
 
 ]
   return (

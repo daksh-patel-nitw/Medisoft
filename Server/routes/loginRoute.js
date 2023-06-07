@@ -39,7 +39,7 @@ router.post('/login', async (req, res) => {
 
 router.get('/getAllLogin', async (req, res) => {
 
-  const f=await l_Data.find({},{uname:1,dep:1,type:1})
+  const f=await l_Data.find({type:{$ne:'patient'}},{uname:1,dep:1,type:1})
   res.send(f);
 })
 

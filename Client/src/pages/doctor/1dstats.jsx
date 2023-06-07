@@ -337,7 +337,7 @@ export default function App()
           <Card className="partition" style={{width:'100%'}}>
             <Grid item xs={12}><div style={{padding:8,fontWeight:'Bold',fontSize:'16px'}}>Lab Tests:</div> <hr style={{ margin: 0 }} /></Grid>
             <CardContent style={{paddingTop:'9px'}}>
-              <Grid  style={{backgroundColor:'red'}}container justify="center" xs={12}>{TestC()}</Grid>
+              <Grid  container justify="center" xs={12}>{TestC()}</Grid>
             </CardContent>
           </Card>  
         </Grid>

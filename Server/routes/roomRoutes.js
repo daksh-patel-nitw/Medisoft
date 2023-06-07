@@ -4,6 +4,38 @@ const room = require('../models/room');
 const r_C = require('../models/room_category');
 const bodyParser = require("body-parser");
 const {generateBill}=require('./helper')
+const pdf = require('html-pdf');
+
+router.post('/generatepdf', async (req, res) => {
+    try {
+    console.log(req.body)
+      const htmlContent = req.body.table;
+      const pdfBuffer = await generatePDF(htmlContent);
+  
+      // Set the response headers
+      res.setHeader('Content-Type', 'application/pdf');
+      res.setHeader('Content-Disposition', 'attachment; filename=file.pdf');
+  
+      // Send the PDF buffer as response
+      res.send(pdfBuffer);
+    } catch (error) {
+      console.error('Error generating PDF:', error);
+      res.status(500).send({ error: 'Failed to generate PDF' });
+    }
+  });
+  
+  function generatePDF(html) {
+    return new Promise((resolve, reject) => {
+      pdf.create(html).toBuffer((error, buffer) => {
+        if (error) {
+          reject(error);
+        } else {
+          resolve(buffer);
+        }
+      });
+    });
+  }
+
 
 //------Book new Room Category
 router.post("/newroomcategory",async (req,res)=>{

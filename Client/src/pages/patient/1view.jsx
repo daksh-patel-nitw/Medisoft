@@ -16,6 +16,7 @@ import {
     TextField,
     TablePagination,
 } from '@material-ui/core';
+
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import Accordion from '@material-ui/core/Accordion';
 import AccordionSummary from '@material-ui/core/AccordionSummary';
@@ -33,7 +34,7 @@ export default function App()
     try {
       const response = await fetch(`http://localhost:5000/api/getBill/${pid}`);
       const data = await response.json();
-      console.log(data);
+      // console.log(data);
       setB(data);
     } catch (error) {
       console.log(error);
@@ -43,7 +44,7 @@ export default function App()
     try {
       const response = await fetch(`http://localhost:5000/api/onlypatientapp/${pid}`);
       const data = await response.json();
-      console.log(data);
+      // console.log(data);
       setA(data);
     } catch (error) {
       console.log(error);
@@ -57,42 +58,139 @@ export default function App()
     fetchBill('P0000004');
   }, []);
  
+   const writeStatus=(s)=>{
+     return s==='D'?'Completed':'Pending'
+   }
    
+   const generatePDF = async(id) => {
+    let table_=`<html><body style='margin:5px'><h2>Medisoft-HMS Invoice</h2><h3>Date:${new Date().toLocaleDateString()}</h3>`;
+    let total=0;
+    await bills.filter(b => b.aid === id).forEach(bill => {
+      table_ += `<div>
+        <p style='font-weight:bold'>${bill.type.charAt(0).toUpperCase() + bill.type.slice(1)}</p>
+        ${bill.description}
+        <h4>SubTotal:${bill.price}</h4>
+      </div>`;
+      total += bill.price;
+    });
+    table_+=`<h3>Total:${total}</h3></body></html>`
+    console.log(table_)
+    try {
+      const response = await fetch('http://localhost:5000/api/generatepdf', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ table:table_ }),
+      });
+  
+      if (!response.ok) {
+        throw new Error('Failed to generate PDF');
+      }
+  
+      // Assuming the response contains the PDF file
+      const pdfBlob = await response.blob();
+  
+      // Use the PDF blob as needed (e.g., initiate file download)
+      // For example, to initiate a file download:
+      const downloadUrl = URL.createObjectURL(pdfBlob);
+      const link = document.createElement('a');
+      link.href = downloadUrl;
+      link.download = 'file.pdf';
+      link.click();
+  
+      console.log('PDF generated and downloaded successfully!');
+    } catch (error) {
+      console.error('Error generating PDF:', error);
+    }  
+  };
+
+  const checkBill=(id)=>{
+    return Boolean(bills.find(b=>b.aid===id));
+  }
+  
+  const [rating, setRating] = useState(0);
+  const [isInteractive, setIsInteractive] = useState(false);
+  const handleRatingChange = (value) => {
+    setRating(value);
+    setIsInteractive(false);
+  };
+  const handleRateClick = () => {
+    setIsInteractive(true);
+  };
+
+
       return (
         <PageLayout>
           <Grid container direction="column" spacing={2}>
 
-            {appointments.length && appointments.map((e) => (
-               <Grid item xs={12}>
-                      <Card className="partition" style={{ width: "700px", margin: "auto" }}>
+            {appointments.length && appointments.map((e,index) => (
+               <Grid key={e._id} item xs={12}>
+                      <Card className="partition" style={{ maxWidth: "700px", margin: "auto" }}>
                         <CardContent>
-                          <Accordion>
+                          <Accordion 
+                          disabled={e.status!=='D'?true:false}
+                          >
                             <AccordionSummary
                               expandIcon={<ExpandMoreIcon />}
                               aria-controls="panel1a-content"
                               id="panel1a-header"
                             >
-                              <p>
+                              <span style={{flexGrow: 1,fontWeight: "bold",padding: 4,}}>
                                 {new Date(e.admitted_date).toLocaleString("en-US", {
                                   timeZone: "Asia/Kolkata",
                                   month: "long",
                                   day: "numeric",
                                   year: "numeric",
-                                })}{" "} 
-                              </p>
+                                })}
+                              </span>
+                             
+                              <span 
+                              style={{ 
+                                maxWidth:85,
+                                textAlign:'center',
+                                        padding: 4,
+                                        borderRadius: 5,
+                                        backgroundColor: e.status==='D'?"rgb(166, 255, 137)":"rgb(255, 137, 192)",
+                                        fontWeight: "bold",}}>
+                                          {writeStatus(e.status)} 
+                              </span>
                             </AccordionSummary>
                             <AccordionDetails>
                               <Grid container direction="column" spacing={2}>
-                                <Grid item>
-                                  <h4>Doctor Notes:</h4>
-                                  <span>
-                                    {e.notes}
-                                  </span>
+                                <Grid container item>
+                                  <Grid item xs={6}>
+                                    <h4>Doctor Notes:</h4>
+                                    <div>
+                                      {e.notes}
+                                    </div>
+                                  </Grid>
+                                  <Grid item xs={6}>
+                                    <div>
+                                      {[...Array(5)].map((_, index) => (
+                                          <span
+                                            
+                                            style={{
+                                              color: index + 1 <= rating ? 'yellow' : 'gray', fontSize:'2rem',
+                                              cursor: isInteractive ? 'pointer' : 'default', }}
+                                            onClick={isInteractive?() => handleRatingChange(index + 1):null}
+                                          >
+                                            {index + 1 <= rating ? '★' : '☆'}
+                                          </span>
+                                        ))}
+                                    </div>
+                                    <div>
+                                        <button disabled={isInteractive} onClick={handleRateClick}>
+                                          Rate
+                                        </button>
+                                    </div>
+                                  </Grid>
+
                                 </Grid>
                                 <Grid item>
                                   <p>Medicines:</p>
                                   {e.medicines.map((m) => (
-                                    <div
+                                    <div key={m._id}
                                       style={{
                                         margin: 4,
                                         padding: 4,
@@ -109,7 +207,7 @@ export default function App()
                                 <Grid item>
                                   <p>Tests:</p>
                                   {e.tests.map((t) => (
-                                    <div
+                                    <div key={t._id}
                                       style={{
                                         margin: 4,
                                         padding: 4,
@@ -118,17 +216,13 @@ export default function App()
                                         fontWeight: "bold",
                                       }}
                                     >
-                                      {t.name}
+                                      {t.name}-------- "{t.p_range}"
                                     </div>
                                   ))}
                                 </Grid>
                                 <Grid item>
-                                  {bills.filter(b => b.aid === e._id).map(bill => (
-                                    <div>
-                                      <p>{bill.type}</p>
-                                      {Order(bill.description)}
-                                    </div>
-                                  ))}
+                                  <button disabled={!checkBill(e._id)}
+                                  onClick={()=>generatePDF(e._id)}>Download Bill</button>
                                 </Grid>
                               </Grid>
                               

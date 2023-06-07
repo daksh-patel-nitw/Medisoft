@@ -17,7 +17,7 @@ import AccordionDetails from '@material-ui/core/AccordionDetails';
 
 export default function App()
 {
-  
+  const doctorId =async()=> {return (await localStorage.getItem('id'))  }
   const [check,setC]=useState(0);
     const[Ap,setAp]=useState([]);
     const[p,setP]=useState({});
@@ -88,6 +88,7 @@ export default function App()
   useEffect(() => {
     fetchMedicine();
     fetchTest();
+    //doctorId
     fetchData('E000000C');
   }, []);
 
@@ -302,6 +303,7 @@ export default function App()
       .then(data =>
       {
         console.log(data);
+        // doctorId
         fetchData('E000000C');
       })
       .catch(error => console.error(error));}

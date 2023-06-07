@@ -12,7 +12,6 @@ import {
     TableRow,
     Button,
     TextField,
- 
     TablePagination,
 } from '@material-ui/core';
 import Card from '@material-ui/core/Card';
@@ -24,34 +23,28 @@ import Autocomplete from '@material-ui/lab/Autocomplete';
 export default function App()
 {
 
-    const arr2 = ["Test Name","Normal Range","Patient Id", "Patient Name","Admit Date","Doctor ID"];
+    const arr2 = ["Test Name","Patient Name","Patient Id","Normal Range", "Admit Date","Doctor ID"];
     const arr=['tname','n_range','pid','pname','createdAt','mobile','did']
 
    
 
     const fetchdata=async()=>await fetch(`http://localhost:5000/api/getlabtests`)
           .then((res) => res.json())
-          .then((data) => { console.log(data); 
+          .then((data) => { 
+            // console.log(data); 
             setTest(data)
             })
           .catch((err) => console.error(err));
 
     const[test,setTest]=useState([]);
-    const [dep,setDepart]=useState([]);
+    
     useEffect(() => {
-      
-      setDepart( [ 'orthopedic',
-      'neurologist',
-      'cardiologist',
-      'endocrinologist',
-      'gynecologist' ]);
         fetchdata();
     },[]);
 
-    console.log(dep);
 
     const [filtered,setFilter]=useState([]);
-   
+    
      const handleSearch = (newValue, property) => {
         if (newValue) {
           const t=test[value].find((e)=>e[property]===newValue);
@@ -98,30 +91,52 @@ export default function App()
     console.log("value",value);
     setFval({pid:'',pname:''});
     setFilter([]);
-  }, [value]);
+  }, [value,test]);
+
+
+  const updateAfter=(id)=>{
+    const updatedTest = test.map((arr, index) => {
+      if (index === value) {
+        // Update the middle array using the filter method
+        return arr.filter((m) => m._id !== id);
+      }
+      return arr; // Return other arrays as they are
+    });
+    console.log(updatedTest)
+    setTest(updatedTest);
+    setFilter([]);
+  }
 
   const confirmT=async(id)=>{
     await fetch(`http://localhost:5000/api/updatedetails/${id}`)
           .then((res) => res.json())
-          .then((data) => { console.log(data); 
+          .then((data) => { 
+            // console.log(data); 
             })
           .catch((err) => console.error(err));
-          fetchdata();
+          updateAfter(id);
   }
 
-  const resultAdd=async(id,value)=>{
-    await fetch(`http://localhost:5000/api/donetest/${id}/${value}`)
+  const resultAdd=async(id,value1)=>{
+    await fetch(`http://localhost:5000/api/donetest/${id}/${value1}`)
     .then(res => res.json())
-    .then(data =>{console.log("Updated data",data)})
+    .then(data =>{
+      console.log("Updated data")})
     .catch(err => console.error(err));
-    fetchdata();
+    console.log(test)
+    updateAfter(id);
+  
   }
-  const rowsPerPageOptions = [1, 2, 3];
+  const rowsPerPageOptions = [3,5];
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(rowsPerPageOptions[0]);
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
+    // console.log(newPage);
+  };
+  const handleChangeRowsPerPage = (event) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
   };
 
   const[id_,getId]=useState();
@@ -137,10 +152,7 @@ export default function App()
         setOpenEditModal(false);
     };
 
-  const handleChangeRowsPerPage = (event) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(0);
-  };
+ 
     return (
 
         <PageLayout>
@@ -170,9 +182,9 @@ export default function App()
                             <Table size="small">
                                 <TableHead  style={{ backgroundColor: '#1F3F49' }}>
                                     <TableRow>
-                                      {arr2.map(e=>(
+                                      {arr2.map((e,index)=>(
                                         <TableCell style={{ color: 'white', fontWeight: 'bold' }}>
-                                          {e}
+                                          {value===0&&index===3?"Required":e}
                                         </TableCell>
                                       ))
                                         }
@@ -182,13 +194,15 @@ export default function App()
                                     </TableRow>
                                 </TableHead>
                                 <TableBody>
-                                {test[value] &&(filtered.length?filtered:test[value]).map((e,index)=> (
+                                {test[value] &&
+  (filtered.length ? filtered : test[value])
+    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((e,index)=> (
                                       <TableRow>
                                         <TableCell>{e.tname}</TableCell>
-                                          <TableCell>{e.n_range} </TableCell>
-                                          <TableCell>{e.pid} </TableCell>
-                                          <TableCell>{e.pname}</TableCell>
-                                          <TableCell>{(new Date(e.createdAt)).toLocaleString('en-US', { timeZone: 'Asia/Kolkata', year: 'numeric', month: 'long', day: 'numeric' })}</TableCell>
+                                        <TableCell>{e.pname}</TableCell>
+                                        <TableCell>{e.pid} </TableCell>
+                                        <TableCell>{value===0?e.pat_details:e.n_range} </TableCell>
+                                        <TableCell>{(new Date(e.createdAt)).toLocaleString('en-US', { timeZone: 'Asia/Kolkata', year: 'numeric', month: 'long', day: 'numeric' })}</TableCell>
                                           
                                           <TableCell>{e.did}</TableCell>
                                         <TableCell>
@@ -216,7 +230,7 @@ export default function App()
                             <TablePagination
                             rowsPerPageOptions={rowsPerPageOptions}
                             component="div"
-                            count={test[value]&& test[value].length}
+                            count={test[value] &&( filtered.length?filtered.length:test[value].length)}
                             rowsPerPage={rowsPerPage}
                             page={page}
                             onPageChange={handleChangePage}

@@ -63,7 +63,7 @@ export default function App()
     const formV=(tracker===1?patValues:empValues);
     alert(JSON.stringify(formV));
     const link='http://localhost:5000/api/'+(tracker===1?'newpatient':'newemployee');
-    
+    console.log('Link:',link)
     // alert(link);
     await fetch(link, {
       method: 'POST',

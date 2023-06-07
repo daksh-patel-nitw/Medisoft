@@ -36,14 +36,6 @@ const UserSchema=new Schema(
             required:true
         },
         discharge_date:Date,
-        m_T:{
-            type:Boolean,
-            default:false
-        },
-        b_T:{
-            type:Boolean,
-            default:false
-        },
         status:{
             type:String,
             enum:['cancel','D','P','progress','confirm','I'],
@@ -60,7 +52,13 @@ const UserSchema=new Schema(
         bill:Array,
         weight:Number,
         ctime:Number,
-        height:Number
+        height:Number,
+        feedback:{
+            type:Number,
+            default:0
+        },
+        pat_chat:Array,
+        doc_chat:Array,
     },{
         versionKey:false,timestamps:true
     }

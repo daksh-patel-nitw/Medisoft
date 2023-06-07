@@ -224,7 +224,7 @@ router.get('/getlabtests',async(req,res)=>{
     const allT1 = await test.find({details:'D',status:'F'});
     const allT2 = await test.find({status:'D'});
     const arr1=[[...allT],[...allT1],[...allT2]];
-    console.log(allT1);
+    // console.log(allT1);
     res.send(arr1);
 })
 
@@ -252,23 +252,9 @@ router.get('/donetest/:id/:value', async (req, res) => {
       { new: true, useFindAndModify: false }
     );
     console.log('test:',allT);
-    const patient_ = await patient.findOne({ _id: allT.aid });
-    if (!patient_) {
-      return res.status(404).json({ message: 'Patient not found' });
-    }
-
-    console.log(patient_)
-    const uptest = patient_.tests.find((t) => t.name === allT.tname);
-
-    if (!uptest) {
-      return res.status(404).json({ message: 'Test not found' });
-    }
-
-    uptest.p_range = allT.p_range;
-
-    await patient_.save();
-    
-    res.send({ updatedTest: allT,newapp:patient_ });
+    const p=await patient.updateOne({ _id: allT.aid }, { $set: { "tests.$[elem].p_range": allT.p_range } }, { arrayFilters: [{ "elem.name": allT.tname }] });
+    console.log(p);
+    res.send({ updatedTest: allT,newapp:p});
   } catch (error) {
     console.error(error);
     res.status(500).send("Server error");

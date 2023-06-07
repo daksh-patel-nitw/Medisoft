@@ -10,7 +10,8 @@ import
     TableHead,
     TableRow,
     IconButton,
-    TextField
+    TextField,
+    TablePagination
 } from '@material-ui/core';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import Card from '@material-ui/core/Card';
@@ -90,6 +91,19 @@ export default function App()
     const handleMe=()=>{
         console.log(tests);
     }
+
+    const rowsPerPageOptions = [7];
+    const [page, setPage] = useState(0);
+    const [rowsPerPage, setRowsPerPage] = useState(rowsPerPageOptions[0]);
+  
+    const handleChangePage = (event, newPage) => {
+      setPage(newPage);
+    //   console.log(newPage);
+    };
+    const handleChangeRowsPerPage = (event) => {
+      setRowsPerPage(parseInt(event.target.value, 10));
+    };
+  
     return (
 
         <PageLayout>
@@ -122,7 +136,7 @@ export default function App()
                                         </TableRow>
                                     </TableHead>
                                     <TableBody>
-                                        {tests && tests.filter((m) => m.name.toLowerCase().includes(searchValue.toLowerCase())).map((m) => (
+                                        {tests && tests.filter((m) => m.name.toLowerCase().includes(searchValue.toLowerCase())).slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((m) => (
                                             <TableRow key={m._id}>
                                                 <TableCell>{m.name}</TableCell>
                                                 <TableCell>{m.price} <IconButton
@@ -159,6 +173,15 @@ export default function App()
                                         ))}
                                     </TableBody>
                                 </Table>
+                                <TablePagination
+                            rowsPerPageOptions={rowsPerPageOptions}
+                            component="div"
+                            count={tests && tests.length}
+                            rowsPerPage={rowsPerPage}
+                            page={page}
+                            onPageChange={handleChangePage}
+                            onRowsPerPageChange={handleChangeRowsPerPage}
+                            />
                                 {selectedMedicine && (
                                     <EditModal
                                         open={openEditModal}

@@ -6,8 +6,7 @@ const bodyParser=require("body-parser");
 const helperF =require('./helper');
 const helper=require('../models/helper');
 const timings_=require('../models/timings');
-
-const twilio = require('twilio');
+const b_and_h=require('../controllers/bill')
 
 //Register New employee
 router.post('/newemployee',async(req,res)=>{
@@ -52,11 +51,11 @@ router.get('/deps', async(req,res)=>{
 //Get the employee with specific role
 router.get('/getemployee/:role',async(req,res)=>{
     const param=req.params;
-    const allT=await emp.find({role:param.role},{fname:1, lname:1,dep:1, eid:1,timings:1,questions:1});
+    const allT=await emp.find({role:param.role},{fname:1, lname:1,dep:1, eid:1,timings:1,questions:1,pph:1});
     const newT=[];
     allT.map((e)=>{
       // console.log(e.questions);
-        const t={dname:e.fname+" "+e.lname,dep:e.dep,did:e.eid,timings:e.timings,qs:e.questions};
+        const t={dname:e.fname+" "+e.lname,dep:e.dep,did:e.eid,timings:e.timings,qs:e.questions,pph:e.pph};
         newT.push(t);
     })
     res.send(newT);
@@ -194,5 +193,19 @@ router.get('/admingetemp',async(req,res)=>{
   res.send(arr);
 })
 
+// -----------------------adminHelper-------------------------
+router.post('/updateHelper',async(req,res)=>{
+  const b=req.body;
+  console.log(b)
+  const doc=await b_and_h.updateHelper(b.name,b.content);
+  console.log(doc);
+  res.send(doc);
+})
+
+router.get('/getRolesDeps',async(req,res)=>{
+  const doc=await b_and_h.sendList();
+  console.log(doc);
+  res.send(doc);
+})
 module.exports = router;
 

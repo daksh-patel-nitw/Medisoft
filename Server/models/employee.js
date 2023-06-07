@@ -72,7 +72,9 @@ const UserSchema=new Schema(
             required:true
         },
         timings:Array,
-        questions:Array
+        questions:Array,
+        pph:Number,
+        chat:Number
     },{
         versionKey:false
     }

@@ -63,7 +63,8 @@ const UserSchema=new Schema(
         others:{
             type:String,
             default:'none'
-        }
+        },
+        chat:Number
     },{
         versionKey:false
     }
