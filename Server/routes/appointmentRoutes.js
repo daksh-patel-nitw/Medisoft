@@ -4,7 +4,7 @@ const app=require('../controllers/appointment')
 const appointment=require('../models/appointment')
 const tt=require('../models/timings')
 const bodyParser=require("body-parser");
-const {generateBill}=require("./helper");
+
 
 router.use(bodyParser.urlencoded({extended:true}));
 router.use(bodyParser.json());

@@ -4,7 +4,7 @@ const patient = require('../models/patient');
 const uniqueN = require('../models/helper');
 const login = require('../models/login');
 const bodyParser = require("body-parser");
-const helper =require('./helper');
+// const helper =require('./helper');
 
 const twilio = require('twilio');
 const accountSid = 'AC68eaa778b2a20e63ece41712af3584ed';
@@ -52,7 +52,8 @@ router.post('/newpatient', async (req, res) =>
     console.log(body);
     const doc=await uniqueN.findOneAndUpdate({name:'pid'})
     num=doc.content.pop();
-    pid=await helper.generateId(num)
+    pid=''
+    // await helper.generateId(num)
     num++;
     doc.content.push(num);
     await doc.save();
@@ -75,7 +76,8 @@ router.post('/newpatient', async (req, res) =>
     });
     await newP.save();
     // console.log("Added New Patient Successfully");
-    const password=await helper.generatePassword();
+    const password=''
+    // await helper.generatePassword();
 
     const newl=new login({
         uname:pid,

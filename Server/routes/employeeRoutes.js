@@ -6,7 +6,7 @@ const bodyParser=require("body-parser");
 const helperF =require('./helper');
 const helper=require('../models/helper');
 const timings_=require('../models/timings');
-const b_and_h=require('../controllers/bill')
+const b_and_h=require('../controllers/billAndHelper')
 
 //Register New employee
 router.post('/newemployee',async(req,res)=>{
@@ -194,18 +194,6 @@ router.get('/admingetemp',async(req,res)=>{
 })
 
 // -----------------------adminHelper-------------------------
-router.post('/updateHelper',async(req,res)=>{
-  const b=req.body;
-  console.log(b)
-  const doc=await b_and_h.updateHelper(b.name,b.content);
-  console.log(doc);
-  res.send(doc);
-})
 
-router.get('/getRolesDeps',async(req,res)=>{
-  const doc=await b_and_h.sendList();
-  console.log(doc);
-  res.send(doc);
-})
 module.exports = router;
 

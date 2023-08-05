@@ -1,39 +1,33 @@
-const bill=require('../models/bill');
-
-const generateBill=async(pid,price,aid,des,type,status,date)=>{
-  const newB=new bill({
-    pid:pid,
-    price:price,
-    aid:aid,
-    description:des,
-    type:type,
-    status:status,
-    date:date
-  })
-  await newB.save();
-  console.log('Bill in Helper:',newB);
-  return newB;
-}
-
-function generateId(number) {
-    let base36 = (number).toString(36).toUpperCase();
-    let padded = base36.padStart(7, '0');
-    return padded;
-  }
-
-  function generatePassword() { 
-    var length = 6;
-    charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#%&*!$<>";
-    retVal = "";
-    for (var i = 0, n = charset.length; i < length; ++i) { 
-        retVal += charset.charAt(Math.floor(Math.random() * n)); 
-    } 
-    return retVal; 
-}
+const helper=require('../controllers/billAndHelper')
+const express=require('express');
+const router=express.Router();
+const bodyParser=require("body-parser");
 
 
-  module.exports = {
-    generatePassword,
-    generateId,
-    generateBill
-  };
+router.post('/updateHelper',async(req,res)=>{
+  const b=req.body;
+  console.log(b)
+  const doc=await helper.updateHelper(b.name,b.content);
+  console.log(doc);
+  res.send(doc);
+})
+
+//Get doctor department from helper
+router.get('/deps', async(req,res)=>{
+  const allT=await helper.getItem('dep');
+  res.send(allT);
+})
+
+//Send departments and roles to admin
+router.get('/getRolesDeps',async(req,res)=>{
+  const arr=[await helper.getItem('roles')];
+  arr.push(await helper.getItem('dep'))
+  res.send(arr);
+})
+
+router.get('/tester',async(req,res)=>{
+  const eid=await helper.generateId('eid');
+  res.send(eid);
+})
+
+module.exports = router;

@@ -1,6 +1,6 @@
 const appointment=require('../models/appointment')
 const tt=require('../models/timings')
-const {generateBill}=require("./helper");
+const {generateBill}=require("./billAndHelper");
 const twilio = require('twilio');
 const accountSid = 'AC68eaa778b2a20e63ece41712af3584ed';
 const authToken = 'ff960610dd1d9e9ab52915683345f96b';
@@ -73,12 +73,12 @@ exports.getAllPatientApps= async (pid,did)=>{
 //get all pteint appointments for patient screen
 exports.getPatientApp=async(pid)=>{
     const d=await appointment.find({pid:pid});
-    res.send(d);
+    return(d);
 }
 
 exports.getdoctorapp=async(did)=>{
     const d=await appointment.find({did:did}).sort({createdAt:1});
-    res.send(d);
+    return(d);
 }
 
 //Confirm Appointment on Counter-2

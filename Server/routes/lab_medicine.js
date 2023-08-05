@@ -5,7 +5,7 @@ const medicine = require('../models/medicine');
 const express = require('express');
 const router = express.Router();
 const bodyParser = require("body-parser");
-const {generateBill}=require("./helper");
+// const {generateBill}=require("./helper");
 const patient = require('../models/appointment');
 // ===========================Medicine_Name=========================
 
@@ -126,7 +126,8 @@ router.post('/finishmedopd', async (req, res) => {
       console.log("Medicine After:",med)
     });
     console.log(data[0]);
-    const newBill = await generateBill(data[0].pid, priceTotal, data[0].aid, des, "medicine", true, data[0].createdAt);
+    const newBill = ''
+    // await generateBill(data[0].pid, priceTotal, data[0].aid, des, "medicine", true, data[0].createdAt);
     console.log("Bill in Route:",newBill)
     // pid,price,aid,des,type,status,date
     res.send({ update: newBill });
@@ -237,7 +238,8 @@ router.get('/updatedetails/:id',async(req,res)=>{
     const des=`<table style='width: 100%; border-collapse: collapse;'>
         <tr><th style='border: 1px solid black; padding: 5px;'>Description</th><th style='border: 1px solid black; padding: 5px;'>Quantity</th><th style='border: 1px solid black; padding: 5px;'>Price</th></tr><tr><td style='border: 1px solid black; padding: 5px;'>${allT.tname}</td><td style='border: 1px solid black; padding: 5px;'>1</td><td style='border: 1px solid black; padding: 5px;'>${allT.price}</td></tr></table><h2>Total: ${allT.price}</h2>`;
 
-    const newBill = await generateBill(allT.pid, allT.price, allT.aid, des, 'Lab', status, allT.createdAt);
+    const newBill = ''
+    // await generateBill(allT.pid, allT.price, allT.aid, des, 'Lab', status, allT.createdAt);
     console.log("Bill in Route:",newBill)
 
     res.send(allT);

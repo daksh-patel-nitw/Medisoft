@@ -3,7 +3,6 @@ const router = express.Router();
 const room = require('../models/room');
 const r_C = require('../models/room_category');
 const bodyParser = require("body-parser");
-const {generateBill}=require('./helper')
 const pdf = require('html-pdf');
 
 router.post('/generatepdf', async (req, res) => {

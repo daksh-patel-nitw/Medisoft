@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const l_Data=require('../models/login')
 const bodyParser = require("body-parser");
-const helperF =require('./helper');
+// const helperF =require('./helper');
 const bill=require('../models/bill');
 
 // ---------------Login-----------------------------------------------
@@ -24,7 +24,8 @@ router.post('/login', async (req, res) => {
   
   router.post('/addlogin', async (req, res) => {
     const b = req.body;
-    const password=await helperF.generatePassword();
+    const password=''
+    // await helperF.generatePassword();
     const newLogin = new l_Data({
       uname: b.eid,
       password: password,
