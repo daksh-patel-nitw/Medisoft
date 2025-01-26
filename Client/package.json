@@ -9,6 +9,7 @@
     "@material-ui/icons": "^4.11.3",
     "@material-ui/lab": "^4.0.0-alpha.61",
     "@reduxjs/toolkit": "^2.5.0",
+    "axios": "^1.7.9",
     "fullcalendar": "^6.1.5",
     "jspdf": "^2.5.1",
     "react": "16.8.6",
