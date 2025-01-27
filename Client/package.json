@@ -20,7 +20,7 @@
     "react-redux": "^9.2.0",
     "react-router-dom": "^6.10.0",
     "react-scripts": "3.2.0",
-    "react-toastify": "^4.0.0",
+    "react-toastify": "^4.5.2",
     "socket.io": "^4.6.1",
     "zustand": "^4.3.7"
   },
