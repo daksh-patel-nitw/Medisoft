@@ -6,11 +6,6 @@ const login = require('../models/login');
 const bodyParser = require("body-parser");
 // const helper =require('./helper');
 
-const twilio = require('twilio');
-const accountSid = 'AC68eaa778b2a20e63ece41712af3584ed';
-const authToken = 'ff960610dd1d9e9ab52915683345f96b';
-const client = new twilio(accountSid, authToken);
-
 router.use(bodyParser.urlencoded({ extended: true }));
 router.use(bodyParser.json());
 

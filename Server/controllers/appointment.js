@@ -1,10 +1,6 @@
 const appointment=require('../models/appointment')
 const tt=require('../models/timings')
 const {generateBill}=require("./billAndHelper");
-const twilio = require('twilio');
-const accountSid = 'AC68eaa778b2a20e63ece41712af3584ed';
-const authToken = 'ff960610dd1d9e9ab52915683345f96b';
-const client = new twilio(accountSid, authToken);
 
 exports.makeOpdAppointment=async(b)=>{
     const newA= new appointment({
