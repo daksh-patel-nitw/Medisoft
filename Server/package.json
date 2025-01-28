@@ -1,21 +1,22 @@
 {
-  "name": "server",
+  "name": "server_02_25",
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "",
-  "license": "ISC",
+  "author": "Daksh Patel",
+  "license": "MIT",
   "description": "",
+  "type": "module",
   "dependencies": {
-    "body-parser": "^1.20.2",
+    "bcrypt": "^5.1.1",
+    "body-parser": "^1.20.3",
+    "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
-    "express": "^4.18.2",
-    "html-pdf": "^3.0.1",
-    "mongoose": "^5.13.17",
-    "node-localstorage": "^2.2.1",
-    "socket.io": "^4.6.1",
-    "twilio": "^3.84.1"
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.9.5"
   }
 }

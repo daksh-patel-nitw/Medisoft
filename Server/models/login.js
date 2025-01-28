@@ -1,30 +1,30 @@
-const Mongoose =require('mongoose');
+import mongoose from 'mongoose';
 
-const Schema=Mongoose.Schema;
-const UserSchema=new Schema(
+const { Schema, model } = mongoose;
+
+const UserSchema = new Schema(
     {   
-        uname:{
-            type:String,
-            required:true
+        mId:{
+            type: String,
+            required: true
         },
-        password:{
-            type:String,
-            required:true
+        uname: {
+            type: String,
+            required: true
         },
-        type:{
-            type:String,
-            required:true
+        password: {
+            type: String,
+            required: true
         },
-        dep:{
-            type:String,
-            required:true
-        }
-             
-    },{
-        versionKey:false
+        type: String,
+        dep: String,
+        security_phrase:String,
+    },
+    {
+        versionKey: false
     }
 );
 
-const UserModel=Mongoose.model("login",UserSchema);
+const loginModel = model("login", UserSchema);
 
-module.exports=UserModel;
+export default loginModel;

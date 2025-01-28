@@ -1,4 +1,3 @@
-// insertData.js
 import { addInitialLogin } from './controllers/login.js';
 import { createRecord2 } from './controllers/billAndHelper.js';
 
@@ -12,8 +11,4 @@ const insertData = async () => {
   }
 };
 
-export default insertData;  // Export the insertData function
-
-
-
-
+export default insertData;
