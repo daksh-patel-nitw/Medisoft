@@ -1,6 +1,7 @@
-const Mongoose =require('mongoose');
+import mongoose from 'mongoose';
 
-const Schema=Mongoose.Schema;
+const { Schema, model } = mongoose;
+
 const UserSchema=new Schema(
     {   
         name:{
@@ -36,6 +37,6 @@ const UserSchema=new Schema(
     }
 );
 
-const UserModel=Mongoose.model("Medicine_name",UserSchema);
+const medicineCategoryModel = model("medicineCategory", UserSchema);
 
-module.exports=UserModel;
+export default medicineCategoryModel;

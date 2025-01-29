@@ -1,7 +1,7 @@
-const m_n = require('../models/medicine_name');
+import  = require('../models/medicine_name');
 const t_n = require('../models/test_name');
 const test = require('../models/tests');
-const medicine = require('../models/medicine');
+const medicine = require('../models/medicineInventory');
 const express = require('express');
 const router = express.Router();
 const bodyParser = require("body-parser");

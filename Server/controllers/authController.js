@@ -8,6 +8,7 @@ dotenv.config();
 const SECRET_KEY = process.env.SECRET_KEY;
 const REFRESH_SECRET_KEY = process.env.REFRESH_SECRET_KEY;
 
+//login
 export const validateUser = async (req, res) => {
   try {
       const { uname, password } = req.body;
@@ -52,6 +53,7 @@ export const validateUser = async (req, res) => {
   }
 };
 
+//signup
 export const makeNewLogin = async (req, res) => {
     try {
         
@@ -83,10 +85,10 @@ export const makeNewLogin = async (req, res) => {
     }
 };
 
-
+//refreshToken
 export const refreshToken = async (req, res) => {
   console.log(req.cookies);
-  const refreshToken = req.cookies.refreshtoken;
+  const refreshToken = req.cookies.refreshToken;
 
   if (!refreshToken) {
       return res.status(401).json({ message: 'No refresh token provided' });

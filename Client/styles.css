@@ -2,9 +2,8 @@ body{
     background-image: url("gplay.png");
   }
 
-  .partition{
+.partition{
     background-image:url("mirrored-squares.png");
-    /* color: rgb(166, 255, 137); */
-  }
+}
    
   
