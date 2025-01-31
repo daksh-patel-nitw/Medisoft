@@ -1,14 +1,14 @@
 
 import React from 'react';
 import { useState,useEffect } from 'react';
-import Grid from '@material-ui/core/Grid';
-import Card from '@material-ui/core/Card';
-import CardContent from '@material-ui/core/CardContent';
-import TextField from '@material-ui/core/TextField';
-import Button from '@material-ui/core/Button';
+import Grid from '@mui/material//Grid2;
+import Card from '@mui/material//Card';
+import CardContent from '@mui/material//CardContent';
+import TextField from '@mui/material//TextField';
+import Button from '@mui/material//Button';
 import PageLayout from './pageLayout';
-import { FormControlLabel, Radio, RadioGroup } from '@material-ui/core';
-import Autocomplete from '@material-ui/lab/Autocomplete';
+import { FormControlLabel, Radio, RadioGroup } from '@mui/material/';
+import Autocomplete from '@mui/material/lab/Autocomplete';
 import Calendar from 'react-calendar';
 
 // Appointment Form Values
@@ -238,10 +238,10 @@ const dateUI=()=>(
   const partO=()=>{
     return(
       <Grid container spacing={2} > 
-        <Grid item xs={6}>
+        <Grid size={{xs:6}>
             {autoComp(doctors,'dname',"Doctor",0)}
           </Grid>
-        <Grid item xs={6}>
+        <Grid size={{xs:6}>
             {autoComp(doctors,'dep',"Type",1)}
         </Grid>
       </Grid>
@@ -265,7 +265,7 @@ const dateUI=()=>(
           </Grid>
       
         {formV.did && 
-          <Grid item xs={12}>
+          <Grid size={{xs:12}>
             <Card className="partition" >
               <CardContent>
                   {dateUI()}
@@ -275,7 +275,7 @@ const dateUI=()=>(
           } 
 
         { selectedDate &&  
-          <Grid item xs={12}>
+          <Grid size={{xs:12}>
             <Card className="partition" >
               <CardContent>
                   {timeUI()}

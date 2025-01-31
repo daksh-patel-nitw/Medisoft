@@ -1,16 +1,16 @@
 import React from 'react';
 import { useState,useEffect } from 'react';
-import Grid from '@material-ui/core/Grid';
-import Card from '@material-ui/core/Card';
-import CardContent from '@material-ui/core/CardContent';
-import TextField from '@material-ui/core/TextField';
-import Button from '@material-ui/core/Button';
+import Grid from '@mui/material//Grid2;
+import Card from '@mui/material//Card';
+import CardContent from '@mui/material//CardContent';
+import TextField from '@mui/material//TextField';
+import Button from '@mui/material//Button';
 import PageLayout from './pageLayout';
-import { InputLabel,FormControl,FormControlLabel, Radio, RadioGroup } from '@material-ui/core';
-import Select from '@material-ui/core/Select';
-import Tabs from '@material-ui/core/Tabs';
-import Tab from '@material-ui/core/Tab';
-import Chip from '@material-ui/core/Chip';
+import { InputLabel,FormControl,FormControlLabel, Radio, RadioGroup } from '@mui/material/';
+import Select from '@mui/material//Select';
+import Tabs from '@mui/material//Tabs';
+import Tab from '@mui/material//Tab';
+import Chip from '@mui/material//Chip';
 
   //Fetch Departments  
 //   useEffect(() => { 
@@ -218,7 +218,7 @@ export default function App()
 
     <PageLayout>
       <Grid container spacing={2} >
-        <Grid item xs={12}>
+        <Grid size={{xs:12}>
           <Card className="partition" style={{height:500}}>
             <Tabs
               value={value}

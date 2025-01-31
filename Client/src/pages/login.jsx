@@ -12,10 +12,10 @@ import Pharmacy from "./pharmacy/1newMedicine";
 // import { useNavigate } from 'react-router-dom';
 
 
-import Grid from '@material-ui/core/Grid';
-import TextField from '@material-ui/core/TextField';
-import Button from '@material-ui/core/Button';
-import { Card, CardContent } from '@material-ui/core';
+import Grid from '@mui/material//Grid2;
+import TextField from '@mui/material//TextField';
+import Button from '@mui/material//Button';
+import { Card, CardContent } from '@mui/material/';
 
 function LoginWithLocalStorage(){
     const handleInputChange=(event)=>{
@@ -93,7 +93,7 @@ function LoginWithLocalStorage(){
                         <CardContent>
                             <Grid container style={{marginTop:8}}   spacing={2}>
                             <Grid item ><h1 align="center">Login Here</h1></Grid>
-                            <Grid item xs={12}>
+                            <Grid size={{xs:12}>
                                     <TextField
                                     fullWidth
                                     name="uname"
@@ -104,7 +104,7 @@ function LoginWithLocalStorage(){
                                     onChange={handleInputChange}
                                 />
                             </Grid>
-                            <Grid item xs={12}>
+                            <Grid size={{xs:12}>
                                     <TextField
                                     fullWidth
                                     name="password"
@@ -115,7 +115,7 @@ function LoginWithLocalStorage(){
                                     onChange={handleInputChange}
                                 />
                             </Grid>
-                            <Grid item xs={12}>
+                            <Grid size={{xs:12}>
                             <Button type="submit" color="primary" size="medium" variant="contained">
                                 Login
                             </Button></Grid>

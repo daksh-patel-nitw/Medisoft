@@ -1,0 +1,14 @@
+ 
+  .menuButton {
+    margin-right: 16px;
+  }
+  
+  .title {
+    flex-grow: 1;
+  }
+  
+  .appBar {
+    z-index: 1301;
+    background-color: #1F3F49;
+    color: white;
+  }

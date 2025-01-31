@@ -6,9 +6,9 @@ import {
   DialogTitle,
   Button,
   TextField,
-} from '@material-ui/core';
-import Checkbox from '@material-ui/core/Checkbox';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
+} from '@mui/material/';
+import Checkbox from '@mui/material//Checkbox';
+import FormControlLabel from '@mui/material//FormControlLabel';
 
 const EditModal =({ open, handleClose, handleEdit, appoint }) => {
 

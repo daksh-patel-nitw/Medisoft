@@ -1,19 +1,19 @@
 import React from 'react';
 import { useState,useEffect,useRef } from 'react';
-import Grid from '@material-ui/core/Grid';
-import Card from '@material-ui/core/Card';
-import CardContent from '@material-ui/core/CardContent';
-import TextField from '@material-ui/core/TextField';
-import Button from '@material-ui/core/Button';
+import Grid from '@mui/material//Grid2;
+import Card from '@mui/material//Card';
+import CardContent from '@mui/material//CardContent';
+import TextField from '@mui/material//TextField';
+import Button from '@mui/material//Button';
 import PageLayout from './pageLayout';
-import Container from '@material-ui/core/Container';
-import Select from '@material-ui/core/Select';
-import Autocomplete from '@material-ui/lab/Autocomplete';
-import TextareaAutosize from '@material-ui/core/TextareaAutosize';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import Accordion from '@material-ui/core/Accordion';
-import AccordionSummary from '@material-ui/core/AccordionSummary';
-import AccordionDetails from '@material-ui/core/AccordionDetails';
+import Container from '@mui/material//Container';
+import Select from '@mui/material//Select';
+import Autocomplete from '@mui/material/lab/Autocomplete';
+import TextareaAutosize from '@mui/material//TextareaAutosize';
+import ExpandMoreIcon from '@mui/material/icons/ExpandMore';
+import Accordion from '@mui/material//Accordion';
+import AccordionSummary from '@mui/material//AccordionSummary';
+import AccordionDetails from '@mui/material//AccordionDetails';
 
 export default function App()
 {
@@ -199,15 +199,15 @@ export default function App()
       
       <Grid item xs alignItems="center" container spacing={1}>
         
-          <Grid item xs={10}>
+          <Grid size={{xs:10}>
               {autoComp('name','Test',0)}
           </Grid>
-          <Grid item xs={2}>
+          <Grid size={{xs:2}>
             <Button style={{margin:"auto"}}onClick={handleTSubmit} variant="contained" color="primary">
               Add
             </Button>
           </Grid>
-          <Grid item xs={12}>
+          <Grid size={{xs:12}>
           {Ap.tests && Ap.tests.map(item=>(
           <><span style={{padding:4,borderRadius:2,backgroundColor:"rgb(255, 137, 192)",fontWeight:"bold"}}>{item.name}</span> </>))}
           </Grid>
@@ -227,7 +227,7 @@ export default function App()
               {autoComp('name','Medicine',1)}
             </Grid>
         
-            <Grid item xs={4} >
+            <Grid size={{xs:4} >
               <TextField
                 fullWidth
                 key='ps_c'
@@ -241,7 +241,7 @@ export default function App()
                 required
               />
             </Grid>
-            <Grid item xs={4} >
+            <Grid size={{xs:4} >
               <TextField
                 fullWidth
                 key='ps_u'
@@ -255,17 +255,17 @@ export default function App()
                 required
               />
             </Grid>
-            <Grid item xs={6}>
+            <Grid size={{xs:6}>
               <h3>{m.t}</h3>
             </Grid>
 
-          <Grid item xs={6}>
+          <Grid size={{xs:6}>
             <Button type="submit" variant="contained" color="primary">
               Add
             </Button>
           </Grid>
 
-          <Grid item xs={12}>
+          <Grid size={{xs:12}>
             <table style={{borderCollapse: 'collapse',border:'1px solid black'}}>
               <tr>
               { ['Name','Unit','Package Quantity','Free Quantity'].map((a)=>(
@@ -325,7 +325,7 @@ export default function App()
       
      { checkErr?<h1>No More Patients</h1>:<Grid container spacing={2} >
 
-      <Grid item xs={3}> 
+      <Grid size={{xs:3}> 
           <Card className="partition" >
             <CardContent>
                 
@@ -345,10 +345,10 @@ export default function App()
 
         <Grid item container xs={5}>
           <Card className="partition" style={{height:500}}>
-          <Grid item xs={12}><div style={{padding:8,fontWeight:'Bold',fontSize:'16px'}}>Medicines:</div> <hr style={{ margin: 0 }} /></Grid>
+          <Grid size={{xs:12}><div style={{padding:8,fontWeight:'Bold',fontSize:'16px'}}>Medicines:</div> <hr style={{ margin: 0 }} /></Grid>
             <CardContent style={{paddingTop:'9px'}}>
               <Grid  item container justify="center" xs={12}>{medicineC()}</Grid></CardContent>
-            <Grid item xs={12}><div style={{padding:8,fontWeight:'Bold',fontSize:'16px'}}>Lab Tests:</div> <hr style={{ margin: 0 }} /></Grid>
+            <Grid size={{xs:12}><div style={{padding:8,fontWeight:'Bold',fontSize:'16px'}}>Lab Tests:</div> <hr style={{ margin: 0 }} /></Grid>
             <CardContent style={{paddingTop:'9px'}}><Grid  container justify="center" xs={12}>{TestC()}</Grid>
               </CardContent>
           </Card>  
@@ -356,7 +356,7 @@ export default function App()
         
         
         
-        <Grid item xs={4}>
+        <Grid size={{xs:4}>
           <Card className="partition" >
             <CardContent>
               <TextareaAutosize
@@ -397,7 +397,7 @@ export default function App()
             </CardContent>
           </Card>
         </Grid>
-        <Grid item xs={12}>
+        <Grid size={{xs:12}>
           <Button style={{width:'500px'}} variant="contained" size="medium" color="secondary" onClick={handleSubmit}> Next </Button>
         </Grid>
       </Grid>}

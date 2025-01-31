@@ -1,5 +1,5 @@
 import React, { useState,useEffect } from 'react';
-import TableSortLabel from '@material-ui/core/TableSortLabel';
+import TableSortLabel from '@mui/material//TableSortLabel';
 import {
     Grid,
     Table,
@@ -12,12 +12,12 @@ import {
     TextField,
     FormControl,InputLabel,Select,
     TablePagination,
-} from '@material-ui/core';
-import Card from '@material-ui/core/Card';
-import CardContent from '@material-ui/core/CardContent';
+} from '@mui/material/';
+import Card from '@mui/material//Card';
+import CardContent from '@mui/material//CardContent';
 import PageLayout from './pageLayout';
 
-import Autocomplete from '@material-ui/lab/Autocomplete';
+import Autocomplete from '@mui/material/lab/Autocomplete';
 export default function App()
 {
 
@@ -116,7 +116,7 @@ export default function App()
         }
       };
     const autoComp = (property, label) => (
-        <Grid item xs={4}>
+        <Grid size={{xs:4}>
           <Autocomplete
             freeSolo
             options={rooms.map((option) => option[property])}
@@ -173,20 +173,20 @@ export default function App()
         <PageLayout>
             <Card className="partition">
         <Grid container spacing={2}>
-                <Grid item xs={12}>
+                <Grid size={{xs:12}>
                 <CardContent>
                 
                     <Grid container spacing={2}>
                         {autoComp('pname', 'Patient Name')}
                         {autoComp('pid', 'Patient ID')}
-                        <Grid item xs={4}>
+                        <Grid size={{xs:4}>
                         {fil()}
                         </Grid>
                     </Grid>
                     </CardContent>
                     <CardContent>
                     
-                <Grid item xs={12}>
+                <Grid size={{xs:12}>
                     <TableContainer>
                     <Table size="small">
                         <TableHead style={{ backgroundColor: "#1F3F49" }}>

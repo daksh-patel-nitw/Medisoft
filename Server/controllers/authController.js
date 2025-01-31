@@ -34,10 +34,11 @@ export const validateUser = async (req, res) => {
       // Store refresh token in httpOnly cookie
       res.cookie('refreshToken', refreshToken, {
           httpOnly: true,
-          // secure: process.env.NODE_ENV === 'production', // set true for https
+        //   secure: process.env.NODE_ENV === 'production',
           sameSite: 'strict', 
       });
-
+      
+      
       // Send access token in response body
       return res.status(200).json({
           message: "Login successful",
@@ -45,6 +46,7 @@ export const validateUser = async (req, res) => {
           user: {
               uname: user.uname,
               type: user.type,
+              mid: user.mId,
           },
       });
   } catch (error) {

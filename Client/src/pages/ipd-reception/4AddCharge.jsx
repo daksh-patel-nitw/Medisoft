@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles } from '@mui/material//styles';
 import
 {
     Grid,
@@ -11,11 +11,11 @@ import
     TableRow,
     IconButton,
     TextField
-} from '@material-ui/core';
-import Autocomplete from '@material-ui/lab/Autocomplete';
-import Card from '@material-ui/core/Card';
-import CardContent from '@material-ui/core/CardContent';
-import { Delete, Edit } from '@material-ui/icons';
+} from '@mui/material/';
+import Autocomplete from '@mui/material/lab/Autocomplete';
+import Card from '@mui/material//Card';
+import CardContent from '@mui/material//CardContent';
+import { Delete, Edit } from '@mui/material/icons';
 import PageLayout from './pageLayout';
 import EditModal from './modalEdit';
 import CountUp from 'react-countup';
@@ -89,7 +89,7 @@ export default function App()
 
         <PageLayout>
             <Grid container spacing={2}>
-                <Grid item xs={12}>
+                <Grid size={{xs:12}>
                     <Card className="partition">
                         <CardContent>
                             <Autocomplete

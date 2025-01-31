@@ -1,17 +1,17 @@
 import React, { useEffect } from 'react';
 import { useState } from 'react';
-import Grid from '@material-ui/core/Grid';
-import Card from '@material-ui/core/Card';
-import CardContent from '@material-ui/core/CardContent';
-import TextField from '@material-ui/core/TextField';
-import Button from '@material-ui/core/Button';
+import Grid from '@mui/material//Grid2;
+import Card from '@mui/material//Card';
+import CardContent from '@mui/material//CardContent';
+import TextField from '@mui/material//TextField';
+import Button from '@mui/material//Button';
 import PageLayout from './pageLayout';
-import Autocomplete from '@material-ui/lab/Autocomplete';
-import AddBoxIcon from '@material-ui/icons/AddBox';
-import { FormControl,InputLabel,Select,TablePagination,Table,TableBody,TableCell,TableContainer,TableHead,TableRow,IconButton,} from '@material-ui/core';
-import Stepper from '@material-ui/core/Stepper';
-import Step from '@material-ui/core/Step';
-import StepLabel from '@material-ui/core/StepLabel';
+import Autocomplete from '@mui/material/lab/Autocomplete';
+import AddBoxIcon from '@mui/material/icons/AddBox';
+import { FormControl,InputLabel,Select,TablePagination,Table,TableBody,TableCell,TableContainer,TableHead,TableRow,IconButton,} from '@mui/material/';
+import Stepper from '@mui/material//Stepper';
+import Step from '@mui/material//Step';
+import StepLabel from '@mui/material//StepLabel';
 import './2.css';
 export default function App()
 {
@@ -151,7 +151,7 @@ const [cat,setCat]=useState([]);
     return(
       < >
         
-        {(index===1) && <Grid item xs={6}>
+        {(index===1) && <Grid size={{xs:6}>
          <Autocomplete
               freeSolo
               options={autoArr.map((option) => option[search])}
@@ -170,7 +170,7 @@ const [cat,setCat]=useState([]);
       <Grid container spacing={2}>
         { farr.map((fieldName, index) => (
 
-           (index!==3) && <Grid item xs={(index!=2)?5:10} key={fieldName}>
+           (index!==3) && <Grid size={{xs:(index!=2)?5:10} key={fieldName}>
               <TextField
               className='CI'
                 fullWidth
@@ -223,7 +223,7 @@ const [cat,setCat]=useState([]);
   function roomUI(){
     return (
       <Grid container spacing={2}>
-        <Grid item xs={6}>
+        <Grid size={{xs:6}>
           <FormControl className='CI' variant="outlined" fullWidth>
             <InputLabel htmlFor="filled-age-native-simple">
               Filter with Room Type
@@ -251,7 +251,7 @@ const [cat,setCat]=useState([]);
             </Select>
           </FormControl>
         </Grid>
-        <Grid item xs={12}>
+        <Grid size={{xs:12}>
           <TableContainer>
             <Table size="small">
               <TableHead style={{ backgroundColor: "#1F3F49" }}>
@@ -318,19 +318,19 @@ const [cat,setCat]=useState([]);
     switch (stepIndex) {
       case 0:
         return (<Grid container spacing={2}>
-          <Grid item xs={6}>
+          <Grid size={{xs:6}>
             {makeUI(patients,'pid',pArr,pArr2,handlePSearch,1,"Search Patient ID","Patient")}
           </Grid>
-          <Grid item xs={6}>
+          <Grid size={{xs:6}>
             {makeUI(doctors,'dname',dArr,dArr2,handleDSearch,1,"Search Doctor ID","Doctor")}
           </Grid>
           </Grid>)
       case 1:
         return (<Grid container spacing={2}>
-          <Grid item xs={6}>
+          <Grid size={{xs:6}>
             {roomUI()}
           </Grid>
-          <Grid item xs={6}>
+          <Grid size={{xs:6}>
             <h2>Room Details</h2>
             {makeUI(rooms,'',rArr,rArr2,'',0)}
           </Grid>
@@ -357,14 +357,14 @@ const [cat,setCat]=useState([]);
                     </Stepper><hr />
                     <CardContent style={{top:'0px'}}>
                           {getStepContent(activeStep)}
-                          <Grid item xs={12}>
+                          <Grid size={{xs:12}>
                             <Grid container spacing={2} direction="row">
-                              <Grid item xs={6}>
+                              <Grid size={{xs:6}>
                                 <Button disabled={activeStep === 0} style={{ width: '100%' }}onClick={handleBack}>
                                     Back
                                 </Button>
                               </Grid>
-                              <Grid item xs={6}>
+                              <Grid size={{xs:6}>
                                 
                                   {activeStep !== 0  ?
                                   <Button variant="contained" type="Submit" color="primary" style={{ width: '100%' }}>Submit</Button> : <Button variant="contained"  color="primary" style={{ width: '100%' }} onClick={handleNext}>Next</Button>}

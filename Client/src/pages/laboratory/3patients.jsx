@@ -1,7 +1,7 @@
-import Tabs from '@material-ui/core/Tabs';
-import Tab from '@material-ui/core/Tab';
+import Tabs from '@mui/material//Tabs';
+import Tab from '@mui/material//Tab';
 import React, { useState,useEffect } from 'react';
-import TableSortLabel from '@material-ui/core/TableSortLabel';
+import TableSortLabel from '@mui/material//TableSortLabel';
 import {
     Grid,
     Table,
@@ -13,13 +13,13 @@ import {
     Button,
     TextField,
     TablePagination,
-} from '@material-ui/core';
-import Card from '@material-ui/core/Card';
-import CardContent from '@material-ui/core/CardContent';
+} from '@mui/material/';
+import Card from '@mui/material//Card';
+import CardContent from '@mui/material//CardContent';
 import PageLayout from './pageLayout';
 import Modal from './3modal';
 
-import Autocomplete from '@material-ui/lab/Autocomplete';
+import Autocomplete from '@mui/material/lab/Autocomplete';
 export default function App()
 {
 
@@ -61,7 +61,7 @@ export default function App()
       };
     const [fval,setFval]=useState({pid:'',pname:''})
     const autoComp = (property, label) => (
-        <Grid item xs={4}>
+        <Grid size={{xs:4}>
           <Autocomplete
             freeSolo
             options={test[value]&&test[value].map((option) => option[property])}
@@ -158,7 +158,7 @@ export default function App()
         <PageLayout>
             <Card className="partition">
         <Grid container spacing={2}>
-                <Grid item xs={12}>
+                <Grid size={{xs:12}>
                 <Tabs
               value={value}
               indicatorColor="primary"
@@ -175,7 +175,7 @@ export default function App()
                     <Grid container spacing={2}>
                         {autoComp('pname', 'Patient Name')}
                         {autoComp('pid', 'Patient ID')}
-                        <Grid item xs={12}>
+                        <Grid size={{xs:12}>
                      
 
                             <TableContainer >

@@ -1,9 +1,9 @@
 import React from 'react';
 import { useState,useEffect } from 'react';
-import Card from '@material-ui/core/Card';
-import CardContent from '@material-ui/core/CardContent';
+import Card from '@mui/material//Card';
+import CardContent from '@mui/material//CardContent';
 import PageLayout from './pageLayout';
-import Autocomplete from '@material-ui/lab/Autocomplete';
+import Autocomplete from '@mui/material/lab/Autocomplete';
 import {
     Grid,
     Table,
@@ -15,12 +15,12 @@ import {
     Button,
     TextField,
     TablePagination,
-} from '@material-ui/core';
+} from '@mui/material/';
 
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import Accordion from '@material-ui/core/Accordion';
-import AccordionSummary from '@material-ui/core/AccordionSummary';
-import AccordionDetails from '@material-ui/core/AccordionDetails';
+import ExpandMoreIcon from '@mui/material/icons/ExpandMore';
+import Accordion from '@mui/material//Accordion';
+import AccordionSummary from '@mui/material//AccordionSummary';
+import AccordionDetails from '@mui/material//AccordionDetails';
 
 function Order(des) {
     return <div dangerouslySetInnerHTML={{ __html: des }} />;
@@ -125,7 +125,7 @@ export default function App()
           <Grid container direction="column" spacing={2}>
 
             {appointments.length && appointments.map((e,index) => (
-               <Grid key={e._id} item xs={12}>
+               <Grid key={e._id} size={{xs:12}>
                       <Card className="partition" style={{ maxWidth: "700px", margin: "auto" }}>
                         <CardContent>
                           <Accordion 
@@ -159,13 +159,13 @@ export default function App()
                             <AccordionDetails>
                               <Grid container direction="column" spacing={2}>
                                 <Grid container item>
-                                  <Grid item xs={6}>
+                                  <Grid size={{xs:6}>
                                     <h4>Doctor Notes:</h4>
                                     <div>
                                       {e.notes}
                                     </div>
                                   </Grid>
-                                  <Grid item xs={6}>
+                                  <Grid size={{xs:6}>
                                     <div>
                                       {[...Array(5)].map((_, index) => (
                                           <span

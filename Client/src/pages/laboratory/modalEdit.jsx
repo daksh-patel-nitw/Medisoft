@@ -6,7 +6,7 @@ import {
   DialogTitle,
   Button,
   TextField,
-} from '@material-ui/core';
+} from '@mui/material/';
 
 const EditModal =({ open, column,handleClose, handleEdit, medicine }) => {
   const m=medicine;
