@@ -2,7 +2,7 @@ import React,{useState, useEffect} from 'react';
 import { useNavigate } from 'react-router-dom';
 import NavBar from '../../components/Navbar';
 import SideBar from '../../components/sidebar';
-import Box from '@material-ui/core/Box';
+import Box from '@mui/material//Box';
 
 const arr=[
   {label:'New Test',path:'/newtest',icon:'AddBox'},

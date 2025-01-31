@@ -1,10 +1,10 @@
 import React from 'react';
 import { useState } from 'react';
-import Grid from '@material-ui/core/Grid';
-import Card from '@material-ui/core/Card';
-import CardContent from '@material-ui/core/CardContent';
-import TextField from '@material-ui/core/TextField';
-import Button from '@material-ui/core/Button';
+import Grid from '@mui/material//Grid2;
+import Card from '@mui/material//Card';
+import CardContent from '@mui/material//CardContent';
+import TextField from '@mui/material//TextField';
+import Button from '@mui/material//Button';
 import PageLayout from './pageLayout';
 
 const arr1 = [ 'name',  'price',  'pat_details',  'normal',];
@@ -71,7 +71,7 @@ export default function App()
       <PageLayout>
         <form onSubmit={handleSubmit} autoComplete="off">
           <Grid container spacing={2}>
-            <Grid item xs={12} sm={6}>
+            <Grid size={{xs:12} sm={6}>
               <Card className="partition" >
                 <CardContent>
                   <h2>Add New Test</h2>

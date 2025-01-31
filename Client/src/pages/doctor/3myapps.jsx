@@ -1,13 +1,13 @@
 import React from 'react';
 import { useState,useEffect } from 'react';
-import Grid from '@material-ui/core/Grid';
-import Card from '@material-ui/core/Card';
-import CardContent from '@material-ui/core/CardContent';
-import TextField from '@material-ui/core/TextField';
-import Button from '@material-ui/core/Button';
+import Grid from '@mui/material//Grid2;
+import Card from '@mui/material//Card';
+import CardContent from '@mui/material//CardContent';
+import TextField from '@mui/material//TextField';
+import Button from '@mui/material//Button';
 import PageLayout from './pageLayout';
-import Autocomplete from '@material-ui/lab/Autocomplete';
-import DeleteIcon from '@material-ui/icons/Delete';
+import Autocomplete from '@mui/material/lab/Autocomplete';
+import DeleteIcon from '@mui/material/icons/Delete';
 
 export default function App()
 {
@@ -121,18 +121,18 @@ export default function App()
 
       <PageLayout>
           <Grid container spacing={2}>
-            <Grid item xs={4}>
+            <Grid size={{xs:4}>
               <Card className="partition" >
                 <CardContent>
                   <h2>Timings</h2>
                   <Grid container spacing={2}>
-                    <Grid item xs={12}>
+                    <Grid size={{xs:12}>
                       <Grid container   justifyContent="flex-start"
   alignItems="center" spacing={2}>
-                        <Grid item xs={2}><h3>From</h3></Grid>
-                        <Grid item xs={4}>{autoComp()}</Grid>
-                        <Grid item xs={2}><h3>to {l}</h3></Grid>
-                        <Grid item xs={2}>
+                        <Grid size={{xs:2}><h3>From</h3></Grid>
+                        <Grid size={{xs:4}>{autoComp()}</Grid>
+                        <Grid size={{xs:2}><h3>to {l}</h3></Grid>
+                        <Grid size={{xs:2}>
                             <Button
                             onClick={handleClick}
                               variant="contained"
@@ -146,8 +146,8 @@ export default function App()
 
                     {e.timings && e.timings.map(t => (
                         <React.Fragment key={t}>
-                          <Grid item xs={4}>{t}</Grid>
-                          <Grid item xs={8}>
+                          <Grid size={{xs:4}>{t}</Grid>
+                          <Grid size={{xs:8}>
                             <DeleteIcon onClick={() => handledelete(t)}/>
                           </Grid>
                         </React.Fragment>
@@ -180,8 +180,8 @@ export default function App()
                     </Button></Grid>
                     {e.questions && e.questions.map(t => (
                         <React.Fragment key={t}>
-                          <Grid item xs={4}>{t}</Grid>
-                          <Grid item xs={8}>
+                          <Grid size={{xs:4}>{t}</Grid>
+                          <Grid size={{xs:8}>
                             {/* <DeleteIcon onClick={() => handledelete(t)}/> */}
                           </Grid>
                         </React.Fragment>
@@ -191,7 +191,7 @@ export default function App()
                 </Card>
             </Grid>
             
-            <Grid item xs={4}>
+            <Grid size={{xs:4}>
               <Card>
                 <CardContent>
                     <h3>Patients per Hour</h3>

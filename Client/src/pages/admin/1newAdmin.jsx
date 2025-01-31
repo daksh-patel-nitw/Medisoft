@@ -1,10 +1,10 @@
 import React from 'react';
 import { useState,useEffect } from 'react';
-import Grid from '@material-ui/core/Grid';
-import Card from '@material-ui/core/Card';
-import CardContent from '@material-ui/core/CardContent';
-import TextField from '@material-ui/core/TextField';
-import Button from '@material-ui/core/Button';
+import Grid from '@mui/material//Grid2;
+import Card from '@mui/material//Card';
+import CardContent from '@mui/material//CardContent';
+import TextField from '@mui/material//TextField';
+import Button from '@mui/material//Button';
 import PageLayout from './pageLayout';
 
 export default function App()
@@ -90,12 +90,12 @@ export default function App()
   function UI(index){
     // console.log(' Role',role,'Dep',dep)
     return (
-      <Grid item xs={6}>
+      <Grid size={{xs:6}>
           <Card className="partition" style={{height:'85vh',overflow: 'auto'}}>
       <CardContent >
       <form onSubmit={(event)=>handleSubmit(event,index)} autoComplete="off">
       <Grid container spacing={2}>
-        <Grid item xs={8}>
+        <Grid size={{xs:8}>
           <TextField
             label={"Enter "+(index === 0 ? 'Role' : 'Department')}
             margin="normal"
@@ -104,7 +104,7 @@ export default function App()
             value={index===0?role:dep}
           />
         </Grid>
-        <Grid item xs={4}>
+        <Grid size={{xs:4}>
           <Button
             variant="contained"
             color="primary"
@@ -113,11 +113,11 @@ export default function App()
             Add
           </Button>
         </Grid>
-        <Grid item xs={12}>
+        <Grid size={{xs:12}>
           {rolesDeps[index].content.map(e=>
             (<Grid key={e} container spacing={2}>
-              <Grid item xs={9}><h3>{e}</h3></Grid>
-              <Grid item xs={3}>
+              <Grid size={{xs:9}><h3>{e}</h3></Grid>
+              <Grid size={{xs:3}>
               <button  onClick={()=>handleUpdate(index,'D',e)}>
                 del
               </button>
@@ -125,7 +125,7 @@ export default function App()
               </Grid>
               ))}
         </Grid >
-        <Grid item xs={12}> 
+        <Grid size={{xs:12}> 
           <Button
             type="submit"
             variant="contained"

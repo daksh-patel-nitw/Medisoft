@@ -1,12 +1,12 @@
 import React from 'react';
 import { useState } from 'react';
-import Grid from '@material-ui/core/Grid';
-import Card from '@material-ui/core/Card';
-import CardContent from '@material-ui/core/CardContent';
-import TextField from '@material-ui/core/TextField';
-import Button from '@material-ui/core/Button';
+import Grid from '@mui/material//Grid2;
+import Card from '@mui/material//Card';
+import CardContent from '@mui/material//CardContent';
+import TextField from '@mui/material//TextField';
+import Button from '@mui/material//Button';
 import PageLayout from './pageLayout';
-import { FormControl, FormControlLabel, Radio, RadioGroup } from '@material-ui/core';
+import { FormControl, FormControlLabel, Radio, RadioGroup } from '@mui/material/';
 
 export default function App()
 {
@@ -49,7 +49,7 @@ export default function App()
     <PageLayout>
       
         <Grid container spacing={2}>
-          <Grid item xs={12}>
+          <Grid size={{xs:12}>
           <form onSubmit={handleCatSubmit} autoComplete="off">
             <Card className="partition" >
               <CardContent>

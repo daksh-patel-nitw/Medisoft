@@ -1,7 +1,7 @@
 import React, { useEffect,useState } from 'react';
 import { useParams } from 'react-router-dom';
-import Grid from '@material-ui/core/Grid';
-import Box from '@material-ui/core/Box';
+import Grid from '@mui/material//Grid2;
+import Box from '@mui/material//Box';
 
 
 
@@ -60,7 +60,7 @@ export default function QueueScreen() {
     {doc.map((e,index)=>
   {
     return (
-      <Grid item xs={part} key={e.eid}>
+      <Grid size={{xs:part} key={e.eid}>
         <div><h2>Dr. {e.name}</h2></div>
         {dataStore[e.eid] && dataStore[e.eid].map((val)=>(
           <div style={{margin:2,padding:8,borderRadius:5,backgroundColor: val.status==='progress' ? '#00FFCA' : '#393646',color:'white' }}>{val.pname} ({val.pid})</div>

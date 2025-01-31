@@ -1,7 +1,7 @@
 import React from 'react';
 import { useState,useEffect } from 'react';
 import PageLayout from './pageLayout';
-import Autocomplete from '@material-ui/lab/Autocomplete';
+import Autocomplete from '@mui/material/lab/Autocomplete';
 import {
     Card,
     CardContent,  
@@ -17,7 +17,7 @@ import {
     Button,
     TextField,
     TablePagination,
-} from '@material-ui/core';
+} from '@mui/material/';
 
 export default function App()
 {
@@ -152,16 +152,16 @@ export default function App()
       <CardContent >
       <form onSubmit={handleEmpSubmit} autoComplete="off">
       <Grid container spacing={2}>
-        <Grid item xs={4}>
+        <Grid size={{xs:4}>
           {autocomp(0,'Search Employee Id','eid')}
           </Grid>
-        <Grid item xs={4}>
+        <Grid size={{xs:4}>
           {autocomp(0,'Search Employee','name')}
           </Grid>
-        <Grid item xs={4}>
+        <Grid size={{xs:4}>
           {autocomp(0,'Select Panel')}
           </Grid>
-        <Grid item xs={4}>
+        <Grid size={{xs:4}>
           <Button
             type="submit"
             variant="contained"
@@ -186,10 +186,10 @@ export default function App()
 
   const viewEmpUI=()=>(
     <Grid container spacing={2}>
-    <Grid item xs={4}>
+    <Grid size={{xs:4}>
     {autocomp(1,'Filter Type')}
     </Grid>
-    <Grid item xs={12}>
+    <Grid size={{xs:12}>
     <TableContainer>
       <Table size="small">
         <TableHead style={{ backgroundColor: '#1F3F49' }}>
@@ -236,7 +236,7 @@ export default function App()
           <Grid container spacing={2}>
            
           { isLoading ? 'Loading...': 
-            <Grid item xs={12}>
+            <Grid size={{xs:12}>
               <Card className="partition" style={{height:'530px',width:'700px',margin:'auto'}}>
               <Tabs
                 value={value}

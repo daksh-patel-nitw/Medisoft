@@ -1,17 +1,17 @@
 import React from 'react';
 import { useState,useEffect } from 'react';
-import Grid from '@material-ui/core/Grid';
-import Card from '@material-ui/core/Card';
-import CardContent from '@material-ui/core/CardContent';
-import TextField from '@material-ui/core/TextField';
-import Button from '@material-ui/core/Button';
+import Grid from '@mui/material//Grid2;
+import Card from '@mui/material//Card';
+import CardContent from '@mui/material//CardContent';
+import TextField from '@mui/material//TextField';
+import Button from '@mui/material//Button';
 import PageLayout from './pageLayout';
-import { InputLabel,FormControl,FormControlLabel, Radio, RadioGroup } from '@material-ui/core';
-import Select from '@material-ui/core/Select';
-import Tabs from '@material-ui/core/Tabs';
-import Tab from '@material-ui/core/Tab';
-import Chip from '@material-ui/core/Chip';
-import Autocomplete from '@material-ui/lab/Autocomplete';
+import { InputLabel,FormControl,FormControlLabel, Radio, RadioGroup } from '@mui/material/';
+import Select from '@mui/material//Select';
+import Tabs from '@mui/material//Tabs';
+import Tab from '@mui/material//Tab';
+import Chip from '@mui/material//Chip';
+import Autocomplete from '@mui/material/lab/Autocomplete';
 
 export default function App()
 {
@@ -38,7 +38,7 @@ export default function App()
   };
 
   const autoCompHeader = (label,property,i2) => (
-    <Grid item xs={6}>
+    <Grid size={{xs:6}>
       <Autocomplete
         freeSolo
         options={patientData && patientData.map((option) => option[property])}
@@ -222,15 +222,15 @@ export default function App()
         
         <Grid container alignItems="center" spacing={1}>
           
-            <Grid item xs={10}>
+            <Grid size={{xs:10}>
                 {autoComp('name','Test',0)}
             </Grid>
-            <Grid item xs={2}>
+            <Grid size={{xs:2}>
               <Button style={{margin:"auto"}}onClick={handleTSubmit} variant="contained" color="primary">
                 Add
               </Button>
             </Grid>
-            <Grid item xs={12}>
+            <Grid size={{xs:12}>
             {activePat.tests && activePat.tests.map(item=>(
             <><span style={{padding:4,borderRadius:2,backgroundColor:"rgb(255, 137, 192)",fontWeight:"bold"}}>{item.name}</span> </>))}
             </Grid>
@@ -250,7 +250,7 @@ export default function App()
                 {autoComp('name','Medicine',1)}
               </Grid>
           
-              <Grid item xs={4} >
+              <Grid size={{xs:4} >
                 <TextField
                   fullWidth
                   key='ps_c'
@@ -264,7 +264,7 @@ export default function App()
                   required
                 />
               </Grid>
-              <Grid item xs={4} >
+              <Grid size={{xs:4} >
                 <TextField
                   fullWidth
                   key='ps_u'
@@ -278,17 +278,17 @@ export default function App()
                   required
                 />
               </Grid>
-              <Grid item xs={6}>
+              <Grid size={{xs:6}>
                 <h3>{m.t}</h3>
               </Grid>
   
-            <Grid item xs={6}>
+            <Grid size={{xs:6}>
               <Button type="submit" variant="contained" color="primary">
                 Add
               </Button>
             </Grid>
   
-            <Grid item xs={12}>
+            <Grid size={{xs:12}>
               <table style={{borderCollapse: 'collapse',border:'1px solid black'}}>
                 <tr>
                 { ['Name','Unit','Package Quantity','Free Quantity'].map((a)=>(
@@ -315,7 +315,7 @@ export default function App()
 
     <PageLayout>
       <Grid container spacing={2} >
-        <Grid item xs={12}>
+        <Grid size={{xs:12}>
           <Card className="partition">
             <CardContent>
             <Grid container spacing={2}>
@@ -328,14 +328,14 @@ export default function App()
        
        <Grid item container xs={6}>
           <Card className="partition">
-          <Grid item xs={12}><div style={{padding:8,fontWeight:'Bold',fontSize:'16px'}}>Medicines:</div> <hr style={{ margin: 0 }} /></Grid>
+          <Grid size={{xs:12}><div style={{padding:8,fontWeight:'Bold',fontSize:'16px'}}>Medicines:</div> <hr style={{ margin: 0 }} /></Grid>
             <CardContent style={{paddingTop:'9px'}}>
               <Grid  item container justify="center" xs={12}>{medicineC()}</Grid></CardContent>
               </Card></Grid>
         
         <Grid item container xs={6}>
           <Card className="partition" style={{width:'100%'}}>
-            <Grid item xs={12}><div style={{padding:8,fontWeight:'Bold',fontSize:'16px'}}>Lab Tests:</div> <hr style={{ margin: 0 }} /></Grid>
+            <Grid size={{xs:12}><div style={{padding:8,fontWeight:'Bold',fontSize:'16px'}}>Lab Tests:</div> <hr style={{ margin: 0 }} /></Grid>
             <CardContent style={{paddingTop:'9px'}}>
               <Grid  container justify="center" xs={12}>{TestC()}</Grid>
             </CardContent>
