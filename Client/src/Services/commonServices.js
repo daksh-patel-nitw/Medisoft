@@ -1,4 +1,4 @@
-import httpClient from "./httpCommon";
+import httpClient from "./httpClient";
 
 const header = {
   "Content-Type": "application/json",
@@ -13,6 +13,13 @@ const noTokenPostRequest = (url, data) => {
     header,
     false
   );
+};
+
+const noTokengetRequest = (url) => {
+  return httpClient.executeNoTokenRequest("get", url, null, null, null, true);
+};
+const noTokendeleteRequest = (url, id) => {
+  return httpClient.execute("delete", `${url}/${id}`, null, null, header, true);
 };
 
 const getRequest = (url) => {
@@ -72,8 +79,9 @@ const apis = {
   deleteRequest,
   getByIdRequest,
   putRequestForProfile,
-  postRequestForFormData,
   putRequestForFormData,
+  noTokengetRequest,
+  noTokendeleteRequest,
 };
 
 export default apis;

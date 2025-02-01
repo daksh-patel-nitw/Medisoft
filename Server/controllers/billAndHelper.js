@@ -26,3 +26,22 @@ export const getItem = async (name) => {
   const doc = await helper.findOne({ name });
   return doc;
 };
+
+
+const data={
+  "medicine_type": [
+    "Tablet",
+    "Capsule",
+    "Pill",
+    "Powder",
+    "Drops",
+    "Injection",
+    "Cream",
+    "Ointment",
+    "Gel",
+    "Lotion",
+    "Paste",
+    "Dry Powder Inhaler (DPI)",
+    "Sublingual Tablet"
+  ]
+}

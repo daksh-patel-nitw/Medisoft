@@ -18,6 +18,8 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import * as Icons from '@mui/icons-material';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { getDrawerState, toggleDrawer } from '../redux/slices/drawerSlice';
+import { useSelector, useDispatch } from 'react-redux';
 
 const drawerWidth = 240;
 
@@ -47,7 +49,6 @@ const DrawerHeader = styled('div')(({ theme }) => ({
   alignItems: 'center',
   justifyContent: 'flex-end',
   padding: theme.spacing(0, 1),
-  // necessary for content to be below app bar
   ...theme.mixins.toolbar,
 }));
 
@@ -88,16 +89,12 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
 
 export default function PageLayout({ children, arr }) {
   const theme = useTheme();
-  const [open, setOpen] = React.useState(false);
+  const open = useSelector(getDrawerState);
   const navigate = useNavigate();
-  const location = useLocation();
+  const dispatch = useDispatch();
 
-  const handleDrawerOpen = () => {
-    setOpen(true);
-  };
-
-  const handleDrawerClose = () => {
-    setOpen(false);
+  const handleDrawerState = () => {
+    dispatch(toggleDrawer());
   };
 
   const handleListItemClick = (event, path) => {
@@ -112,7 +109,7 @@ export default function PageLayout({ children, arr }) {
           <IconButton
             color="inherit"
             aria-label="open drawer"
-            onClick={handleDrawerOpen}
+            onClick={handleDrawerState}
             edge="start"
             sx={{ marginRight: 5, ...(open && { display: 'none' }) }}
           >
@@ -125,13 +122,13 @@ export default function PageLayout({ children, arr }) {
       </AppBar>
       <Drawer variant="permanent" open={open}>
         <DrawerHeader>
-          <IconButton onClick={handleDrawerClose}>
+          <IconButton onClick={handleDrawerState}>
             {theme.direction === 'rtl' ? <ChevronRightIcon /> : <ChevronLeftIcon />}
           </IconButton>
         </DrawerHeader>
         <Divider />
         <List>
-          {arr.map((item, index) => (
+          {arr.map((item) => (
             <ListItem key={item.label} disablePadding sx={{ display: 'block' }}>
               <ListItemButton
                 sx={{
