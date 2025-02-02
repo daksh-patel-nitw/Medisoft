@@ -33,7 +33,7 @@ const UserSchema = new Schema(
         },
         status: {
             type: String,
-            default: 'F'
+            enum: ['P','D','C'],
         }, 
         price: {
             type: Number,

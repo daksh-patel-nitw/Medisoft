@@ -5,8 +5,8 @@ import cors from 'cors';
 import authRoutes from './routes/authRoute.js';
 import cookieParser from 'cookie-parser';
 
+import medicineRoutes from './routes/medicines.js';
 // import testRoute from './routes/patientRoutes.js';
-// import labMedicine from './routes/lab_medicine.js';
 // import room from './routes/roomRoutes.js';
 // import doc from './routes/doctorRoutes.js';
 // import ap from './routes/appointmentRoutes.js';
@@ -25,6 +25,7 @@ app.use(cors());
 
 // Use the APIs
 app.use('/api', authRoutes);
+app.use('/pharmacy', medicineRoutes);
 // app.use('/api', testRoute);
 // app.use('/api', labMedicine);
 // app.use('/api', room);

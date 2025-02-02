@@ -1,17 +1,9 @@
-const Mongoose =require('mongoose');
+import mongoose from 'mongoose';
 
-const Schema=Mongoose.Schema;
+const { Schema, model } = mongoose;
 const UserSchema=new Schema(
     {   
-        aid:{
-            type:String,
-            required:true
-        },
-        did:{
-            type:String,
-            required:true
-        },
-        pid:{
+        name:{
             type:String,
             required:true
         },
@@ -19,39 +11,23 @@ const UserSchema=new Schema(
             type:Number,
             required:true
         },
-        pname:{
-            type:String,
-            required:true
-        },
-        tname:{
-            type:String,
-            required:true
-        },
-        p_range:String,
-        n_range:String,
+        //what patient details are required
         pat_details:{
             type:String,
             required:true
         },
-        details:{
+        //Test Amount to be normal
+        normal:{
             type:String,
-            default:'P'
-        },
-        report:String,
-        status:{
-            type:String,
-            default:'F'
-        }, date:{
-            type:Date,
             required:true
         },
+        timing:Array,
+
     },{
-        versionKey:false,
-        timestamps:true
+        versionKey:false
     }
 );
 
+const labModel = model("lab", UserSchema);
 
-const UserModel=Mongoose.model("Test",UserSchema);
-
-module.exports=UserModel;
+export default labModel;

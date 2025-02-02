@@ -1,0 +1,11 @@
+pid,aid,mname,pname,did,unit,price,ps_c,ps,ps_u,status
+p1,a1,XYZ,rohan,d1,20,20,20,21,20,P
+p2,a1,ABC,rohan,d2,10,15,5,6,10,P
+p3,a2,DEF,rahul,d3,30,25,8,9,30,D
+p4,a3,LMN,sita,d4,15,18,12,13,15,P
+p5,a4,XYZ,krishna,d5,20,20,10,11,20,C
+p5,a4,LMN,krishna,d6,25,30,3,5,25,D
+p7,a6,ABC,rohan,d7,20,15,2,4,10,C
+p8,a7,DEF,sita,d8,15,18,7,8,15,D
+p9,a8,LMN,rahul,d9,30,28,14,16,30,P
+p10,a9,XYZ,rohan,d10,10,12,5,7,10,C
