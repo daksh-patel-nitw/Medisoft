@@ -29,20 +29,26 @@ export const validateUser = async (req, res) => {
       const accessToken = jwt.sign({ uname: user.uname, mId:user.mId }, SECRET_KEY, { expiresIn: '1h' });
 
       // Create refresh token
-      const refreshToken = jwt.sign({ mId:user.mId, uname: user.uname }, REFRESH_SECRET_KEY, { expiresIn: '7d' });
+      const refreshToken = jwt.sign({ mId:user.mId, uname: user.uname }, REFRESH_SECRET_KEY, { expiresIn: '12h' });
 
       // Store refresh token in httpOnly cookie
       res.cookie('refreshToken', refreshToken, {
+          maxage: 43200000,
           httpOnly: true,
-        //   secure: process.env.NODE_ENV === 'production',
+          secure: process.env.NODE_ENV === 'production',
           sameSite: 'strict', 
       });
       
+      res.cookie('jwt',accessToken,{
+            maxage: 10800000,
+            httpOnly:true,
+            sameSite:'strict',
+            secure: process.env.NODE_ENV === 'production',
+      })
       
       // Send access token in response body
       return res.status(200).json({
           message: "Login successful",
-          accessToken,
           user: {
               uname: user.uname,
               type: user.type,
@@ -119,7 +125,10 @@ export const deleteLogin = async (req, res) => {
     try {
         
         const mId = req.params.id; 
+        
+        // restrict deletion of own account and other account.
 
+        
         const deletedUser = await loginModel.findOneAndDelete({ mId: mId });
 
         if (!deletedUser) {

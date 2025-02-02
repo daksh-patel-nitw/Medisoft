@@ -1,5 +1,5 @@
-import express from 'express';
 import { deleteLogin, validateUser, makeNewLogin, refreshToken } from '../controllers/authController.js';
+import express from 'express';
 import authenticate from '../middlewares/authenticate.js'; 
 
 const router = express.Router();
@@ -15,7 +15,7 @@ router.get('/refresh', refreshToken);
 
 
 // Route for deleting a login by id
-router.delete('/deleteLogin/:id', deleteLogin);
+router.delete('/deleteLogin/:id',authenticate, deleteLogin);
 
 
 router.get('/profile', authenticate, (req, res) => {

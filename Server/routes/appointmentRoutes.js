@@ -1,13 +1,6 @@
-const express=require('express');
-const router=express.Router();
-const app=require('../controllers/appointment')
-const appointment=require('../models/appointment')
-const tt=require('../models/timings')
-const bodyParser=require("body-parser");
-
-
-router.use(bodyParser.urlencoded({extended:true}));
-router.use(bodyParser.json());
+import express from 'express';
+import authenticate from '../middlewares/authenticate.js'; 
+const router = express.Router();
 
 //Create New Appointment on Counter-1
 router.post('/newappointment',async (req,res)=>{

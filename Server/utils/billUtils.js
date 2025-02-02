@@ -1,6 +1,6 @@
-import BillModel from '../models/bill';
+import BillModel from '../models/bill.js';
 
-export const generateBill = async (pid, price, aid, description, type, status = false, date = new Date(), did = null) => {
+const generateBill = async (pid, price, aid, description, type, did = null , date = new Date()) => {
   try {
     const billData = {
       pid,
@@ -8,7 +8,6 @@ export const generateBill = async (pid, price, aid, description, type, status = 
       price,
       description,
       type,
-      status,
       date,
     };
 
@@ -24,4 +23,4 @@ export const generateBill = async (pid, price, aid, description, type, status = 
   }
 };
 
-
+export default generateBill;
