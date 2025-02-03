@@ -1,6 +1,6 @@
-import App from "../pages/pharmacy/1newMedicine";
-import P2 from "../pages/pharmacy/2medicines";
-import P3 from "../pages/pharmacy/3patients";
+import App from "../dashboards/pharmacy/1newMedicine";
+import P2 from "../dashboards/pharmacy/2medicines";
+import P3 from "../dashboards/pharmacy/3patients";
 /*
 import I1 from "./pages/ipd-reception/1newRoom";
 import I2 from "./pages/ipd-reception/2RegisterPatients";

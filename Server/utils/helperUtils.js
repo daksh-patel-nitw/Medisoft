@@ -1,6 +1,5 @@
 import helper from '../models/helper';
 
-
 //--------------------------------Helper-------------------------------------
 
 // Update Any helper
@@ -9,6 +8,7 @@ export const updateHelper = async (name, content) => {
   return doc;
 };
 
+//generate Id
 export const generateId = async (item) => {
   const number = await helper.findOneAndUpdate(
     { name: item },

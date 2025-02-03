@@ -1,7 +1,7 @@
-const Mongoose =require('mongoose');
+import mongoose from 'mongoose';
 
-const Schema=Mongoose.Schema;
-const UserSchema=new Schema(
+const { Schema, model } = mongoose;
+    const UserSchema=new Schema(
     {   
         type:{
             type:String,
@@ -37,6 +37,6 @@ const UserSchema=new Schema(
     }
 );
 
-const UserModel=Mongoose.model("room_category",UserSchema);
+const roomModel = model("room", UserSchema);
 
-module.exports=UserModel;
+export default roomModel;

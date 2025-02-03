@@ -1,6 +1,6 @@
-const Mongoose =require('mongoose');
+import mongoose from 'mongoose';
 
-const Schema=Mongoose.Schema;
+const { Schema, model } = mongoose;
 const UserSchema=new Schema(
     {   
         type:{
@@ -11,17 +11,10 @@ const UserSchema=new Schema(
             type:String,
             required:true
         },
-        dname:String,
-        did:String,
-        pid:String,
-        aid:String,
-        pname:String,
         date:{
             type:Date,
             default:Date.now
         },
-        dname:String,
-        mobile:Number,
         floor:{
             type:Number,
             required:true
@@ -38,12 +31,18 @@ const UserSchema=new Schema(
             type:String,
             default:'No'
         },
+        dname:String,
+        did:String,
+        pid:String,
+        aid:String,
+        pname:String,
+        mobile:Number,
     },{
         versionKey:false,
         timestamps:true
     }
 );
 
-const UserModel=Mongoose.model("room",UserSchema);
+const roomInventoryModel = model("roomInventory", UserSchema);
 
-module.exports=UserModel;
+export default roomInventoryModel;

@@ -8,6 +8,7 @@ import CustomTable from '../../components/CTable';
 import pharmacyServices from './services/pharmacyServices';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import SideBar from '../../components/sidebar';
 
 const MedicinesPage = () => {
   const [medicines, setMedicines] = useState([]);
@@ -105,8 +106,13 @@ const MedicinesPage = () => {
     ));
   }, [filteredMedicines, handleOpenEditModal, handleDelete]);
 
+  const arr = [
+    { label: 'New Medicine', path: '/', icon: 'AddBox' },
+    { label: 'Medicine List', path: '/medicine', icon: 'TableChart' },
+    { label: 'Patients', path: '/medpatients', icon: 'AccountBox' },
+  ];
   return (
-    <PageLayout>
+    <SideBar arr={arr}>
       <ToastContainer />
       <Card className="partition">
         <CardContent>
@@ -128,7 +134,7 @@ const MedicinesPage = () => {
           )}
         </CardContent>
       </Card>
-    </PageLayout>
+    </SideBar>
   );
 };
 

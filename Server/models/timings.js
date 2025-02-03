@@ -1,10 +1,10 @@
-const Mongoose =require('mongoose');
+import mongoose from 'mongoose';
 
-const Schema=Mongoose.Schema;
+const { Schema, model } = mongoose;
 const UserSchema=new Schema(
     {   
         did:String,
-        date:String,
+        date:Date,
         timing:{
             type:String,
             required:true
@@ -19,6 +19,6 @@ const UserSchema=new Schema(
     }
 );
 
-const UserModel=Mongoose.model("Timing",UserSchema);
+const timingModel=mongoose.model("Timing",UserSchema);
 
-module.exports=UserModel;
+export default timingModel;

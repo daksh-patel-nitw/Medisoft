@@ -155,7 +155,7 @@ export default function PageLayout({ children, arr }) {
       </Drawer>
       <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
         <DrawerHeader />
-        {children}
+          {children}
       </Box>
     </Box>
   );
