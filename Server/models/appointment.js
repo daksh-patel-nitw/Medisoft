@@ -1,6 +1,7 @@
-const Mongoose =require('mongoose');
+const mongoose =require('mongoose');
 
-const Schema=Mongoose.Schema;
+const { Schema, model } = mongoose;
+
 const UserSchema=new Schema(
     {   
         pid:{
@@ -23,19 +24,11 @@ const UserSchema=new Schema(
             type:String,
             required:true
         },
-        admitted_date:{
-            type:Date,
-            default:Date.now
-        },
         schedule_date:{
             type:Date,
             required:true
         },
-        time:{
-            type:String,
-            required:true
-        },
-        discharge_date:Date,
+        //canceled, Doctor Screen, pending, intermediate, confirmed, IPD
         status:{
             type:String,
             enum:['cancel','D','P','progress','confirm','I'],
@@ -45,6 +38,10 @@ const UserSchema=new Schema(
             type:String,
             required:true
         },
+        
+        time:String,
+        discharge_date:Date,
+
         notes:String,
         doctor_qs:Array ,
         medicines:Array,
@@ -64,7 +61,7 @@ const UserSchema=new Schema(
     }
 );
 
-const UserModel=Mongoose.model("Appointment",UserSchema);
+const appointmentModel= model("appointment",UserSchema);
 
-module.exports=UserModel;
+export default appointmentModel;
 

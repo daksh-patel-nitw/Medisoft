@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 
-const Schema=mongoose.Schema;
+const { Schema, model } = mongoose;
 const UserSchema=new Schema(
     {   
         mid:{
@@ -49,6 +49,9 @@ const UserSchema=new Schema(
             type:String,
             enum:['M','F','O'],
             required:true
+        },type:{
+            type:String,
+            enum:['patient','employee']
         },
 
         //Patient Required details
@@ -67,10 +70,11 @@ const UserSchema=new Schema(
         timings:Array,
         questions:Array,
         pph:Number,
-        rating:Number,
     },{
         versionKey:false
     }
 );
 
-export const patient=mongoose.model("Patient",UserSchema);
+const memberModel = model("member", UserSchema);
+
+export default memberModel;

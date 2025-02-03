@@ -1,141 +1,31 @@
-const express = require('express');
+import express from 'express';
+import * as controller from '../controllers/roomController.js';
+
 const router = express.Router();
-const room = require('../models/room');
-const r_C = require('../models/room_category');
-const bodyParser = require("body-parser");
-const pdf = require('html-pdf');
 
-router.post('/generatepdf', async (req, res) => {
-    try {
-    console.log(req.body)
-      const htmlContent = req.body.table;
-      const pdfBuffer = await generatePDF(htmlContent);
-  
-      // Set the response headers
-      res.setHeader('Content-Type', 'application/pdf');
-      res.setHeader('Content-Disposition', 'attachment; filename=file.pdf');
-  
-      // Send the PDF buffer as response
-      res.send(pdfBuffer);
-    } catch (error) {
-      console.error('Error generating PDF:', error);
-      res.status(500).send({ error: 'Failed to generate PDF' });
-    }
-  });
-  
-  function generatePDF(html) {
-    return new Promise((resolve, reject) => {
-      pdf.create(html).toBuffer((error, buffer) => {
-        if (error) {
-          reject(error);
-        } else {
-          resolve(buffer);
-        }
-      });
-    });
-  }
+//--------------------- Rooms ---------------------
 
+// Add new room category to hospital
+router.post("/category",controller.addNewRoomCategory);
 
-//------Book new Room Category
-router.post("/newroomcategory",async (req,res)=>{
-    const body = req.body;
-    console.log(req.body);
-    const newRC= new r_C({
-        type:body.type,
-        beds:body.beds,
-        price:body.price,
-        sofa:body.sofa,
-        tv:body.tv,
-        refrigator:body.refrigator,
-        bathroom:body.bathroom,
-        other:body.other
-    });
+// Get all Room Categories
+router.get('/category',controller.getAllRoomCategories);
 
-    await newRC.save();
-    res.send(newRC);
-})
+// --------------------- Room Inventory ---------------------
 
-//------Send all Room Categories
-router.get('/roomcategory',async (req,res)=>{
-    try {
-        const rc = await r_C.find({},'type price');
-        //   console.log("Route is working");
-        res.send(rc);
-    } catch (err) {
-        console.log(err);
-        res.status(500).send(err);
-    } 
-})
+// Make new Room
+router.post('/',controller.addNewRoom);
 
-//------Make new Room
-router.post('/newroom',async (req,res)=>{
-    const body =req.body;
+//Get All Rooms
+router.get('/',controller.getAllRooms);
 
-    const newR=new room({
-        type:body.type,
-        dep:body.dep,
-        floor:body.floor,
-        room_no:body.room_no,
-        price:body.price
-    })
-    await newR.save();
-    res.send(newR);
-})
-
-//------Get All Rooms
-router.get('/rooms',async (req,res)=>{
-    try {
-        const rooms = await room.find({occupied:'No'}, 'type dep floor room_no price occupied');
-        res.send(rooms);
-    } catch (err) {
-        console.log(err);
-        res.status(500).send(err);
-    } 
-})
-
-router.get('/roomcount',async (req,res)=>{
-    try {
-        const count = await room.countDocuments();
-        console.log(count);
-        res.send({ count });
-    } catch (err) {
-        console.log(err);
-        res.status(500).send(err);
-    } 
-});
+//Get Room Count
+router.get('/count',controller.getRoomCount);
 
 //Book Room 
-router.post('/admitroom',async(req,res)=>{
-    const body=req.body;
-    console.log("This is room:",body)
-    const updatedRoom = await room.findOneAndUpdate(
-    { room_no: body.room,dep:body.dep },
-    { mobile:body.mobile,did: body.did, pid: body.pid,aid:body._id, pname: body.pname, occupied: "Yes" },
-    { new: true ,useFindAndModify: false });
-    res.send("Successful."+updatedRoom);
-})
+router.post('/book',controller.bookRoom);
 
 //Free or discharge room
-router.get('/dischargeipd/:room/:dep',async(req,res)=>{
-    const par=req.params;
-    const updatedRoom = await room.findOneAndUpdate(
-        { room_no: par.room,dep: par.dep },
-        { did:"", pid:"", pname:"",mobile:"", occupied: "No" },
-        { new: true , useFindAndModify: false });
-        res.send(updatedRoom);
-        //***********************************************ADD BILL
-});
+router.get('/discharge/:room/:dep',controller.dischargeRoom);
 
-//Get all occupied rooms
-router.get('/occupiedroom',async(req,res)=>{
-    try {
-        const rooms = await room.find({occupied:"Yes"});
-        //   console.log("Route is working");
-        res.send(rooms);
-    } catch (err) {
-        console.log(err);
-        res.status(500).send(err);
-    } 
-});
-
-module.exports = router;
+export default router;

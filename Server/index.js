@@ -2,15 +2,14 @@ import express from 'express';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import cors from 'cors';
-import authRoutes from './routes/authRoute.js';
 import cookieParser from 'cookie-parser';
 
-import medicineRoutes from './routes/medicines.js';
-// import testRoute from './routes/patientRoutes.js';
-// import room from './routes/roomRoutes.js';
-// import doc from './routes/doctorRoutes.js';
-// import ap from './routes/appointmentRoutes.js';
-// import helper from './routes/helper.js';
+import authRoutes from './routes/authRoutes.js';
+import medicineRoutes from './routes/medicineRoutes.js';
+import labRoutes from './routes/laboratoryRoutes.js';
+import roomRoutes from './routes/roomRoutes.js';
+import memberRoutes from './routes/memberRoutes.js';
+import appointmentRoutes from './routes/appointmentRoutes';
 
 // Load environment variables
 dotenv.config();
@@ -26,13 +25,10 @@ app.use(cors());
 // Use the APIs
 app.use('/api', authRoutes);
 app.use('/pharmacy', medicineRoutes);
-// app.use('/api', testRoute);
-// app.use('/api', labMedicine);
-// app.use('/api', room);
-// app.use('/api', doc);
-// app.use('/api', ap);
-
-// app.use('/api', helper);
+app.use('/lab', labRoutes);
+app.use('/room', roomRoutes);
+app.use('/member', memberRoutes);
+app.use('/appointment', appointmentRoutes);
 
 
 // Connecting to mongoose Database using MONGO_URI from .env

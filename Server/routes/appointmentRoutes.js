@@ -1,91 +1,48 @@
 import express from 'express';
 import authenticate from '../middlewares/authenticate.js'; 
+import { deleteAppointment, diagnoseOpd, getAllPatientApps, getIpdappointment, getPatientApp, makeAppointment, queuescreen, seeappointment, updateIPDpat } from '../controllers/appointmentController.js';
 const router = express.Router();
 
-//Create New Appointment on Counter-1
-router.post('/newappointment',async (req,res)=>{
-    const newT=await app.makeOpdAppointment(req.body);
-    res.send(newT);
-});
+//Create opd or IPD appointment
+router.post('/:type',makeAppointment);
 
-//Ipd Appointment
-router.post('/newipdappointment',async (req,res)=>{
-    const newA=await app.makeIpdAppointment(req.body);
-    res.send(newA);
-});
+//--------------------Routes for Patient -------------------
 
-router.get('/viewpatientapp/:pid/:did',async(req,res)=>{
-    const d=await app.getAllPatientApps(req.params.pid,req.params.did)
-    res.send(d);
-})
+//Get All Appointments of a patient for patient screen
+router.get('/:pid',getPatientApp);
 
-router.get('/onlypatientapp/:pid',async(req,res)=>{
-    const d=await app.getPatientApp(req.params.pid);
-    res.send(d);
-})
+//--------------------Routes for Reception -------------------
 
-router.get('/getdoctorapp/:did',async(req,res)=>{
-    const d=await app.getdoctorapp(req.params.did);
-    res.send(d);
-})
+//Get All Appointments of a doctor
+router.get('/doctor/:did',getDoctorApps);
 
 //Confirm Appointment on Counter-2
-router.put('/updatecapp', async (req, res) => {
-    const updated=await app.confirmAppointment(req.body);
-    res.send(updated)
-  });
-  
-//Doctor Diagnosis
-router.post('/diagnoseopd',async(req,res)=>{
-    const updatedP=await app.diagnoseOpd(req.body);
-    res.send(updatedP); 
-})
-
+router.put('/',confirmAppointment);
 
 //Send Data Appointments with department
-router.get('/getapp/:dep',async(req,res)=>{
-    const appointments=await app.getCounter2app(req.params.dep);
-    res.send(appointments);
-})
+router.get('/getapp/:dep',getCounter2app);
 
+//Cancel Appointment
+router.delete('/:id',deleteAppointment);
 
-//doctor_appointment
-router.get('/getappointment/:did/',async(req,res)=>{
-  const appointments=await app.getappointment(req.params.did);
-  res.send(appointments);
-})
+//--------------------Routes for Doctor-------------------
+
+//Doctor Diagnosis
+router.put('/doctor/',diagnoseOpd);
+
+//Get All Appointments history of a patient
+router.get('/:pid/:did',getAllPatientApps);
 
 //doctor IPD appointment
 // localhost:5000/api/getIpdappointment/E000000G
-router.get('/getIpdappointment/:did',async(req,res)=>{
-  const appointments=await app.getIpdappointment(req.params.did);
-  res.send(appointments);
-})
+router.get('/dscreen/:did',getIpdappointment)
 
 //Update appointment details iPD
-router.put('/updateIPDpat',async(req,res)=>{
-  const updated = await app.updateIPDpat(req.body);
-  res.send(updated)
-})
+router.put('/updatePat',updateIPDpat);
 
-router.get('/queuescreen/:id',async(req,res)=>{
-  const t=await app.queuescreen(req.params.id);
-  res.send(t);
-})
-
-//Cancel Appointment
-router.delete('/deleteappointment/:id',async(req,res)=>{
-    const updated=await app.deleteappointment(req.params.id);
-    res.status(200).send(updated)
-})
-
+router.get('/queuescreen/:id',queuescreen);
 
 // http://localhost:5000/api/seeappointment/E000000C
-router.get('/seeappointment/:id',async(req,res)=>{
-  const arr=await app.seeappointment(req.params.id);
-  res.send(arr);
-})
+router.get('/reception/:id',seeappointment);
 
-
-
-module.exports=router;
+export default router;

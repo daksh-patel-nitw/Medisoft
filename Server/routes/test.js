@@ -45,6 +45,10 @@ const records2 = [
   {
     name:'dep',
     content:["orthopedic", "neurologist", "cardiologist", "endocrinologist", "gynecologist"]
+  },
+  {
+    name:'medicineType',
+    content:["tablet", "capsule", "injection", "ointment", "drop", "inhaler", "cream", "gel", "lotion", "shampoo", "spray", "powder", "mouthwash", "paste", "emulsion", "bar", "soap"]
   }
 ];
 

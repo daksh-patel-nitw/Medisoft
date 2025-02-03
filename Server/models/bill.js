@@ -4,14 +4,12 @@ const { Schema, model } = mongoose;
 
 const BillSchema = new Schema(
   {
+    name:String,
     pid: {
       type: String,
       required: true,
     },
-    aid: {
-      type: String,
-      required: true,
-    },
+    aid: String,
     date: {
       type: Date,
       required: true,
@@ -27,7 +25,7 @@ const BillSchema = new Schema(
     type: {
       type: String,
       required: true,
-      enum: ['pharmacy', 'doctor', 'lab'],
+      enum: ['pharmacy', 'doctor', 'lab','room','other'],
     },
     did: String,
     status: {

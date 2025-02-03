@@ -1,5 +1,6 @@
-import labModel from "../models/laboratoryInventory";
-import labPrescriptionModel from "../models/laboratoryPrescription";
+import labModel from "../models/laboratoryInventory.js";
+import labPrescriptionModel from "../models/laboratoryPrescription.js";
+import generateBill from '../utils/billUtils.js';
 
 //------------LABORATORY Inventory -------------------
 
@@ -52,7 +53,7 @@ export const getAllTests = async (req, res) => {
 };
 
 //delete test
-export const deletetest = async (req, res) => {
+export const deleteTest = async (req, res) => {
   try {
     const deletedMedicine = await t_n.findByIdAndDelete(id);
     res.status(200).json(`${deletedMedicine.mname} deleted successfully`);
@@ -65,7 +66,7 @@ export const deletetest = async (req, res) => {
 //-----------------Tests-------------------------
 
 //add Test from doctor
-export const newpatienttest = async (req,res) => {
+export const prescribeTest = async (req,res) => {
   try {
 
     const tests = req.body;
@@ -93,7 +94,7 @@ export const newpatienttest = async (req,res) => {
 };
 
 //Send All laboratory tests status 
-export const getlabtests = async (req,res) => {
+export const getAllPrescribedTests = async (req,res) => {
   try {
 
     const allTests = await labPrescriptionModel.aggregate([
@@ -136,7 +137,7 @@ export const updatePatientDetails = async (req,res) => {
 };
 
 // update the results of the test
-export const donetest = async (req,res) => {
+export const updateTestResults = async (req,res) => {
   try {
     
     const allT = await test.findByIdAndUpdate(

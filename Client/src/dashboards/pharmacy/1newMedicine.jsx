@@ -3,11 +3,14 @@ import Grid from '@mui/material/Grid2';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import Button from '@mui/material/Button';
+import Box from '@mui/material/Box';
 import PageLayout from './pageLayout';
+import SideBar from '../../components/sidebar';
 import CTextField from '../../components/CTextField';
 import pharmacyServices from './services/pharmacyServices';
 
 export default function App() {
+  
   const [formValues, setFormValues] = useState({
     name: '',
     q: '',
@@ -35,9 +38,17 @@ export default function App() {
     const { name, value } = event.target;
     setFormValues({ ...formValues, [name]: value });
   };
-
+  const arr = [
+    { label: 'New Medicine', path: '/', icon: 'AddBox' },
+    { label: 'Medicine List', path: '/medicine', icon: 'TableChart' },
+    { label: 'Patients', path: '/medpatients', icon: 'AccountBox' },
+  ];
   return (
-    <PageLayout>
+    <>
+    <SideBar arr={arr} >
+    
+
+    
       <form onSubmit={handleSubmit} autoComplete="off">
         <Card className="component_img">
           <CardContent>
@@ -88,6 +99,7 @@ export default function App() {
           </CardContent>
         </Card>
       </form>
-    </PageLayout>
+      </SideBar>
+    </>
   );
 }

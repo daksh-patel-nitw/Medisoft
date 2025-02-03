@@ -1,41 +1,36 @@
-import express from 'express';
-import jwt from 'jsonwebtoken';
+const helper=require('../controllers/billAndHelper')
+const express=require('express');
+const router=express.Router();
+const bodyParser=require("body-parser");
+const { recompileSchema } = require('../models/helper');
 
 
-const app = express();
-const SECRET_KEY = 'your_secret_key'; // Keep this secret and secure
+router.post('/updateHelper',async(req,res)=>{
+  const b=req.body;
+  console.log(b)
+  const doc=await helper.updateHelper(b.name,b.content);
+  console.log(doc);
+  res.send(doc);
+})
 
+//Get doctor department from helper
+router.get('/deps', async(req,res)=>{
+  const allT=await helper.getItem('dep');
+  res.send(allT);
+})
 
-// Dummy user data for demonstration
-const users = [
-  { id: 1, username: 'admin', password: 'password123', role: 'admin' },
-  { id: 2, username: 'user', password: 'userpass', role: 'user' },
-];
+//Send departments and roles to admin
+router.get('/getRolesDeps',async(req,res)=>{
+  const arr=[await helper.getItem('roles')];
+  arr.push(await helper.getItem('dep'))
+  res.send(arr);
+})
 
-// Login route
-app.post('/login', (req, res) => {
-  const { username, password } = req.body;
+router.get('/tester',async(req,res)=>{
+  const eid=await helper.generateId('eid');
+  res.send(eid);
+})
 
-  // Find the user in the dummy database
-  const user = users.find(u => u.username === username && u.password === password);
+module.exports = router;
 
-  if (!user) {
-    return res.status(401).json({ error: 'Invalid username or password' });
-  }
-
-  // Generate a JWT token
-  const token = jwt.sign(
-    { id: user.id, username: user.username, role: user.role },
-    SECRET_KEY,
-    { expiresIn: '1h' } // Token valid for 1 hour
-  );
-
-  res.json({
-    message: 'Login successful',
-    token,
-  });
-});
-
-
-
-
+//roles,pid,eid,dep,medicine_type
