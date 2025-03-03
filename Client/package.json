@@ -18,6 +18,7 @@
     "axios": "^1.7.9",
     "countup": "^1.8.2",
     "react": "^18.3.1",
+    "react-calendar": "^5.1.0",
     "react-dom": "^18.3.1",
     "react-redux": "^9.2.0",
     "react-router": "^7.1.3",

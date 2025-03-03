@@ -10,7 +10,13 @@ const client = axios.create({
 });
 
 client.interceptors.response.use(
-  (response) => response,
+  (response) => {
+    // console.log(response.data);
+    if (response.data.show === true) {
+      toast.success(response.data.message);
+    }
+    return response;
+  },
   (error) => {
     if (error.response) {
       if (
@@ -29,8 +35,10 @@ client.interceptors.response.use(
       console.log("error interceptors", error.response.status);
     } else if (error.request) {
       console.error("Network error: ", error.message);
+      toast.error("Network error: Unable to connect to the server. Please check your internet connection.");
     } else {
       console.error("Error: ", error.message);
+      toast.error(`Unexpected error: ${error.message}`);
     }
     return Promise.reject(error);
   }

@@ -1,4 +1,4 @@
-import helper from '../models/helper';
+import helper from '../models/helper.js';
 
 //--------------------------------Helper-------------------------------------
 
@@ -18,6 +18,7 @@ export const generateId = async (item) => {
 
   const base36 = number.content[0].toString(36).toUpperCase();
   const padded = base36.padStart(7, '0');
+  console.log(padded);
   return padded;
 };
 

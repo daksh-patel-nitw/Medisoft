@@ -1,12 +1,13 @@
 import React from 'react';
 import TextField from '@mui/material/TextField';
 
-const CTextField = ({ name, label, value, onChange }) => {
+export const TextField = ({ name, label, value, onChange,key }) => {
   return (
     <TextField
       fullWidth
       name={name}
       id={name}
+      key={key}
       label={label}
       variant="outlined"
       value={value}
@@ -14,5 +15,3 @@ const CTextField = ({ name, label, value, onChange }) => {
     />
   );
 };
-
-export default CTextField;

@@ -1,12 +1,14 @@
-import timingModel from "../models/timings"
+import timingModel from "../models/timings.js"
 import mongoose from "mongoose";
 
-export const getTimings=(data)=>{
-    return (new Date(Number(data))).toLocaleString('en-US', { timeZone: 'Asia/Kolkata', month: 'long', day: 'numeric', year: 'numeric'  })
-}
+// export const getTimings=(data)=>{
+//     return (new Date(Number(data))).toLocaleString('en-US', { timeZone: 'Asia/Kolkata', month: 'long', day: 'numeric', year: 'numeric'  })
+// }
 
 export const getDocTimings=async(did,date)=>{
+    
     const data=timingModel.find({did:did,date:date});
+    
     if (!data || data.length === 0) {
         return null;
     }

@@ -3,7 +3,7 @@ body{
   }
 
 .partition{
-    background-image :url("mirrored-squares.png");
+    background-image :url("/mirrored-squares.png") !important;
 }
    
   

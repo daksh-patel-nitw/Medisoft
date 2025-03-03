@@ -19,6 +19,6 @@ const UserSchema=new Schema(
     }
 );
 
-const timingModel=mongoose.model("Timing",UserSchema);
+const timingModel=model("Timing",UserSchema);
 
 export default timingModel;
