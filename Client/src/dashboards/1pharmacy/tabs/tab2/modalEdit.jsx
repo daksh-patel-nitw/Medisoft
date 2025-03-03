@@ -7,6 +7,7 @@ import {
   Button,
   TextField,
 } from '@mui/material/';
+import pharmacyServices from './services/pharmacyServices';
 
 const EditModal =({ open, column,handleClose, handleEdit, medicine }) => {
   const m=medicine;

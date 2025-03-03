@@ -1,6 +1,6 @@
+import { confirmAppointment, deleteAppointment, diagnoseOpd, getAllPatientApps, getCounter2app, getDoctorApps, getIpdappointment, getPatientApp, makeAppointment, queuescreen, seeappointment, updateIPDpat } from '../controllers/appointmentController.js';
+
 import express from 'express';
-import authenticate from '../middlewares/authenticate.js'; 
-import { deleteAppointment, diagnoseOpd, getAllPatientApps, getIpdappointment, getPatientApp, makeAppointment, queuescreen, seeappointment, updateIPDpat } from '../controllers/appointmentController.js';
 const router = express.Router();
 
 //Create opd or IPD appointment
@@ -28,17 +28,17 @@ router.delete('/:id',deleteAppointment);
 //--------------------Routes for Doctor-------------------
 
 //Doctor Diagnosis
-router.put('/doctor/',diagnoseOpd);
+router.put('/doctor/diagnose',diagnoseOpd);
 
 //Get All Appointments history of a patient
-router.get('/:pid/:did',getAllPatientApps);
+router.get('/doctor/:pid/:did',getAllPatientApps);
 
 //doctor IPD appointment
 // localhost:5000/api/getIpdappointment/E000000G
 router.get('/dscreen/:did',getIpdappointment)
 
 //Update appointment details iPD
-router.put('/updatePat',updateIPDpat);
+router.put('/ipd/update',updateIPDpat);
 
 router.get('/queuescreen/:id',queuescreen);
 

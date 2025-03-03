@@ -1,6 +1,6 @@
-const Mongoose =require('mongoose');
+import mongoose from 'mongoose';
 
-const Schema=Mongoose.Schema;
+const { Schema, model } = mongoose;
 const UserSchema=new Schema(
     {   
         name:{
@@ -8,7 +8,7 @@ const UserSchema=new Schema(
             required:true
         },
         content:{
-            type:[Mongoose.Schema.Types.Mixed],
+            type:[mongoose.Schema.Types.Mixed],
             required:true
         }
     },{
@@ -16,6 +16,6 @@ const UserSchema=new Schema(
     }
 );
 
-const UserModel=Mongoose.model("Helper",UserSchema);
+const helperModel = model("helper", UserSchema);
 
-module.exports=UserModel;
+export default helperModel;

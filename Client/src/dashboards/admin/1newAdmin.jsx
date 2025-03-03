@@ -1,11 +1,10 @@
 import React from 'react';
 import { useState,useEffect } from 'react';
-import Grid from '@mui/material//Grid2;
+import Grid from '@mui/material/Grid2';
 import Card from '@mui/material//Card';
 import CardContent from '@mui/material//CardContent';
 import TextField from '@mui/material//TextField';
 import Button from '@mui/material//Button';
-import PageLayout from './pageLayout';
 
 export default function App()
 {
@@ -15,7 +14,7 @@ export default function App()
   //fetch all employees
   const fetchData = async () => {
     try {
-      const response = await fetch('http://localhost:5000/api/getRolesDeps');
+      const response = await fetch('http:///getRolesDeps');
       const data = await response.json();
       console.log(data)
       setData(data);
@@ -40,7 +39,7 @@ export default function App()
   const handleSubmit = async (event,index) =>
   {
     event.preventDefault();
-
+    
     await fetch('http://localhost:5000/api/updateHelper', {
       method: 'POST',
       headers: {
@@ -90,12 +89,12 @@ export default function App()
   function UI(index){
     // console.log(' Role',role,'Dep',dep)
     return (
-      <Grid size={{xs:6}>
+      <Grid size={{xs:6}}>
           <Card className="partition" style={{height:'85vh',overflow: 'auto'}}>
       <CardContent >
       <form onSubmit={(event)=>handleSubmit(event,index)} autoComplete="off">
       <Grid container spacing={2}>
-        <Grid size={{xs:8}>
+        <Grid size={{xs:8}}>
           <TextField
             label={"Enter "+(index === 0 ? 'Role' : 'Department')}
             margin="normal"
@@ -104,7 +103,7 @@ export default function App()
             value={index===0?role:dep}
           />
         </Grid>
-        <Grid size={{xs:4}>
+        <Grid size={{xs:4}}>
           <Button
             variant="contained"
             color="primary"
@@ -113,11 +112,11 @@ export default function App()
             Add
           </Button>
         </Grid>
-        <Grid size={{xs:12}>
+        <Grid size={{xs:12}}>
           {rolesDeps[index].content.map(e=>
             (<Grid key={e} container spacing={2}>
-              <Grid size={{xs:9}><h3>{e}</h3></Grid>
-              <Grid size={{xs:3}>
+              <Grid size={{xs:9}}><h3>{e}</h3></Grid>
+              <Grid size={{xs:3}}>
               <button  onClick={()=>handleUpdate(index,'D',e)}>
                 del
               </button>
@@ -125,7 +124,7 @@ export default function App()
               </Grid>
               ))}
         </Grid >
-        <Grid size={{xs:12}> 
+        <Grid size={{xs:12}}> 
           <Button
             type="submit"
             variant="contained"

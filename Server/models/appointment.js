@@ -1,4 +1,4 @@
-const mongoose =require('mongoose');
+import mongoose from 'mongoose';
 
 const { Schema, model } = mongoose;
 
@@ -8,16 +8,16 @@ const UserSchema=new Schema(
             type:String,
             required:true
         },
-        did:{
-            type:String,
+        mobile:{
+            type:Number,
             required:true
         },
         pname:{
             type:String,
             required:true
         },
-        mobile:{
-            type:Number,
+        did:{
+            type:String,
             required:true
         },
         dname:{

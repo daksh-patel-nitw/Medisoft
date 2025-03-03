@@ -1,9 +1,10 @@
 import appointmentModel from '../models/appointment.js'
 import { addTimings } from '../services/getDoctorTimings.js';
-import { generateBill } from '../utils/billUtils';
+import generateBill from '../utils/billUtils.js';
 
 export const makeAppointment = async (req, res) => {
   const b = req.body;
+  console.log(b);
   const { type } = req.params;
   try {
 
@@ -20,7 +21,7 @@ export const makeAppointment = async (req, res) => {
       newA.status = 'P';
       newA.schedule_date = b.schedule_date;
       newA.time = b.time;
-      newA.doctor_qs = [b.qs];
+      newA.doctor_qs = b.qs;
 
       await addTimings(b.schedule_date, b.did, b.time, b.count - 1);
 
@@ -32,8 +33,10 @@ export const makeAppointment = async (req, res) => {
     await newA.save();
     console.log(newA);
 
-    req.status(200).json(newT);
+
+    res.status(200).json({message:"Booking is Successfull",show:true});
   } catch (error) {
+    console.error(error);
     res.status(500).json({ message: "Internal server error" });
   }
 
@@ -43,7 +46,7 @@ export const makeAppointment = async (req, res) => {
 export const getPatientApp = async (req, res) => {
   try {
     const { pid } = req.params;
-    const appointments = await Appointment.find({ pid });
+    const appointments = await appointmentModel.find({ pid });
 
     res.status(200).json(appointments);
   } catch (error) {
@@ -55,7 +58,7 @@ export const getPatientApp = async (req, res) => {
 export const getDoctorApps = async (req, res) => {
   try {
     const { did } = req.params;
-    const appointments = await Appointment.find({ did }).sort({ createdAt: 1 });
+    const appointments = await appointmentModel.find({ did }).sort({ createdAt: 1 });
 
     res.status(200).json(appointments);
   } catch (error) {
@@ -94,7 +97,7 @@ export const getCounter2app = async (req, res) => {
     const today = new Date().toISOString().split("T")[0]; // Ensure only the date part is used
     console.log("Today's date:", today);
 
-    const apps = await Appointment.find(
+    const apps = await appointmentModel.find(
       { dep, schedule_date: today, status: "P" },
       { pid: 1, pname: 1, mobile: 1, dname: 1, time: 1, status: 1, doctor_qs: 1, weight: 1 }
     );
@@ -110,7 +113,7 @@ export const deleteAppointment = async (req, res) => {
   try {
     const { id } = req.params;
 
-    const updatedAppointment = await Appointment.findOneAndUpdate(
+    const updatedAppointment = await appointmentModel.findOneAndUpdate(
       { _id: id },
       { status: "cancel" },
       { new: true }
@@ -133,7 +136,7 @@ export const diagnoseOpd = async (req, res) => {
     const { id } = req.params;
     const { notes, title, medicines, tests } = req.body;
 
-    const updatedAppointment = await Appointment.findOneAndUpdate(
+    const updatedAppointment = await appointmentModel.findOneAndUpdate(
       { _id: id },
       {
         status: "D",
@@ -162,7 +165,7 @@ export const diagnoseOpd = async (req, res) => {
 export const getAllPatientApps = async (req, res) => {
   try {
     const { pid, did } = req.params; // Get parameters from the request
-    const appointments = await Appointment.find({ pid, did, status: 'D' });
+    const appointments = await appointmentModel.find({ pid, did, status: 'D' });
 
     res.status(200).json(appointments);
   } catch (error) {
@@ -257,7 +260,7 @@ export const queuescreen = async (req, res) => {
 export const seeappointment = async (req, res) => {
   try {
     const { id } = req.params; // Use route params for doctor ID
-    
+
     // Correct use of Promise.all with parentheses
     const [p, c, d] = await Promise.all([
       appointmentModel.find({ did: id, status: 'P' }),

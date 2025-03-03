@@ -87,7 +87,7 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
   }),
 );
 
-export default function PageLayout({ children, arr }) {
+export function SideBar({ children, arr }) {
   const theme = useTheme();
   const open = useSelector(getDrawerState);
   const navigate = useNavigate();
