@@ -56,6 +56,8 @@ const UserSchema=new Schema(
         },
         pat_chat:Array,
         doc_chat:Array,
+        price:Number,
+        selected_doctor_qs:String
     },{
         versionKey:false,timestamps:true
     }

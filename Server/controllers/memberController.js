@@ -1,6 +1,8 @@
 import memberModel from "../models/people.js";
 import { generateId } from '../utils/helperUtils.js';
 import { getDocTimings } from "../services/getDoctorTimings.js";
+import { getItem, updateHelper } from '../utils/helperUtils.js';
+import { SignUp, deleteLogin } from '../utils/authData.js';
 
 // -------------------------- Common --------------------------
 
@@ -51,7 +53,7 @@ export const addMember = async (req, res) => {
 export const getMemberWithId = async (req, res) => {
     const { id } = req.params;
     try {
-        const employee = await memberModel.findOne({ mid: id });
+        const employee = await memberModel.findOne({ mid: id }, {});
         res.status(200).send(employee);
     } catch (e) {
         res.status(500).json({ message: 'Internal server error' });
@@ -65,15 +67,16 @@ export const getMemberWithId = async (req, res) => {
 export const getDoctorDetails = async (req, res) => {
     try {
         const newM = await memberModel.aggregate([
-            { $match: { "role": "doctor" } },
+            { $match: { role: "doctor" } },
             {
                 $project: {
-                    "dname": { $concat: ["$fname", " ", "$lname"] },
-                    "dep": 1,
-                    "eid": "$mid",
-                    "timings": 1,
-                    "qs": "$questions",
-                    "pph": 1
+                    dname: { $concat: ["$fname", " ", "$lname"] },
+                    dep: 1,
+                    eid: "$mid",
+                    timings: 1,
+                    qs: "$questions",
+                    pph: 1,
+                    price: 1
                 }
             }
         ]);
@@ -84,16 +87,16 @@ export const getDoctorDetails = async (req, res) => {
     }
 };
 
-export const getPatientNamesId=async(req,res)=>{
+export const getPatientNamesId = async (req, res) => {
     try {
-        
+
         const newM = await memberModel.aggregate([
             { $match: { type: "patient" } },
             {
                 $project: {
                     pname: { $concat: ["$fname", " ", "$lname"] },
                     pid: "$mid",
-                    mobile:1
+                    mobile: 1
                 }
             }
         ]);
@@ -107,14 +110,47 @@ export const getPatientNamesId=async(req,res)=>{
 // Upodate the role of the employee in the admin panel
 export const updateRole = async (req, res) => {
     try {
-        const { id, role } = req.body;
+        const { eid, name, role, dep, mobile } = req.body;
 
-        const result = await memberModel.findOneAndUpdate({ mid: id }, { role: role }, { new: true });
+        console.log(req.body);
+        const result = await memberModel.findOneAndUpdate({ mid: eid }, { role: role }, { new: true });
         if (!result) {
             return res.status(404).json({ message: "Member not found" });
         }
-        // console.log(result);
+        console.log(result);
+        //making the login of the employee with his mobile number as password
+        const newLogin = await SignUp(eid, name, role, mobile, mobile, dep);
+
+        console.log(newLogin);
+
         res.status(200).json({ message: 'Successfully assigned the role', show: true });
+    } catch (e) {
+        res.status(500).json({ message: 'Internal server error' });
+    }
+}
+
+//delete the panel of the employee in the admin panel
+export const deleteRole = async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        console.log(req.body);
+        const result = await memberModel.findOneAndUpdate(
+            { mid: id },
+            { $unset: { role: 1 } },
+            { new: true }
+        );
+
+        if (!result) {
+            return res.status(404).json({ message: "Member not found" });
+        }
+        console.log(result);
+
+        const newLogin = await deleteLogin(id);
+
+        console.log(newLogin);
+
+        res.status(200).json({ message: 'Successfully Deleted the role', show: true });
     } catch (e) {
         res.status(500).json({ message: 'Internal server error' });
     }
@@ -152,16 +188,65 @@ export const getDoctorByDepartment = async (req, res) => {
 }
 
 //add doctor timings
-export const addDoctorTimings = async (req, res) => {
-    const body = req.body;
+export const updateDoctorDetails = async (req, res) => {
+    const { mid, ...updateFields } = req.body;
+
+    if (!mid || Object.keys(updateFields).length === 0) {
+        return res.status(400).json({ message: 'Invalid request. Provide mid and at least one field to update.' });
+    }
+
     try {
-        const result = await memberModel.findOneAndUpdate({ mid: body.eid }, { $set: { timings: body.timings } }, { new: true });
-        res.status(200).send(result);
+        const result = await memberModel.findOneAndUpdate(
+            { mid },
+            { $set: updateFields },
+            { new: true }
+        );
+
+        if (!result) {
+            return res.status(404).json({ message: 'Doctor not found' });
+        }
+
+        res.status(200).json({ message: "Update Successfull", show: true, data: result });
+    } catch (e) {
+        res.status(500).json({ message: 'Internal server error' });
+    }
+};
+
+//--------------------------- Admin ---------------------------
+
+//get roles and departments for admin
+export const getRolesDeps = async (req, res) => {
+    const { option } = req.params;
+    try {
+        const deps = await getItem('dep');
+        if (option === 'onlyDeps') {
+            return res.status(200).json(deps['content']);
+        }
+        const roles = await getItem('roles');
+
+        res.status(200).json([roles['content'], deps['content']]);
     } catch (e) {
         res.status(500).json({ message: 'Internal server error' });
     }
 }
 
+
+//update the roles or departments of the employee for the admin panel
+export const updateRoleDeps = async (req, res) => {
+
+    try {
+
+        const { name, data } = req.body;
+        console.log(name, data);
+        const result = await updateHelper(name, data);
+        if (!result) {
+            return res.status(404).json({ message: "Member not found" });
+        }
+        res.status(200).json({ message: `Successfully updated the ${name}`, show: true, data: result });
+    } catch (e) {
+        res.status(500).json({ message: 'Internal server error' });
+    }
+}
 //Employee data for admin
 export const getAdminEmployee = async (req, res) => {
     try {
@@ -169,17 +254,26 @@ export const getAdminEmployee = async (req, res) => {
             { $match: { type: "employee" } },
             {
                 $project: {
-                    mid: 1,
+                    eid: "$mid",
                     mobile: 1,
                     dep: 1,
                     role: 1,
-                    name: {
-                        $concat: ['$fname', ' ', '$lname']
-                    }
+                    name: { $concat: ['$fname', ' ', '$lname'] }
+                }
+            },
+            {
+                $facet: {
+                    newM1: [{ $match: { role: { $exists: false } } }],  // No 'role' field
+                    newM2: [{ $match: { role: { $exists: true } } }]   // 'role' field exists
                 }
             }
         ]);
-        res.status(200).json(newM);
+
+        const { newM1, newM2 } = newM[0];
+
+
+        const roles = await getItem('roles');
+        res.status(200).json([newM1, newM2, roles.content]);
     } catch (e) {
         res.status(500).json({ message: 'Internal server error' });
     }

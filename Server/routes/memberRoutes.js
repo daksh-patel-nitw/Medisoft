@@ -1,34 +1,50 @@
 import express from 'express';
-import { addDoctorTimings, getPatientNamesId,addMember, getAdminEmployee, getAllPatients, updateRole,getDoctorByDepartment, getDoctortimings, getDoctorDetails, getMemberWithId } from '../controllers/memberController.js';
+import { updateDoctorDetails, getPatientNamesId,addMember, getAdminEmployee, getAllPatients, updateRole,getDoctorByDepartment, getDoctortimings, getDoctorDetails, deleteRole, getMemberWithId,getRolesDeps,updateRoleDeps } from '../controllers/memberController.js';
 const router = express.Router();
 
 //adding new members
 router.post('/',addMember);
 
+// --------------------------------- Reception 1 ----------------------------------------------
 
-
-//getting the doctor details for the reception 1 to book appointment
 router.get('/doctors',getDoctorDetails);
 router.get('/patient/reception',getPatientNamesId);
 
+// --------------------------------- Reception 2 ----------------------------------------------
+
 // Getting the doctor timings for reception 1
 router.get('/doctorTiming/:date/:did',getDoctortimings);
-// --------------------------------- Unused ------------------------------------------------
 
-//getting employee with Id
+//-------------------------------- Doctor Screen ----------------------------------------------
+//getting Doctor details with id.
 router.get('/emp/:id',getMemberWithId);
+
+//updating the doctor details. ----Update this route
+router.post('/updateDetails',updateDoctorDetails);
+
+// --------------------------------- Admin Panel -------------------------------------------
+
+//Employee Roles and Departments in the hospital
+router.get('/rolesDeps/:option',getRolesDeps);
+
+//updating the role OR deps of the employee for the admin panel
+router.post('/roleDeps',updateRoleDeps);
+
+//Employee data for Admin
+router.get('/admin',getAdminEmployee);
+
+//update the roles of the employee for the admin panel
+router.post('/role',updateRole);
+router.delete('/role/:id',deleteRole);
+
+// --------------------------------- Unused ------------------------------------------------
 
 //Queue Screen
 router.get('/doctor/:dep',getDoctorByDepartment);
 
-//add doctor timings
-router.post('/timings',addDoctorTimings);
 
-//update the roles of the employee for the admin panel
-router.post('/role',updateRole);
 
-//Employee data for Admin
-router.get('/admin',getAdminEmployee);
+
 
 //get all patients
 router.get('/patient',getAllPatients);

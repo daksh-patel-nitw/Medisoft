@@ -23,7 +23,7 @@ const handleCheckboxChange = (event, index) => {
 useEffect(() =>
     {
        setForm(appoint);
-       setCheckedList(Array(appoint.doctor_qs[0].length).fill(0))
+       setCheckedList(Array(appoint.doctor_qs.length).fill(0))
     }, [open]);
   const title=appoint.pname;
   const [form,setForm]=useState([]);
@@ -72,7 +72,7 @@ useEffect(() =>
                     variant="outlined"
                     onChange={handleInputChange}
                         />
-           {appoint.doctor_qs[0].map((e, index) => (
+           {appoint.doctor_qs.map((e, index) => (
   <FormControlLabel
     key={index}
     control={<Checkbox checked={checkedList[index] === 1} onChange={(event) => handleCheckboxChange(event, index)} name={e} />}
