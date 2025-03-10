@@ -17,7 +17,7 @@ const generateBill = async(pid, price, aid, description, type, did = null , date
 
     const bill = new BillModel(billData);
     await bill.save();
-    
+    // return bill;
   } catch (error) {
     throw new Error('Error generating bill');
   }

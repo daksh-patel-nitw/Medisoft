@@ -62,6 +62,7 @@ const execute = (method, resource, data = null, params = null, headers = null, a
 
 const executeNoTokenRequest = (method, resource, data = null, params = null, headers = null, auth = false) =>
   new Promise((resolve, reject) => {
+    console.log(resource);
     client({
       method,
       url: resource,
@@ -73,7 +74,28 @@ const executeNoTokenRequest = (method, resource, data = null, params = null, hea
       .then((req) => resolve(req.data))
       .catch((err) => {
         if ([400, 401, 402, 405, 406, 410, 500, 409, 404].includes(err.response?.status)) {
-          resolve(err.response.data);
+          resolve(err.response.status);
+        } else {
+          reject(err);
+        }
+      });
+  });
+
+const executeNoTokenStatusRequest = (method, resource, data = null, params = null, headers = null, auth = false) =>
+  new Promise((resolve, reject) => {
+    console.log(resource);
+    client({
+      method,
+      url: resource,
+      data,
+      params,
+      headers,
+      withCredentials: auth,
+    })
+      .then((req) => resolve( req.status))
+      .catch((err) => {
+        if ([400, 401, 402, 405, 406, 410, 500, 409, 404].includes(err.response?.status)) {
+          resolve( err.response.status );
         } else {
           reject(err);
         }
@@ -114,6 +136,7 @@ const httpClient = {
   execute,
   executeNoTokenRequest,
   executeRefreshToken,
+  executeNoTokenStatusRequest,
   client,
 };
 

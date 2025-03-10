@@ -1,12 +1,16 @@
 import httpClient from "./httpClient";
 
-
 const header = {
   "Content-Type": "application/json",
 };
 
+
 const noTokenPostRequest = (url, data) => {
   return httpClient.executeNoTokenRequest( "post", url, data, null, header, false);
+};
+
+const noTokenStatusPostRequest = (url, data) => {
+  return httpClient.executeNoTokenStatusRequest( "post", url, data, null, header, false);
 };
 
 const noTokengetRequest = (url) => {
@@ -15,15 +19,16 @@ const noTokengetRequest = (url) => {
 
 
 const noTokenputRequest = (url, data) => {
-  return httpClient.executeNoTokenRequest( "put", url, data, null, header, true);
+  return httpClient.executeNoTokenRequest( "put", url, data, null, header, false);
 };
 
-const noTokendeleteRequest = (url, id) => {
-  return httpClient.executeNoTokenRequest("delete", `${url}/${id}`, null, null, header, true);
+const noTokenStatusDeleteRequest = (url, id) => {
+  console.log( `${url}/${id}`);
+  return httpClient.executeNoTokenStatusRequest("delete", `${url}/${id}`, null, null, {}, false);
 };
 
 const noTokengetByIdRequest = (url, id) => {
-  return httpClient.executeNoTokenRequest("get", `${url}/${id}`, null, null, header, true);
+  return httpClient.executeNoTokenRequest("get", `${url}/${id}`, null, null, header, false);
 };
 
 //------------------------ Protected Requests --------------------------------
@@ -55,8 +60,8 @@ export const apis = {
   deleteRequest,
   getByIdRequest,
   noTokengetRequest,
-  
-  noTokendeleteRequest,
+  noTokenStatusPostRequest,
+  noTokenStatusDeleteRequest,
   noTokenputRequest,
   noTokengetByIdRequest
 };

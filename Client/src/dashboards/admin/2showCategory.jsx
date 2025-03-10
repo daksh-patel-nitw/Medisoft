@@ -1,51 +1,40 @@
 import React from 'react';
-import { useState,useEffect } from 'react';
-import PageLayout from './pageLayout';
-import Autocomplete from '@mui/material/lab/Autocomplete';
+import { useState, useEffect } from 'react';
+import { toast } from 'react-toastify';
+import Autocomplete from '@mui/material/Autocomplete';
+import Grid from '@mui/material/Grid2';
 import {
-    Card,
-    CardContent,  
-    Tabs,
-    Tab,
-    Grid,
-    Table,
-    TableBody,
-    TableCell,
-    TableContainer,
-    TableHead,
-    TableRow,
-    Button,
-    TextField,
-    TablePagination,
+  Card,
+  CardContent,
+  Tabs,
+  Tab,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Button,
+  TextField,
+  TablePagination,
 } from '@mui/material/';
+import { apis } from '../../Services/commonServices';
+import { SideBar } from '../../components/sidebar';
+import { side_bar_utils } from './side_bar';
 
-export default function App()
-{
-  const [loginEmp,setLoginEmp]=useState([]);
-  const [emp,setEmp]=useState([]);
-  const panel=['opd1','opd2','pharmacy','lab','doctor','ipd','bill','admin','']  
+export default function App() {
+  const [loginEmp, setLoginEmp] = useState([]);
+  const [emp, setEmp] = useState([]);
+  const [panel, setPanel] = useState([]);
+  // const panel = ['opd1', 'opd2', 'pharmacy', 'lab', 'doctor', 'ipd', 'bill', 'admin', '']
   const [isLoading, setIsLoading] = useState(true);
 
   //fetch all Login with role from database
   const fetchData = async () => {
-    try {
-      const response = await fetch('http://localhost:5000/api/getAllLogin');
-      const data = await response.json();
-      console.log(data)
-      setLoginEmp(data);
-    } catch (error) {
-      console.log(error);
-    }
-  
-    //fetch all employees
-    try {
-      const response = await fetch('http://localhost:5000/api/admingetemp');
-      const data = await response.json();
-      console.log(data)
-      setEmp(data);
-    } catch (error) {
-      console.log(error);
-    }
+    const data2 = await apis.noTokengetRequest('/member/admin')
+    setEmp(data2[0]);
+    setLoginEmp(data2[1]);
+    setPanel(data2[2]);
     setIsLoading(false);
   };
 
@@ -54,52 +43,52 @@ export default function App()
     fetchData();
   }, []);
 
-    const handleSearch = (newValue,name,index) =>{
-      if(index===0){
-        if (newValue) {
-          if(name){
-            const t=emp.find((e)=>e[name]===newValue);
-            setEmpValues({...empValues,eid:t.eid,name:t.name,dep:t.dep});
-          }else{
-            setEmpValues({...empValues,type:newValue})
-          }           
-        }
-        else {
-          setEmpValues({eid:'',name:'',type:'',dep:''});
-        }
-      }else{
-        if (newValue) {
-
-          setFilter(
-              loginEmp.filter((m) =>
-                m['type'].toLowerCase().includes(newValue.toLowerCase())
-              )   )    
-        }
-        else {
-            setFilter([]);
+  const handleSearch = (newValue, name, index) => {
+    if (index === 0) {
+      if (newValue) {
+        if (name) {
+          const t = emp.find((e) => e[name] === newValue);
+          setEmpValues({ ...empValues, mobile: t.mobile, eid: t.eid, name: t.name, dep: t.dep });
+        } else {
+          setEmpValues({ ...empValues, role: newValue })
         }
       }
-        
-    };
+      else {
+        setEmpValues({ eid: '', name: '', role: '', dep: '', mobile: '' });
+      }
+    } else {
+      if (newValue) {
 
-    const autocomp = (index,label,name) => (
-      <Autocomplete
-        options={name ? emp && emp.map((option) => option[name]) : panel}
-        onChange={(event, newValue) => handleSearch(newValue, name,index)}
-        value={name ? empValues[name] : empValues["type"]}
-        renderInput={(params) => (
-          <TextField
-            {...params}
-            label={label}
-            margin="normal"
-            variant="outlined"
-          />
-        )}
-      />
-    );
+        setFilter(
+          loginEmp.filter((m) =>
+            m['role'].toLowerCase().includes(newValue.toLowerCase())
+          ))
+      }
+      else {
+        setFilter([]);
+      }
+    }
 
-  const [filtered,setFilter]=useState([]);
-  const rowsPerPageOptions = [5,7];
+  };
+
+  const autocomp = (index, label, name) => (
+    <Autocomplete
+      options={name ? emp && emp.map((option) => option[name]) : panel}
+      onChange={(event, newValue) => handleSearch(newValue, name, index)}
+      value={name ? empValues[name] : empValues["role"]}
+      renderInput={(params) => (
+        <TextField
+          {...params}
+          label={label}
+          margin="normal"
+          variant="outlined"
+        />
+      )}
+    />
+  );
+
+  const [filtered, setFilter] = useState([]);
+  const rowsPerPageOptions = [5, 7];
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(rowsPerPageOptions[0]);
   const handleChangeRowsPerPage = (event) => {
@@ -110,69 +99,80 @@ export default function App()
     setPage(newPage);
   };
 
-  const deleteT=async(id)=>{
-        
-        await fetch(`http://localhost:5000/api/deleteLogin/${id}`)
-              .then((res) => res.json())
-              .then((data) => { console.log(data); 
-                })
-              .catch((err) => console.error(err));
-                // console.log(loginEmp.filter(e=>e._id!==id));
-        setLoginEmp(loginEmp.filter(e=>e._id!==id));
-              
-      }
-
-  // Category Form Values
-  const [empValues, setEmpValues] = useState({eid:'',name:'',type:'',dep:''});
+  //Delete Employee
+  const deleteT = async (id) => {
+    const result = await apis.noTokenStatusDeleteRequest("member/role", id);
   
-  //Handle Category Form Submit
-  const handleEmpSubmit = async (event) =>
-  {
-    event.preventDefault();
-    alert(JSON.stringify(empValues));
-    await fetch('http://localhost:5000/api/addlogin', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(empValues)
-    })
-      .then(response => response.json())
-      .then(data =>
-      {
-        console.log(data);
-        setEmpValues({eid:'',name:'',type:'',dep:''});
-      })
-      .catch(error => console.error(error));
+    if (result === 200) {
+      const employee = loginEmp.find(e => e.eid === id);
+  
+      if (employee) {
+        setLoginEmp(loginEmp.filter(e => e.eid !== id));
+        setEmp([...emp, employee]);
+      }
+    }
   };
 
-   //Category Form UI
-  function EmpCard(){
+  // Category Form Values
+  const [empValues, setEmpValues] = useState({ eid: '', name: '', role: '', dep: '', mobile: '' });
+
+  //Handle Category Form Submit
+  const handleEmpSubmit = async (event) => {
+    event.preventDefault();
+    if(!empValues.eid || !empValues.name){
+      toast.error("Please select the patient");
+      return;
+    }
+    if(!empValues.role){
+      toast.error('Please select the role');
+      return;
+    }
+
+    alert(JSON.stringify(empValues));
+
+    const result = await apis.noTokenStatusPostRequest('member/role', empValues);
+    console.log(result);
+    if (result === 200) {
+      setLoginEmp([empValues, ...loginEmp]);
+      setEmp(emp.filter((e) => e.eid != empValues['eid']));
+      setEmpValues({ eid: '', name: '', role: '', dep: '', mobile: '' });
+    }
+
+  };
+
+  //Category Form UI
+  function EmpCard() {
     return (
       <CardContent >
-      <form onSubmit={handleEmpSubmit} autoComplete="off">
-      <Grid container spacing={2}>
-        <Grid size={{xs:4}>
-          {autocomp(0,'Search Employee Id','eid')}
+        <form onSubmit={handleEmpSubmit} autoComplete="off">
+          <Grid container spacing={2}>
+            <Grid size={{ xs: 4 }}>
+              {autocomp(0, 'Employee Id', 'eid')}
+            </Grid>
+            <Grid size={{ xs: 4 }}>
+              {autocomp(0, 'Search Employee', 'name')}
+            </Grid>
+            <Grid size={{ xs: 4 }}>
+              {autocomp(0, 'Select Panel')}
+            </Grid>
+            <Grid size={{ xs: 12 }}>
+              <h2>{empValues.eid}</h2>
+              <h2>{empValues.name}</h2>
+              <h2>{empValues.dep}</h2>
+              <h2>{empValues.mobile}</h2>
+            </Grid>
+            <Grid size={{ xs: 4 }}>
+              <Button
+                type="submit"
+                variant="contained"
+                color="primary"
+              >
+                Give Access
+              </Button>
+            </Grid>
           </Grid>
-        <Grid size={{xs:4}>
-          {autocomp(0,'Search Employee','name')}
-          </Grid>
-        <Grid size={{xs:4}>
-          {autocomp(0,'Select Panel')}
-          </Grid>
-        <Grid size={{xs:4}>
-          <Button
-            type="submit"
-            variant="contained"
-            color="primary"
-          >
-            Give Access
-          </Button>
-        </Grid>
-      </Grid>
-      </form>
-    </CardContent>
+        </form >
+      </CardContent >
     )
   }
 
@@ -184,60 +184,62 @@ export default function App()
     setValue(newValue);
   };
 
-  const viewEmpUI=()=>(
+  const viewEmpUI = () => (
     <Grid container spacing={2}>
-    <Grid size={{xs:4}>
-    {autocomp(1,'Filter Type')}
-    </Grid>
-    <Grid size={{xs:12}>
-    <TableContainer>
-      <Table size="small">
-        <TableHead style={{ backgroundColor: '#1F3F49' }}>
-          <TableRow>
-            <TableCell style={{ color: 'white', fontWeight: 'bold' }}>Employee ID</TableCell>
-            <TableCell style={{ color: 'white', fontWeight: 'bold' }}>Panel</TableCell>
-            <TableCell style={{ color: 'white', fontWeight: 'bold' }}>Department</TableCell>
-            <TableCell style={{ color: 'white', fontWeight: 'bold' }}>Action</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {loginEmp && (filtered.length ? filtered : loginEmp)
-          .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-          .map((e, index) => (
-            <TableRow key={index}>
-              <TableCell>{e.uname}</TableCell>
-              <TableCell>{e.type}</TableCell>
-              <TableCell>{e.dep}</TableCell>
-              <TableCell>
-                <Button onClick={() => deleteT(e._id)} variant="contained" color="primary">
-                  Delete
-                </Button>
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-      <TablePagination
-        rowsPerPageOptions={rowsPerPageOptions}
-        component="div"
-        count={loginEmp && loginEmp.length}
-        rowsPerPage={rowsPerPage}
-        page={page}
-        onPageChange={handleChangePage}
-        onRowsPerPageChange={handleChangeRowsPerPage}
-      />
-    </TableContainer>
-    </Grid>
+      <Grid size={{ xs: 4 }}>
+        {autocomp(1, 'Filter By Panel')}
+      </Grid>
+      <Grid size={{ xs: 12 }}>
+        <TableContainer>
+          <Table size="small">
+            <TableHead style={{ backgroundColor: '#1F3F49' }}>
+              <TableRow>
+                <TableCell style={{ color: 'white', fontWeight: 'bold' }}>Employee ID</TableCell>
+                <TableCell style={{ color: 'white', fontWeight: 'bold' }}>Panel</TableCell>
+                <TableCell style={{ color: 'white', fontWeight: 'bold' }}>Mobile</TableCell>
+                <TableCell style={{ color: 'white', fontWeight: 'bold' }}>Department</TableCell>
+                <TableCell style={{ color: 'white', fontWeight: 'bold' }}>Action</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {loginEmp && (filtered.length ? filtered : loginEmp)
+                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                .map((e, index) => (
+                  <TableRow key={index}>
+                    <TableCell>{e.name}</TableCell>
+                    <TableCell>{e.role}</TableCell>
+                    <TableCell>{e.mobile}</TableCell>
+                    <TableCell>{e.dep}</TableCell>
+                    <TableCell>
+                      <Button onClick={() => deleteT(e.eid)} variant="contained" color="primary">
+                        Delete
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
+            </TableBody>
+          </Table>
+          <TablePagination
+            rowsPerPageOptions={rowsPerPageOptions}
+            component="div"
+            count={loginEmp && loginEmp.length}
+            rowsPerPage={rowsPerPage}
+            page={page}
+            onPageChange={handleChangePage}
+            onRowsPerPageChange={handleChangeRowsPerPage}
+          />
+        </TableContainer>
+      </Grid>
     </Grid>
   )
-      
+
   return (
-        <PageLayout>
-          <Grid container spacing={2}>
-           
-          { isLoading ? 'Loading...': 
-            <Grid size={{xs:12}>
-              <Card className="partition" style={{height:'530px',width:'700px',margin:'auto'}}>
+    <SideBar arr={side_bar_utils} >
+      <Grid container spacing={2}>
+
+        {isLoading ? 'Loading...' :
+          <Grid size={{ xs: 12 }}>
+            <Card className="partition" style={{ height: '530px', width: '700px', margin: 'auto' }}>
               <Tabs
                 value={value}
                 indicatorColor="primary"
@@ -248,15 +250,15 @@ export default function App()
                 <Tab label="Add New Role" />
                 <Tab label="View Roles" />
               </Tabs>
-                <CardContent>
-                  {(value!==1)?EmpCard():viewEmpUI()}
-                </CardContent>
-              </Card>
-            </Grid>
-          }
+              <CardContent>
+                {(value !== 1) ? EmpCard() : viewEmpUI()}
+              </CardContent>
+            </Card>
           </Grid>
+        }
+      </Grid >
 
-        </PageLayout>
-      );
-      
+    </SideBar>
+  );
+
 }

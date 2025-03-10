@@ -4,11 +4,11 @@ const { Schema, model } = mongoose;
 
 const UserSchema = new Schema(
     {   
-        mId:{
+        mid:{
             type: String,
             required: true
         },
-        uname: {
+        name: {
             type: String,
             required: true
         },
@@ -16,7 +16,7 @@ const UserSchema = new Schema(
             type: String,
             required: true
         },
-        type: String,
+        panel: String,
         dep: String,
         security_phrase:String,
     },
