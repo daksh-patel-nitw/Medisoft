@@ -11,26 +11,12 @@ const UserSchema=new Schema(
             type:String,
             required:true
         },
-        date:{
-            type:Date,
-            default:Date.now
-        },
-        floor:{
-            type:Number,
-            required:true
-        },
         room_no:{
             type:Number,
             required:true
         },
-        price:{
-            type:Number,
-            required:true
-        },
-        occupied:{
-            type:String,
-            default:'No'
-        },
+        charge:Number,
+        status:String,
         dname:String,
         did:String,
         pid:String,

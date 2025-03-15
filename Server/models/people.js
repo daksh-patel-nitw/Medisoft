@@ -70,7 +70,8 @@ const UserSchema=new Schema(
         timings:Array,
         questions:Array,
         pph:Number,
-        price:Number
+        price:Number,
+        opd:Number
     },{
         versionKey:false,
         timestamps:true

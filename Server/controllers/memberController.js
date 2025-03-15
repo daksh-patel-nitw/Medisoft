@@ -187,12 +187,11 @@ export const getDoctorByDepartment = async (req, res) => {
     }
 }
 
-//add doctor timings
-export const updateDoctorDetails = async (req, res) => {
-    const { mid, ...updateFields } = req.body;
-
+//update the member details
+export const updateMember = async (mid,updateFields) => {
     if (!mid || Object.keys(updateFields).length === 0) {
-        return res.status(400).json({ message: 'Invalid request. Provide mid and at least one field to update.' });
+        console.error('Invalid request. Provide mid and at least one field to update.');
+        throw new Error('Invalid request. Provide mid and at least one field to update.');
     }
 
     try {
@@ -203,10 +202,25 @@ export const updateDoctorDetails = async (req, res) => {
         );
 
         if (!result) {
-            return res.status(404).json({ message: 'Doctor not found' });
+            console.error('Doctor not found');
+            throw new Error('Doctor not found');
         }
+        return result;
+    } catch (e) {
+        console.error(e);
+        throw e;
+    }
+}
+
+//add doctor timings
+export const updateDoctorDetails = async (req, res) => {
+    const { mid, ...updateFields } = req.body;
+    console.log(req.body);
+    try {
+        const result=await updateMember(mid, updateFields);
 
         res.status(200).json({ message: "Update Successfull", show: true, data: result });
+
     } catch (e) {
         res.status(500).json({ message: 'Internal server error' });
     }

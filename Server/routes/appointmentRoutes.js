@@ -20,6 +20,10 @@ router.delete('/:id',deleteAppointment);
 router.get('/queuescreen/:dep',queuescreen);
 
 
+//------------------------- Unused
+
+//--------------------Routes for Doctor -------------------
+
 //doctor IPD appointment
 router.get('/dscreen/:did',getOPDappointment)
 

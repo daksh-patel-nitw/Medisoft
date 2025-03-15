@@ -43,10 +43,7 @@ const UserSchema=new Schema(
         discharge_date:Date,
 
         notes:String,
-        doctor_qs:Array ,
-        medicines:Array,
-        tests:Array,
-        bill:Array,
+        doctor_qs:Array,
         weight:Number,
         ctime:Number,
         height:Number,

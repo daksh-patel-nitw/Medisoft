@@ -23,7 +23,7 @@ const noTokenputRequest = (url, data) => {
 };
 
 const noTokenStatusDeleteRequest = (url, id) => {
-  console.log( `${url}/${id}`);
+  // console.log( `${url}/${id}`);
   return httpClient.executeNoTokenStatusRequest("delete", `${url}/${id}`, null, null, {}, false);
 };
 

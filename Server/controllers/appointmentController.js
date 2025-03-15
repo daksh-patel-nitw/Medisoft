@@ -1,13 +1,10 @@
 import appointmentModel from '../models/appointment.js'
 import { addTimings } from '../services/getDoctorTimings.js';
 import generateBill from '../utils/billUtils.js';
+import {updateMember} from './memberController.js';
 
-export const makeAppointment = async (req, res) => {
-  const b = req.body;
-  console.log(b);
-  const { type } = req.params;
+export const bookAppointment = async (type,b) => {
   try {
-
     const newA = new appointmentModel({
       pid: b.pid,
       did: b.did,
@@ -23,6 +20,11 @@ export const makeAppointment = async (req, res) => {
       newA.time = b.time;
       newA.doctor_qs = b.qs;
       newA.price=b.price;
+      
+      //updating the opd status of the patient to avoid multiple bookings.
+      await updateMember(b.pid,{opd:1});
+      
+      // Updating the time slots of the doctor after booking
       await addTimings(b.schedule_date, b.did, b.time, b.count - 1);
 
     } else {
@@ -32,14 +34,25 @@ export const makeAppointment = async (req, res) => {
 
     await newA.save();
     console.log(newA);
+    return newA._id;
+  }catch (error) {
+    console.error(error);
+    throw new Error("Error booking appointment");
+  }
 
+}
 
+export const makeAppointment = async (req, res) => {
+  const b = req.body;
+  console.log(b);
+  const { type } = req.params;
+  try{
+    const aid=await bookAppointment(type,b);
     res.status(200).json({ message: "Booking is Successfull", show: true });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Internal server error" });
   }
-
 };
 
 // Patient screen: Get all patient appointments

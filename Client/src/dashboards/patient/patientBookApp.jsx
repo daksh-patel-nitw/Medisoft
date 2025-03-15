@@ -251,7 +251,7 @@ const dateUI=()=>(
 
  return (
 
-    <PageLayout>
+    <SideBar>
      
       <form onSubmit={handleFormSubmit}>
         <Grid container spacing={2} >
@@ -286,7 +286,7 @@ const dateUI=()=>(
         </Grid>
       </form>
      
-    </PageLayout>
+    </SideBar>
 
   );
 }

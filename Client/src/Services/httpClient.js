@@ -62,7 +62,6 @@ const execute = (method, resource, data = null, params = null, headers = null, a
 
 const executeNoTokenRequest = (method, resource, data = null, params = null, headers = null, auth = false) =>
   new Promise((resolve, reject) => {
-    console.log(resource);
     client({
       method,
       url: resource,

@@ -11,21 +11,25 @@ router.post("/category",controller.addNewRoomCategory);
 // Get all Room Categories
 router.get('/category',controller.getAllRoomCategories);
 
-// --------------------- Room Inventory ---------------------
+// ------------------------- Rooms --------------------------
 
 // Make new Room
 router.post('/',controller.addNewRoom);
 
-//Get All Rooms
-router.get('/',controller.getAllRooms);
+//Get All Rooms of a department
+router.get('/dep/:dep',controller.getAllRoomsByDep);
 
-//Get Room Count
-router.get('/count',controller.getRoomCount);
-
+// --------------------- Room Inventory ---------------------
 //Book Room 
 router.post('/book',controller.bookRoom);
 
+//Get All Rooms that are occupied
+router.get('/',controller.getAllRooms);
+
 //Free or discharge room
-router.get('/discharge/:room/:dep',controller.dischargeRoom);
+router.post('/discharge',controller.dischargeRoom);
+
+// ------------------------ Unused ------------------------
+
 
 export default router;

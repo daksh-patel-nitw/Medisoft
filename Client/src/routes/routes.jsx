@@ -6,7 +6,7 @@ import OP1 from "../dashboards/opd-1-reception/1newRegister";
 import OP2 from "../dashboards/opd-1-reception/2bookAppointment";
 
 // import D1 from "../dashboards/doctor/1dstats";
-import D2 from "../dashboards/doctor/2.patDoc";
+// import D2 from "../dashboards/doctor/2.patDoc";
 import D3 from "../dashboards/doctor/3setup";
 
 import OOp1 from "../dashboards/opd-2-reception/1confirmP";
@@ -16,17 +16,15 @@ import Queue from "../dashboards/queueScreen";
 import A1 from "../dashboards/admin/1newAdmin";
 import A2 from "../dashboards/admin/2showCategory";
 
-/*
 import I1 from "../dashboards/ipd-reception/1newRoom";
 import I2 from "../dashboards/ipd-reception/2RegisterPatients";
-import I3 from "../dashboards/ipd-reception/3.1Patients";
+import I3 from "../dashboards/ipd-reception/3Patients";
+/*
 import I4 from "../dashboards/ipd-reception/4AddCharge";
 
 import T1 from "../dashboards/lab/1newtest";
 import T2 from "../dashboards/lab/2tests";
 import T3 from "../dashboards/lab/3patients";
-
-
 
 
 import B1 from "../dashboards/billDesk/1billshow";
@@ -35,7 +33,6 @@ import Pat1 from "../dashboards/patient/1view";
 import Pat2 from "../dashboards/patient/patientBookApp";
 
 import L from "../dashboards/login";
-
 
 */
 const routes = [
@@ -50,7 +47,7 @@ const routes = [
   { path: "/queue/:dep", element: <Queue /> },
 
   // Doctor Tab
-  { path: "/doctoropdpatient", element: <D2 /> },
+  // { path: "/doctoropdpatient", element: <D2 /> },
   { path: "/doctorappointments", element: <D3 /> },
 
 
@@ -58,14 +55,18 @@ const routes = [
   { path: "/admin", element: <A1 /> },
   { path: "/viewemps", element: <A2 /> },
 
+
+  // IPD
+  { path: "/newroom", element: <I1 /> },
+  { path: "/ipdnewpatient", element: <I2 /> },
+  { path: "/testpatients", element: <I3 /> },
+
+  // pharmacy
   // { path: "/newmedicine", element: <P1 /> },
   // { path: "/medicine", element: <P2 /> },
   // { path: "/medpatients", element: <P3 /> },
 
   /*// IPD
-  { path: "/newroom", element: <I1 /> },
-  { path: "/ipdnewpatient", element: <I2 /> },
-  { path: "/testpatients", element: <I3 /> },
   { path: "/addipdcharge", element: <I4 /> },
 
 

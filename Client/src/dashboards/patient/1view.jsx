@@ -121,7 +121,7 @@ export default function App()
 
 
       return (
-        <PageLayout>
+        <SideBar>
           <Grid container direction="column" spacing={2}>
 
             {appointments.length && appointments.map((e,index) => (
@@ -237,7 +237,7 @@ export default function App()
                
                 
           </Grid>
-        </PageLayout>
+        </SideBar>
       );
       
 }
