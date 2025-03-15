@@ -130,7 +130,7 @@ export default function App() {
   }, [billed]);
 
   return (
-    <PageLayout>
+    <SideBar>
       <Card className="partition">
         <CardContent>
           <Tabs
@@ -186,6 +186,6 @@ export default function App() {
           </Grid>
         </CardContent>
       </Card>
-    </PageLayout>
+    </SideBar>
   );
 }

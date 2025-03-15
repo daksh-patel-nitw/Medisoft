@@ -1,21 +1,13 @@
 import mongoose from 'mongoose';
 
 const { Schema, model } = mongoose;
-const UserSchema=new Schema(
+    const UserSchema=new Schema(
     {   
         type:{
             type:String,
             required:true
         },
-        dep:{
-            type:String,
-            required:true
-        },
-        floor:{
-            type:Number,
-            required:true
-        },
-        room_no:{
+        beds:{
             type:Number,
             required:true
         },
@@ -23,24 +15,32 @@ const UserSchema=new Schema(
             type:Number,
             required:true
         },
-        maxPatients:{
-            type:Number,
+        sofa:{
+            type:String,
+            required:true
+        },
+        tv:{
+            type:String,
+            required:true
+        },
+        refrigator:{
+            type:String,
+            required:true
+        },
+        bathroom:{
+            type:String,
             required:true
         },
         number_of_patients:{
             type:Number,
-            default:0
+            required:true
         },
-        occupied:{
-            type:String,
-            default:'No'
-        }
+        other:String
     },{
-        versionKey:false,
-        timestamps:true
+        versionKey:false
     }
 );
 
-const room = model("room", UserSchema);
+const roomModel = model("roomCategory", UserSchema);
 
-export default room;
+export default roomModel;

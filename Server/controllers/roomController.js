@@ -1,6 +1,9 @@
+import roomCategoryModel from '../models/roomCategory.js';
 import roomModel from '../models/rooms.js';
-import roomInventoryModel from '../models/roomInventory.js';
+import roomInventoryModel from '../models/roomsInventory.js';
 import generateBill from '../utils/billUtils.js';
+import { getItem } from '../utils/helperUtils.js';
+import {bookAppointment} from './appointmentController.js';
 
 //--------------------- Rooms ---------------------
 
@@ -8,7 +11,7 @@ import generateBill from '../utils/billUtils.js';
 export const addNewRoomCategory = async (req, res) => {
     const body = req.body;
     try {
-        const newRC = new roomModel({
+        const newRC = new roomCategoryModel({
             type: body.type,
             beds: body.beds,
             price: body.price,
@@ -16,10 +19,11 @@ export const addNewRoomCategory = async (req, res) => {
             tv: body.tv,
             refrigator: body.refrigator,
             bathroom: body.bathroom,
+            number_of_patients: body.number_of_patients,
             other: body.other
         });
         await newRC.save();
-        res.status(200).json(newRC);
+        res.status(200).json({ message: `Room Category ${body.type} added Successfully`, show: true });
     } catch (err) {
         res.status(500).json({ message: "Server Error" });
     }
@@ -28,9 +32,12 @@ export const addNewRoomCategory = async (req, res) => {
 //Send all Room Categories
 export const getAllRoomCategories = async (req, res) => {
     try {
-        const rc = await roomModel.find().lean();
-        res.status(200).json(rc);
+        const rooms = await roomCategoryModel.find({});
+        const deps = await getItem('dep');
+        const roomCount = await roomInventoryModel.countDocuments();
 
+
+        res.status(200).json([rooms, deps.content, roomCount]);
     } catch (err) {
         console.log(err);
         return (err);
@@ -41,17 +48,18 @@ export const getAllRoomCategories = async (req, res) => {
 
 //Make new Room
 export const addNewRoom = async (req, res) => {
-    const body = req.body;
+    const body = req.body;    
     try {
-        const newR = new roomInventoryModel({
+        const newR = new roomModel({
             type: body.type,
             dep: body.dep,
             floor: body.floor,
             room_no: body.room_no,
-            price: body.price
+            price: body.price,
+            maxPatients: body.maxPatients,
         });
         await newR.save();
-        res.status(200).json(newR);
+        res.status(200).json({ message: `Room ${body.room_no} added Successfully`, show: true });
     } catch (err) {
         console.log(err);
         res.status(500).json({ message: "Server Error" });
@@ -61,28 +69,27 @@ export const addNewRoom = async (req, res) => {
 //Get All Rooms
 export const getAllRooms = async (req, res) => {
     try {
-        const result = await roomInventoryModel.aggregate([
-            {
-                $facet: {
-                    occupied: [{ $match: { occupied: "Yes" } }],
-                    unoccupied: [{ $match: { occupied: "No" } }]
-                }
-            }
-        ]);
+        const result = await roomInventoryModel.find({status:"P"});
 
-        res.status(200).json(result[0]);
+        res.status(200).json(result);
     } catch (err) {
         console.log(err);
         res.status(500).json({ message: "Server Error" });
     }
 };
 
-//number of rooms
-export const getRoomCount = async (req, res) => {
+//get all rooms by department
+export const getAllRoomsByDep = async (req, res) => {
     try {
-        const count = await roomInventoryModel.countDocuments();
-        console.log(count);
-        res.status(200).json(count);
+
+        //Finding all the non empty rooms in the department.
+        const result = await roomModel.find({ dep: req.params.dep, occupied: "No" });
+        
+        //Find the unique types of rooms in the department
+        const uniqueTypes = await roomCategoryModel.distinct("type");
+
+        res.status(200).json([result,uniqueTypes]);
+
     } catch (err) {
         console.log(err);
         res.status(500).json({ message: "Server Error" });
@@ -93,23 +100,50 @@ export const getRoomCount = async (req, res) => {
 export const bookRoom = async (req, res) => {
     const body = req.body;
     try {
-        const bookedRoom = await roomInventoryModel.findOneAndUpdate(
+        // making the appointment
+        const aid=await bookAppointment('ipd',body);
+
+        // Fetching only required fields
+        const room = await roomModel.findOne(
             { room_no: body.room_no, dep: body.dep },
-            {
-                occupied: "Yes",
-                did: body.did,
-                aid: body.aid,
-                dname: body.dname,
-                pid: body.pid,
-                pname: body.pname,
-                mobile: body.mobile
-            },
-            { new: true }
+            { maxPatients: 1, number_of_patients: 1 }
         );
+        
+        if (room && room.number_of_patients < room.maxPatients) {
+            const bookedRoom = await roomModel.findOneAndUpdate(
+                { room_no: body.room_no, dep: body.dep },
+                {
+                    $inc: { number_of_patients: 1 }, // Increment patient count
+                    $set: { 
+                        occupied: room.number_of_patients + 1 === room.maxPatients ? "Yes" : "No",
+                    }
+                },
+                { new: true }
+            );
+            
+            // console.log("Room updated:", bookedRoom);
+            // console.log("Appointment ID:", aid);
 
-        await generateBill(body.pid, bookedRoom.price, body.aid, "Room Booking", "room", body.did);
-
-        res.status(200).json(updatedRoom);
+            const bookedRoomInventory = new roomInventoryModel({
+                type: body.type,
+                dep: body.dep,
+                room_no: body.room_no,
+                dname: body.dname,
+                did: body.did,
+                pid: body.pid,
+                aid: aid,
+                pname: body.pname,
+                mobile: body.mobile,
+                status: "P"
+            });
+            bookedRoomInventory.save();
+            
+            // console.log("Room booked:", bookedRoom);
+        } else {
+            res.status(400).json({ message: "Room is already full." });
+        }
+        
+        res.status(200).json({message: `Room ${body.room_no} Booked for ${body.pname} `, show: true });
     } catch (err) {
         console.log(err);
         res.status(500).json({ message: "Server Error" });
@@ -119,14 +153,33 @@ export const bookRoom = async (req, res) => {
 //Free or discharge room
 export const dischargeRoom = async (req, res) => {
     try {
-        const { room, dep } = req.params;
-        const updatedRoom = await roomInventoryModel.findOneAndUpdate(
-            { room_no: room, dep: dep },
-            { occupied: "No", did: "", aid: "", dname: "", pid: "", pname: "", mobile: "" },
-            { new: true });
-        res.status(200).json(updatedRoom);
+        const { id} = req.body;
+
+        // Fetch the room inventory record
+        const roomInventory = await roomInventoryModel.findById(id);
+        if (!roomInventory) return res.status(404).json({ message: "Room Inventory not found" });
+
+        // Fetch the associated room details
+        const room = await roomModel.findOneAndUpdate(
+            { room_no: roomInventory.room_no, dep: roomInventory.dep },
+            { 
+                $inc: { number_of_patients: -1 }, 
+                $set: { occupied: "No" } 
+            },
+            { new: true }
+        );
+        if (!room) return res.status(404).json({ message: "Room not found" });
+
+        // Update roomInventory details
+        roomInventory.status = "Discharged";
+        roomInventory.charge = room.price * Math.ceil((Date.now() - new Date(roomInventory.createdAt)) / (1000 * 60 * 60 * 24));
+
+        await roomInventory.save(); // Save changes to DB
+
+        res.status(200).json({ message: `Patient ${roomInventory.pname} discharged successfully.`, show: true });
     } catch (err) {
-        console.log(err);
+        console.error(err);
         res.status(500).json({ message: "Server Error" });
     }
 };
+

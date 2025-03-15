@@ -106,7 +106,7 @@ export default function App()
   
     return (
 
-        <PageLayout>
+        <SideBar>
             <Grid container spacing={2}>
                 <Grid size={{xs:12}>
                     <Card className="partition">
@@ -196,7 +196,7 @@ export default function App()
                     </Card>
                 </Grid>
             </Grid>
-        </PageLayout>
+        </SideBar>
 
     );
 }

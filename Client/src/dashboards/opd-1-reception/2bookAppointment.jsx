@@ -14,7 +14,7 @@ import { apis } from '../../Services/commonServices';
 import { sidebar_utils } from './utils';
 
 // Appointment Form Values
-const arr1 = ['pid', 'pname', 'mobile', 'did', 'dname', 'dep', 'schedule_date', 'time', 'qs', 'count'];
+const arr1 = ['pid', 'pname', 'mobile', 'pph','did', 'dname', 'dep', 'schedule_date', 'time', 'qs', 'count', 'price'];
 const arr2 = ['Patient ID', "Patient Name", "Mobile", 'DepartMent', "Doctor Name",];
 const initialValues = arr1.reduce(
   (obj, key) => ({ ...obj, [key]: key !== 'schedule_date' ? '' : 'Select Date' }),
@@ -40,14 +40,12 @@ export default function App() {
   // fetching data
   useEffect(() => {
     const fetchData = async () => {
-
       const d_data = await apis.noTokengetRequest('/member/doctors');
-      console.log(d_data);
+      // console.log(d_data);
       setDoc(d_data);
       const data = await apis.noTokengetRequest('/member/patient/reception');
       setPat(data);
-      console.log(data);
-
+      // console.log(data);
     };
 
     fetchData();
@@ -67,7 +65,7 @@ export default function App() {
       } else {
         const s = (i2 === 1) ? 'dep' : 'dname';
         const t = doctors.find((e) => e[s] === newValue);
-        setForm({ ...formV, did: t.eid, dname: t.dname, dep: t.dep, qs: t.qs });
+        setForm({ ...formV, did: t.eid, dname: t.dname, dep: t.dep, qs: t.qs, price: t.price,pph:t.pph });
         setT(t.timings);
       }
     }
@@ -135,7 +133,7 @@ export default function App() {
     console.log(formV);
     if (formV['time']) {
       alert(JSON.stringify(formV));
-      const d_data = await apis.noTokenPostRequest('/appointment/opd', formV);
+      await apis.noTokenPostRequest('/appointment/opd', formV);
       clearValues();
 
     } else {
@@ -170,7 +168,9 @@ export default function App() {
   const handleDateClick = async (date) => {
     if (!isBeforeToday(date)) {
       setSelectedDate(date);
-      const d = new Date(date).toISOString().split("T")[0];
+      const localDate = new Date(date);
+      localDate.setHours(12, 0, 0, 0); // Set to noon to avoid timezone issues
+      const d = localDate.toISOString().split("T")[0];
       setForm({ ...formV, schedule_date: d });
 
       const link = `/member/doctorTiming/${d}/${formV.did}`;
@@ -186,14 +186,17 @@ export default function App() {
 
 
         const updatedCount = Timings.reduce((acc, timing) => {
-          acc[timing] = resMap[timing] || 6;
+          if (resMap[timing] == null)
+            acc[timing] = formV.pph;
+          else
+            acc[timing] = resMap[timing];
           return acc;
         }, {});
 
         console.log(updatedCount);
         setC(updatedCount);
       } else {
-        const defaultCount = Object.fromEntries(Timings.map(t => [t, 6]));
+        const defaultCount = Object.fromEntries(Timings.map(t => [t, formV.pph]));
         setC(defaultCount);
       }
 

@@ -2,7 +2,7 @@ import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
 import loginModel from '../models/login.js';
 import dotenv from 'dotenv';
-
+import { SignUp} from '../utils/authData.js';
 dotenv.config();
 
 const SECRET_KEY = process.env.SECRET_KEY;
@@ -50,9 +50,9 @@ export const validateUser = async (req, res) => {
       return res.status(200).json({
           message: "Login successful",
           user: {
-              uname: user.uname,
-              type: user.type,
-              mid: user.mId,
+              name: user.name,
+              panel: user.panel,
+              mid: user.mid,
           },
       });
   } catch (error) {
@@ -64,26 +64,10 @@ export const validateUser = async (req, res) => {
 //signup
 export const makeNewLogin = async (req, res) => {
     try {
-        
-        const { mId, uname,type="none", dep="",password,security_phrase } = req.body;
-
-        // Hash the password before saving
-        const saltRounds = 10;
-        const hashedPassword = await bcrypt.hash(password, saltRounds);
-        const hashed_security_phrase = await bcrypt.hash(security_phrase, saltRounds);
-
-        // Create a new login record
-        const newLogin = new loginModel({
-            mId,
-            uname,
-            password: hashedPassword,
-            type,
-            dep,
-            security_phrase:hashed_security_phrase
-        });
-
-        // Save to the database
-        await newLogin.save();
+        const {mid, name, panel, dep, mobile}=req.body;
+        console.log(req.body);
+        // mid, name, role, password, security_phrase, dep
+        const newLogin=await SignUp(mid, name, panel, mobile, mobile, dep);
 
         console.log(newLogin);
         return res.status(201).json({ message: "User created successfully", newLogin });

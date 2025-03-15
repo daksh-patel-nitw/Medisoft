@@ -43,10 +43,7 @@ const UserSchema=new Schema(
         discharge_date:Date,
 
         notes:String,
-        doctor_qs:Array ,
-        medicines:Array,
-        tests:Array,
-        bill:Array,
+        doctor_qs:Array,
         weight:Number,
         ctime:Number,
         height:Number,
@@ -56,6 +53,8 @@ const UserSchema=new Schema(
         },
         pat_chat:Array,
         doc_chat:Array,
+        price:Number,
+        selected_doctor_qs:String
     },{
         versionKey:false,timestamps:true
     }

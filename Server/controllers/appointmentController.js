@@ -1,13 +1,10 @@
 import appointmentModel from '../models/appointment.js'
 import { addTimings } from '../services/getDoctorTimings.js';
 import generateBill from '../utils/billUtils.js';
+import {updateMember} from './memberController.js';
 
-export const makeAppointment = async (req, res) => {
-  const b = req.body;
-  console.log(b);
-  const { type } = req.params;
+export const bookAppointment = async (type,b) => {
   try {
-
     const newA = new appointmentModel({
       pid: b.pid,
       did: b.did,
@@ -22,7 +19,12 @@ export const makeAppointment = async (req, res) => {
       newA.schedule_date = b.schedule_date;
       newA.time = b.time;
       newA.doctor_qs = b.qs;
-
+      newA.price=b.price;
+      
+      //updating the opd status of the patient to avoid multiple bookings.
+      await updateMember(b.pid,{opd:1});
+      
+      // Updating the time slots of the doctor after booking
       await addTimings(b.schedule_date, b.did, b.time, b.count - 1);
 
     } else {
@@ -32,14 +34,25 @@ export const makeAppointment = async (req, res) => {
 
     await newA.save();
     console.log(newA);
+    return newA._id;
+  }catch (error) {
+    console.error(error);
+    throw new Error("Error booking appointment");
+  }
 
+}
 
-    res.status(200).json({message:"Booking is Successfull",show:true});
+export const makeAppointment = async (req, res) => {
+  const b = req.body;
+  console.log(b);
+  const { type } = req.params;
+  try{
+    const aid=await bookAppointment(type,b);
+    res.status(200).json({ message: "Booking is Successfull", show: true });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Internal server error" });
   }
-
 };
 
 // Patient screen: Get all patient appointments
@@ -79,10 +92,12 @@ export const confirmAppointment = async (req, res) => {
     );
     console.log(updatedP);
 
-    const newBill = await generateBill(updatedP.pid, updatedP.aid, updatedP._id, "Doctor Fees", 'doctor', updatedP.did);
-    console.log("Bill in Route:", newBill)
+    // pid, price, aid, description, type, did = null , date = new Date()
+    
+    await generateBill(updatedP.pid, updatedP.price,updatedP.aid, "Doctor Fees", 'doctor', updatedP.did);
+    // console.log("Bill in Route:", newBill)
 
-    res.status(200).json({ message: "Updated Successfully." });
+    res.status(200).json({ message: "Confirmed Successfully.",show:true });
 
   } catch (error) {
     console.error(error);
@@ -90,17 +105,26 @@ export const confirmAppointment = async (req, res) => {
   }
 }
 
-//Get Appoints on Counter-2
+//Get Appointmentss on Counter-2
 export const getCounter2app = async (req, res) => {
   try {
     const { dep } = req.params;
-    const today = new Date().toISOString().split("T")[0]; // Ensure only the date part is used
-    console.log("Today's date:", today);
+    var start = new Date();
+    start.setHours(0, 0, 0, 0);
+
+    var end = new Date();
+    end.setHours(23, 59, 59, 999);
 
     const apps = await appointmentModel.find(
-      { dep, schedule_date: today, status: "P" },
+      {
+        dep: dep,
+        schedule_date: { $gte: start, $lt: end },
+        status: "P"
+      },
       { pid: 1, pname: 1, mobile: 1, dname: 1, time: 1, status: 1, doctor_qs: 1, weight: 1 }
     );
+
+    // console.log(apps);
 
     res.status(200).json(apps);
   } catch (error) {
@@ -109,9 +133,13 @@ export const getCounter2app = async (req, res) => {
   }
 };
 
+//Cancel the appointment
 export const deleteAppointment = async (req, res) => {
+  const { id } = req.params;
+  console.log("Received ID in backend:", id); 
   try {
     const { id } = req.params;
+    console.log(id);
 
     const updatedAppointment = await appointmentModel.findOneAndUpdate(
       { _id: id },
@@ -123,7 +151,7 @@ export const deleteAppointment = async (req, res) => {
       return res.status(404).json({ message: "Appointment not found" });
     }
 
-    res.status(200).json({ message: "Appointment canceled successfully", appointment: updatedAppointment });
+    res.status(200).json({ message: "Appointment cancelled successfully", show:true });
   } catch (error) {
     console.error("Error canceling appointment:", error);
     res.status(500).json({ message: "Error canceling appointment", error });
@@ -174,7 +202,7 @@ export const getAllPatientApps = async (req, res) => {
 };
 
 // Get IPD appointment for the doctor (First, find 'confirm' status, then 'progress' status)
-export const getIpdappointment = async (req, res) => {
+export const getOPDappointment = async (req, res) => {
   try {
     const { did } = req.body;
     console.log(did);
@@ -235,26 +263,37 @@ export const updateIPDpat = async (req, res) => {
 // Display patient name on the queue screen
 export const queuescreen = async (req, res) => {
   try {
-    const { did } = req.params; // Use route params for doctor ID
-    const app1 = await appointmentModel.findOne({ did: did, status: 'progress' }, { pname: 1, pid: 1, status: 1, ctime: 1 }).sort({ ctime: 1 });
-    console.log(did);
-    const app = await appointmentModel.find({ did: did, status: 'confirm' }, { pname: 1, pid: 1, status: 1, ctime: 1 }).sort({ ctime: 1 });
-    console.log(app1);
+    const { dep } = req.params; // Get department from params
 
-    let t;
-    if (app1) {
-      t = [app1, ...app];
-    } else {
-      t = app;
-    }
+    const appointments = await appointmentModel.aggregate([
+      {
+        $match: { dep,status:'confirm' }, // Filter appointments by department
+      },
+      {
+        $group: {
+          _id: "$did", // Group by doctor ID
+          doctorName: { $first: "$dname" }, // Store doctor's name
+          appointments: {
+            $push: {
+              pid: "$pid",
+              pname: "$pname",
+              status: "$status"
+            },
+          },
+        },
+      },
+      {
+        $sort: { "appointments.ctime": 1 }, // Sort appointments by ctime
+      },
+    ]);
 
-    console.log(did, t);
-    res.status(200).json(t);
+    res.status(200).json(appointments);
   } catch (error) {
     console.error("Error fetching queue screen data:", error);
     res.status(500).json({ message: "Error fetching queue screen data", error });
   }
 };
+
 
 // See appointments: Pending, Confirmed, and Diagnosed
 export const seeappointment = async (req, res) => {

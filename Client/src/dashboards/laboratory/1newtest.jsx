@@ -68,7 +68,7 @@ export default function App()
 
   return (
 
-      <PageLayout>
+      <SideBar>
         <form onSubmit={handleSubmit} autoComplete="off">
           <Grid container spacing={2}>
             <Grid size={{xs:12} sm={6}>
@@ -93,7 +93,7 @@ export default function App()
             </Grid>
           </Grid>
         </form>
-      </PageLayout>
+      </SideBar>
  
   );
 }
