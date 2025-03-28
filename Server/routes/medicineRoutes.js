@@ -8,22 +8,32 @@ const router = express.Router();
 //Add new medicine
 router.post('/', controller.addNewMedicine);
 
-//Send all medicine to doctor
-router.get('/d', controller.getMedicineDoctor);
+//Get all medicine categories
+router.get('/types', controller.getMedicineCategories);
 
-//Send all mediciene to pharmacy
-router.get('/', controller.getAllMedicines);
-
-//update medicine detail
-router.put('/:value', controller.updateMedicine);
+//Updating or deleting medicine categories
+router.post('/types', controller.updateMedicineCategories);
 
 //delete medicine
 router.delete('/:id', controller.deleteMedicine);
 
-//====================== Prescription Routes ============================
+//Send all mediciene to pharmacy
+router.get('/', controller.getAllMedicines);
 
-//Add new prescription
-router.post('/prescription', controller.addNewPrescription);
+//Filter medicine
+router.get('/search', controller.filterMedicine);
+//---------------------- Unused ----------------------------
+//Send all medicine to doctor
+router.get('/d', controller.getMedicineDoctor);
+
+
+
+//update medicine detail
+router.put('/:value', controller.updateMedicine);
+
+
+
+//====================== Prescription Routes ============================
 
 //Get all prescriptions
 router.get('/prescription', controller.getAllPrescriptions);

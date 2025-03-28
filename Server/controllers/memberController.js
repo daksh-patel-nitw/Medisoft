@@ -54,7 +54,7 @@ export const getMemberWithId = async (req, res) => {
     const { id } = req.params;
     try {
         const employee = await memberModel.findOne({ mid: id }, {});
-        res.status(200).send(employee);
+        res.status(200).json(employee);
     } catch (e) {
         res.status(500).json({ message: 'Internal server error' });
     }

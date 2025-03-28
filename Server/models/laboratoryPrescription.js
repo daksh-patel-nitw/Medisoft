@@ -7,20 +7,8 @@ const UserSchema=new Schema(
             type:String,
             required:true
         },
-        did:{
-            type:String,
-            required:true
-        },
-        pid:{
-            type:String,
-            required:true
-        },
         price:{
             type:Number,
-            required:true
-        },
-        pname:{
-            type:String,
             required:true
         },
         tname:{
@@ -31,20 +19,19 @@ const UserSchema=new Schema(
         p_range:String,
         //normal range
         n_range:String,
+        //what patient details are required
         pat_details:{
             type:String,
             required:true
         },
         //to get the patient details
-        details:{
-            type:String,
-            default:'P'
-        },
+        details:String,
         report:String,
-        //to add the results of the test
+        //status pending->billed->taken->done or cancel
         status:{
             type:String,
-            default:'F'
+            enum: ['P','B','T','D','C'],
+            default: 'P'
         },
     },{
         versionKey:false,
