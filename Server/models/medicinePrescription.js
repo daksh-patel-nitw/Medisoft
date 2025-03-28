@@ -1,50 +1,45 @@
 import mongoose from 'mongoose';
 
 const { Schema, model } = mongoose;
-const UserSchema = new Schema(
+const medicinePrescriptionSchema = new Schema(
     {
-        pid: {
+        aid: {
             type: String,
             required: true
         },
-        aid: {
-            type: String,
+        price: {
+            type: Number,
             required: true
         },
         mname: {
             type: String,
             required: true
         },
-        pname: {
-            type: String,
-            required: true
-        },
-        did: {
-            type: String,
-            required: true
-        },
+        ps:Number,
         quantity: {
             type: Number,
             required: true
         },
-        unit: {
-            type: String,
-            required: true
-        },
+        //status pending->billed->done or cancel
         status: {
             type: String,
-            enum: ['P','D','C'],
-        }, 
-        price: {
-            type: Number,
-            required: true
+            enum: ['P','B','D','C'],
+            default: 'P'
         },
+        //time string will be of comma separated: breakfast, lunch, Snaks, dinner, 1 time a day
+        // all will be prefixed with before and after
+        //eg:For after lunch and after dinner: "AL,AD"
+        time:{
+            type:String,
+            required:true
+        }
+
     }, {
     versionKey: false,
     timestamps: true
 }
 );
 
-const medicinePrescriptionModel = mongoose.model("medicinePrescription", UserSchema);
+const medicinePrescriptionModel = model("medicinePrescription", medicinePrescriptionSchema);
 
 export default medicinePrescriptionModel;

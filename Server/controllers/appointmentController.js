@@ -1,7 +1,10 @@
 import appointmentModel from '../models/appointment.js'
-import { addTimings } from '../services/getDoctorTimings.js';
+import { addTimings, removeTimings} from '../services/getDoctorTimings.js';
 import generateBill from '../utils/billUtils.js';
 import {updateMember} from './memberController.js';
+import { prescribeTest,getTests } from './labController.js';
+import { prescribeMedicine,getMedicine } from './medicinesController.js';
+import mongoose from 'mongoose';
 
 export const bookAppointment = async (type,b) => {
   try {
@@ -82,12 +85,12 @@ export const getDoctorApps = async (req, res) => {
 
 //Confirm Appointment on Counter-2
 export const confirmAppointment = async (req, res) => {
-  const { _id, doctor_qs, weight, height } = req.body;
+  const { _id, selected_doctor_qs, weight, height } = req.body;
 
   try {
     const updatedP = await appointmentModel.findByIdAndUpdate(
       _id,
-      { status: 'confirm', ctime: Date.now(), doctor_qs, weight, height },
+      { status: 'confirm', ctime: Date.now(), selected_doctor_qs, weight, height },
       { new: true }
     );
     console.log(updatedP);
@@ -147,6 +150,9 @@ export const deleteAppointment = async (req, res) => {
       { new: true }
     );
 
+    //updating the count of the doctor after cancelling the appointment
+    await removeTimings(updatedAppointment.schedule_date, updatedAppointment.did, updatedAppointment.time);
+
     if (!updatedAppointment) {
       return res.status(404).json({ message: "Appointment not found" });
     }
@@ -160,57 +166,136 @@ export const deleteAppointment = async (req, res) => {
 
 //Doctor Diagnosis done in opd
 export const diagnoseOpd = async (req, res) => {
-  try {
-    const { id } = req.params;
-    const { notes, title, medicines, tests } = req.body;
+  const session = await mongoose.startSession(); // Start a transaction session
+  session.startTransaction();
 
+  try {
+    const { notes, medicines, tests, _id } = req.body;
+
+    //Step 1: Update the appointment status
     const updatedAppointment = await appointmentModel.findOneAndUpdate(
-      { _id: id },
+      { _id: _id },
       {
         status: "D",
         notes,
         discharge_date: new Date(),
-        title,
-        medicines,
-        tests
       },
-      { new: true }
+      { new: true, session } // Use the transaction session
     );
 
     if (!updatedAppointment) {
-      return res.status(404).json({ message: "Appointment not found" });
+      await session.abortTransaction();
+      session.endSession();
+      return res.status(404).json({ message: "Appointment not found", show: true });
     }
 
+    //Step 2: Prescribe Medicines
+    const status1 = await prescribeMedicine(_id, medicines, session);
+    if (!status1) {
+      await session.abortTransaction();
+      session.endSession();
+      return res.status(500).json({ message: "Failure in adding Medicines", show: true });
+    }
+
+    //Step 3: Prescribe Tests
+    const status2 = await prescribeTest(_id, tests, session);
+    if (!status2) {
+      await session.abortTransaction();
+      session.endSession();
+      return res.status(500).json({ message: "Failure in adding Tests", show: true });
+    }
+
+    //Commit the transaction if all steps succeed
+    await session.commitTransaction();
+    session.endSession();
+
     res.status(200).json({ message: "Diagnosis updated successfully", appointment: updatedAppointment });
+
   } catch (error) {
+    await session.abortTransaction(); // Rollback changes
+    session.endSession();
     console.error("Error updating diagnosis:", error);
     res.status(500).json({ message: "Error updating diagnosis", error });
   }
 };
 
+const getMedicineAndTest = async (aid,index) => {
+  try {
+    const medicines = await getMedicine(aid,index);
+    const tests = await getTests(aid,index);
+    return { medicines:medicines, tests:tests };
+  }
+  catch (error) {
+    console.error("Error fetching medicines and tests:", error);
+    throw new Error("Error fetching medicines and tests");
+  }
+};
 
 // Doctor screen: View patient's previous appointments
 export const getAllPatientApps = async (req, res) => {
   try {
     const { pid, did } = req.params; // Get parameters from the request
-    const appointments = await appointmentModel.find({ pid, did, status: 'D' });
 
-    res.status(200).json(appointments);
+    // Corrected sorting
+    const appointments = await appointmentModel.find({ pid, did, status: 'D' }).sort({ discharge_date: -1 });
+
+    // Convert to plain objects and fetch medicines/tests in parallel
+    const appointmentsWithDetails = await Promise.all(
+      appointments.map(async (app) => {
+        const { medicines, tests } = await getMedicineAndTest(app._id,1);
+        return { ...app.toObject(), medicines, tests }; // Convert to object and add properties
+      })
+    );
+
+    res.status(200).json(appointmentsWithDetails);
   } catch (error) {
     res.status(500).json({ message: "Error fetching appointments", error });
   }
 };
 
-// Get IPD appointment for the doctor (First, find 'confirm' status, then 'progress' status)
+// Get all IPD patients for the doctor
+export const getIPDPatients = async (req, res) => {
+  try {
+    const { did } = req.params;
+    const patients = await appointmentModel.find({ did, status: 'I' },{pname:1,mobile:1,pid:1,createdAt:1});
+
+    res.status(200).json(patients);
+  }
+  catch (error) {
+    console.error("Error fetching IPD patients:", error);
+    res.status(500).json({ message: "Error fetching IPD patients", error });
+  }
+};
+
+// Get IPD appointment of a patient for the doctor
+export const getIPDAppointment=async(req,res)=>{
+  try {
+    const { did, pid } = req.params;
+    const appointment = await appointmentModel.findOne({ did, pid, status: 'I' }).lean();
+
+    if (!appointment) {
+      return res.status(404).json({ message: "No IPD appointment found",show:true });
+    }
+
+    const { medicines, tests } = await getMedicineAndTest(appointment._id,0);
+    res.status(200).json({ _id:appointment._id, medicines, tests });
+  }
+  catch (error) {
+    console.error("Error fetching IPD appointment:", error);
+    res.status(500).json({ message: "Error fetching IPD appointment", error });
+  }
+};
+
+// Get OPD appointment for the doctor (First, find 'confirm' status, then 'progress' status)
 export const getOPDappointment = async (req, res) => {
   try {
-    const { did } = req.body;
+    const { did } = req.params;
     console.log(did);
 
     // Run both queries in parallel to reduce database calls
     const [appointmentToUpdate, inProgress] = await Promise.all([
       appointmentModel.findOne({ did: did, status: 'confirm' }).sort({ ctime: 1 }),
-      appointmentModel.findOne({ did: did, status: 'progress' }).sort({ ctime: 1 })
+      appointmentModel.findOne({ did: did, status: 'progress' })
     ])
 
     if (inProgress) {
@@ -223,7 +308,7 @@ export const getOPDappointment = async (req, res) => {
       );
       return res.status(200).json(appointmentToUpdate);
     } else {
-      return res.status(404).json({ message: 'No confirmed appointments found for this doctor' });
+      return res.status(404).json({ message: 'No confirmed appointments found for this doctor',warn:true });
     }
   } catch (error) {
     console.error("Error fetching IPD appointment:", error);
@@ -267,7 +352,10 @@ export const queuescreen = async (req, res) => {
 
     const appointments = await appointmentModel.aggregate([
       {
-        $match: { dep,status:'confirm' }, // Filter appointments by department
+        $match: { dep,status:{ $in: ['confirm', 'progress'] } }, // Filter appointments by department
+      },
+      {
+        $sort: { status:-1,ctime: 1 }, // Sort appointments by ctime
       },
       {
         $group: {
@@ -282,9 +370,7 @@ export const queuescreen = async (req, res) => {
           },
         },
       },
-      {
-        $sort: { "appointments.ctime": 1 }, // Sort appointments by ctime
-      },
+
     ]);
 
     res.status(200).json(appointments);
@@ -314,8 +400,3 @@ export const seeappointment = async (req, res) => {
     res.status(500).json({ message: "Error fetching appointments", error });
   }
 };
-
-
-
-
-

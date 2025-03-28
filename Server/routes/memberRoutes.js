@@ -17,10 +17,11 @@ router.get('/doctorTiming/:date/:did',getDoctortimings);
 
 //-------------------------------- Doctor Screen ----------------------------------------------
 //getting Doctor details with id.
-router.get('/emp/:id',getMemberWithId);
+router.get('/getById/:id',getMemberWithId);
 
 //updating the doctor details. ----Update this route
 router.post('/updateDetails',updateDoctorDetails);
+
 
 // --------------------------------- Admin Panel -------------------------------------------
 
@@ -36,6 +37,8 @@ router.get('/admin',getAdminEmployee);
 //update the roles of the employee for the admin panel
 router.post('/role',updateRole);
 router.delete('/role/:id',deleteRole);
+
+
 
 // --------------------------------- Unused ------------------------------------------------
 

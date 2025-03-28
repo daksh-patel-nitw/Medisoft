@@ -8,6 +8,27 @@ export const updateHelper = async (name, content) => {
   return doc;
 };
 
+//optimized the updation procees of the content
+export const updateOnlyContentHelper = async (name, value) => {
+  const doc = await helper.findOneAndUpdate(
+    { name }, 
+    { $push: { content: value } },
+    { new: true } 
+  );
+  return true;
+};
+
+//optimized the deletion procees of the content
+export const removeContentHelper = async (name, value) => {
+  const doc = await helper.findOneAndUpdate(
+    { name }, 
+    { $pull: { content: value } },
+    { new: true }
+  );
+  return false;
+};
+
+
 //generate Id
 export const generateId = async (item) => {
   const number = await helper.findOneAndUpdate(

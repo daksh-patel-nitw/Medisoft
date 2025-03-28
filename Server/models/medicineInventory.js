@@ -31,7 +31,7 @@ const UserSchema=new Schema(
         ps_c:{
             type:Number,
             default:0
-        }
+        },
     },{
         versionKey:false
     }
