@@ -21,6 +21,9 @@ const noTokengetRequest = (url) => {
 const noTokenputRequest = (url, data) => {
   return httpClient.executeNoTokenRequest( "put", url, data, null, header, false);
 };
+const noTokenStatusPutRequest = (url, data) => {
+  return httpClient.executeNoTokenStatusRequest( "put", url, data, null, header, false);
+};
 
 const noTokenStatusDeleteRequest = (url, id) => {
   // console.log( `${url}/${id}`);
@@ -62,6 +65,7 @@ export const apis = {
   noTokengetRequest,
   noTokenStatusPostRequest,
   noTokenStatusDeleteRequest,
+  noTokenStatusPutRequest,
   noTokenputRequest,
   noTokengetByIdRequest
 };

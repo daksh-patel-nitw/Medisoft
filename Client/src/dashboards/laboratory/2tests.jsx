@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { makeStyles } from '@mui/material//styles';
-import
-{
-    Grid,
+
+
+import {
+    Grid2 as Grid,
     Table,
     TableBody,
     TableCell,
@@ -13,102 +13,79 @@ import
     TextField,
     TablePagination
 } from '@mui/material/';
-import Autocomplete from '@mui/material/lab/Autocomplete';
+import Autocomplete from '@mui/material/Autocomplete';
 import Card from '@mui/material//Card';
 import CardContent from '@mui/material//CardContent';
-import { Delete, Edit } from '@mui/material/icons';
-import PageLayout from './pageLayout';
+import { Delete, Edit } from '@mui/icons-material';
+import { SideBar } from '../../components/sidebar';
+import { side_bar } from './utils';
+import { apis } from '../../Services/commonServices';
 import EditModal from './modalEdit';
 
-const useStyles = makeStyles({
-    table: {
-        minWidth: 100,
-    },
-});
 
 
-export default function App()
-{
+export default function App() {
     const [tests, setTests] = useState([]);
     const [openEditModal, setOpenEditModal] = useState(false);
     const [selectedMedicine, setSelectedMedicine] = useState(null);
     const [colname, setColname] = useState('');
-    useEffect(() =>
-    {
-        fetch('http://localhost:5000/api/alltest')
-            .then((res) => res.json())
-            .then((data) => { console.log(data); setTests(data) })
-            .catch((err) => console.error(err));
+    const fetchTests = async () => {
+        const data = await apis.noTokengetRequest('/lab');
+        setTests(data);
+    };
+    useEffect(() => {
+        fetchTests();
     }, []);
 
-    console.log(tests)
-    const classes = useStyles();
-    const handleDelete = async (id) =>
-    {
-        console.log(id);
-        await fetch(`http://localhost:5000/api/deletetest/${id}`, {
-            method: 'DELETE'
-        })
-            .then((res) => res.json())
-            .then((data) => { console.log(data); setTests(tests.filter((m) => m._id !== id)) })
-            .catch((err) => console.error(err));
+    // console.log(tests)
 
+    const handleDelete = async (id) => {
+        console.log(id);
+        const status = await apis.noTokenStatusDeleteRequest('/lab', id);
+        if (status === 200) {
+            setTests(tests.filter((m) => m._id !== id))
+        }
     };
 
-    const handleEdit = (id, updatedMedicine, column) =>
-    {
-        console.log(id);
-        setTests((prevMedicines) => prevMedicines.map((m) =>
-        {
-            if (m._id === id) {
-                return { ...m, [column]: updatedMedicine };
-            }
-            return m;
-        }));
-    };
-
-    const handleOpenEditModal = (medicine, column) =>
-    {
+    const handleOpenEditModal = (medicine, column) => {
         setSelectedMedicine(medicine);
-        console.log("MName", medicine, "Column:", column);
+        // console.log("MName", medicine, "Column:", column);
         setColname(column);
         setOpenEditModal(true);
     };
 
-    const handleCloseEditModal = () =>
-    {
+    const handleCloseEditModal = () => {
         setOpenEditModal(false);
     };
-    const arr = ["Test Name", "Price","Required Details","Normal Range","Delete"];
+    const arr = ["Test Name", "Price", "Required Details", "Normal Range", "Timings", "Delete"];
     const [searchValue, setSearchValue] = useState('');
 
-    const handleSearch = (event, newValue) =>
-    {
-        console.log(tests);
+    const handleSearch = (event, newValue) => {
+        // console.log(tests);
         setSearchValue(newValue ? newValue : '');
     };
 
-    const handleMe=()=>{
+    const handleMe = () => {
         console.log(tests);
     }
 
     const rowsPerPageOptions = [7];
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(rowsPerPageOptions[0]);
-  
+
     const handleChangePage = (event, newPage) => {
-      setPage(newPage);
-    //   console.log(newPage);
+        setPage(newPage);
+        //   console.log(newPage);
     };
     const handleChangeRowsPerPage = (event) => {
-      setRowsPerPage(parseInt(event.target.value, 10));
+        setRowsPerPage(parseInt(event.target.value, 10));
     };
-  
+
     return (
 
-        <SideBar>
+        <SideBar arr={side_bar}>
             <Grid container spacing={2}>
-                <Grid size={{xs:12}>
+                <Grid size={{ xs: 12 }}>
                     <Card className="partition">
                         <CardContent>
                             <Autocomplete
@@ -125,7 +102,7 @@ export default function App()
                                 )}
                             />
                             <TableContainer >
-                                <Table size="small" className={classes.table}>
+                                <Table size="small" sx={{ minWidth: 100 }}>
                                     <TableHead style={{ backgroundColor: '#1F3F49' }}>
                                         <TableRow>
                                             {arr.map((element) => (
@@ -157,8 +134,26 @@ export default function App()
                                                     onClick={() => handleOpenEditModal(m, 'normal')}
                                                 >
                                                     <Edit />
-                                                </IconButton></TableCell>
-                                                
+                                                </IconButton>
+                                                </TableCell>
+
+                                                <TableCell>
+                                                    <Grid container spacing ={1}>
+                                                        <Grid container direction='column' spacing={1}>
+                                                            {m.timing.map((t,index) => (
+                                                                <Grid>
+                                                                    {index+1+'. '+t}
+                                                                </Grid>
+                                                            ))}
+                                                        </Grid> 
+                                                        <Grid>
+                                                            <IconButton onClick={() => handleOpenEditModal(m, 'timing')}>
+                                                                <Edit />
+                                                            </IconButton>
+                                                        </Grid>
+                                                    </Grid>
+                                                </TableCell>
+
                                                 <TableCell>
                                                     <IconButton
                                                         onClick={() =>
@@ -174,21 +169,20 @@ export default function App()
                                     </TableBody>
                                 </Table>
                                 <TablePagination
-                            rowsPerPageOptions={rowsPerPageOptions}
-                            component="div"
-                            count={tests && tests.length}
-                            rowsPerPage={rowsPerPage}
-                            page={page}
-                            onPageChange={handleChangePage}
-                            onRowsPerPageChange={handleChangeRowsPerPage}
-                            />
+                                    rowsPerPageOptions={rowsPerPageOptions}
+                                    component="div"
+                                    count={tests && tests.length}
+                                    rowsPerPage={rowsPerPage}
+                                    page={page}
+                                    onPageChange={handleChangePage}
+                                    onRowsPerPageChange={handleChangeRowsPerPage}
+                                />
                                 {selectedMedicine && (
                                     <EditModal
                                         open={openEditModal}
                                         column={colname}
                                         handleClose={handleCloseEditModal}
-                                        handleEdit={handleEdit}
-                                        medicine={selectedMedicine}
+                                        test={selectedMedicine}
                                     />
                                 )}
                             </TableContainer>
@@ -196,7 +190,7 @@ export default function App()
                     </Card>
                 </Grid>
             </Grid>
-        </SideBar>
+        </SideBar >
 
     );
 }

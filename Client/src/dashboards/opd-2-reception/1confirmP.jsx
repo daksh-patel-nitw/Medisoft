@@ -16,22 +16,12 @@ import Card from '@mui/material/Card';
 import CardContent from '@mui/material//CardContent';
 import { SideBar } from "../../components/sidebar.jsx";
 import EditModal from './modalEdit';
-import { arr } from './pageLayout';
+import { arr, arr1, arr2, initialValues } from './utils.js';
 import { Delete } from '@mui/icons-material';
 import { apis } from '../../Services/commonServices.js';
 
 
-const arr1 = ['pid', 'pname', 'mobile', 'dname', 'time', 'weight', "height", 'doctor_qs',];
-const arr2 = ["Patient ID", "Patient Name", "Mobile", "Doctor Name", "Time", "Weight", "Height", "Doctor questions"];
-
-const initialValues = arr1.reduce(
-  (obj, key) => ({ ...obj, [key]: '' }),
-  {}
-);
-
 export default function App() {
-
-  // Patient Values
   const [patValues, setPat] = useState(initialValues);
   const [pData, setD] = useState([]);
 
@@ -44,14 +34,9 @@ export default function App() {
     fetchData('cardiology');
   }, []);
 
-
   //clear Values
   const clearValues = (valf) => {
-    const newValues = {};
-    Object.entries(patValues).forEach(([key, value]) => {
-      newValues[key] = '';
-    });
-    setPat(newValues);
+    setPat(initialValues);
   };
 
   //Filters
@@ -93,18 +78,23 @@ export default function App() {
   const [openEditModal, setOpenEditModal] = useState(false);
   const [selectedApp, setSelectedApp] = useState(null);
 
-
-
   const handleDelete = async (id) => {
     console.log(id);
-    await apis.noTokendeleteRequest('/appointment',id);
+    // const status = 200;
+    const status = await apis.noTokenStatusDeleteRequest('/appointment', id);
+    if (status === 200) {
+      setD(pData.filter(e => e._id !== id));
+    }
   };
 
   const handleEdit = async (updated) => {
-    console.log("Updated in the 1", updated);
-    setD(pData.filter(e => e.pid !== updated.pid));
+    // console.log("Updated in the 1", updated);
+    
+    const status=await apis.noTokenStatusPutRequest('/appointment', updated);
+    // console.log("Status",status);
+    if(status===200)
+      setD(pData.filter(e => e._id !== updated._id));
 
-    await apis.noTokenputRequest('/appointment', updated);
   };
 
   const handleOpenEditModal = (app) => {
@@ -116,7 +106,6 @@ export default function App() {
   const handleCloseEditModal = () => {
     setOpenEditModal(false);
   };
-
 
   const getTable = () => {
     return (
@@ -172,13 +161,15 @@ export default function App() {
     <SideBar arr={arr}>
       <Grid container spacing={2} >
         <Grid size={{ xs: 12 }}>
-          <Card className="partition" style={{ height: 500 }}>
+          <Card className="partition" style={{ height: "80vh" }}>
             <CardContent>
               <Grid container spacing={2}>
                 <Grid size={{ xs: 6 }}> {autoComp(pData, 'pid', "Patient ID", 1)}</Grid>
                 <Grid size={{ xs: 6 }}> {autoComp(pData, 'pname', "Patient Name", 0)}</Grid>
 
-                <Grid size={{ xs: 12 }}>{getTable()}</Grid>
+                <Grid size={{ xs: 12 }} style={{ overflow: "auto", height: "60vh" }}>
+                  {getTable()}
+                </Grid>
               </Grid>
             </CardContent>
           </Card>

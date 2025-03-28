@@ -1,99 +1,130 @@
 import React from 'react';
 import { useState } from 'react';
-import Grid from '@mui/material//Grid2;
+import Grid from '@mui/material//Grid2';
 import Card from '@mui/material//Card';
 import CardContent from '@mui/material//CardContent';
 import TextField from '@mui/material//TextField';
+import IconButton from '@mui/material//IconButton';
+import { Delete } from '@mui/icons-material';
 import Button from '@mui/material//Button';
-import PageLayout from './pageLayout';
+import { arr1, arr2, side_bar, initialTestState } from './utils';
+import { SideBar } from '../../components/sidebar';
+import { apis } from '../../Services/commonServices';
 
-const arr1 = [ 'name',  'price',  'pat_details',  'normal',];
-const arr2 = ["Test Name", "Test Price", "Required Details", "Normal Range"];
-const initialized=arr1.reduce(
-    (obj, key) => ({ ...obj, [key]: ''}),
-    {}
-  );
+export default function App() {
+  const [formValues, setFormValues] = useState(initialTestState);
+  const [timings, setTiming] = useState('');
 
-export default function App()
-{
-  const [formValues, setFormValues] = useState(initialized);
-  
-
-  const handleSubmit = (event) =>
-  {
+  const handleSubmit = async (event) => {
     event.preventDefault();
-    // perform any necessary actions with formValues
-    alert(JSON.stringify(formValues));
-    fetch('http://localhost:5000/api/newtest', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(formValues)
-    })
-    .then(response => response.json())
-    .then(data => {
-      console.log(data);
-      setFormValues(initialized);
-    })
-    .catch(error => console.error(error));
+    const status = await apis.noTokenStatusPostRequest('/lab', formValues);
+    if (status === 200) {
+      setFormValues(initialTestState);
+    }
+
   };
 
-  const handleInputChange = (event) =>
-  {
+  const handleInputChange = (event) => {
     const { name, value } = event.target;
-    setFormValues({ ...formValues, [name]: value });
+    console.log(name, value);
+    if (name !== 'timing')
+      setFormValues({ ...formValues, [name]: value });
+    else
+      setTiming(value);
   };
 
-  const makeUI=()=>{
-      return(
-        arr1.map((fieldName, index) => (
-                      
-            <Grid item key={fieldName}> 
-                <TextField
-                  fullWidth
-                  name={fieldName}
-                  id={fieldName}
-                  label={arr2[index]}
-                  variant="outlined"
-                  value={formValues[fieldName]}
-                  onChange={handleInputChange}
-                  required
-                />
-    
-             </Grid>          
-          ))
-      )
+  const addTiming = () => {
+    console.log(timings);
+    setFormValues({ ...formValues, timing: [...formValues.timing, timings] });
+    setTiming('');
+  }
+  const delteTiming = (value) => {
+    setFormValues({ ...formValues, timing: formValues.timing.filter(e => e != value) });
+    setTiming('');
+  }
+
+  const makeUI = () => {
+    return (
+      arr1.map((fieldName, index) => (
+
+        <>
+          <Grid size={{ xs: index === 4 ? 8 : 12 }} key={fieldName}>
+            <TextField
+              fullWidth
+              name={fieldName}
+              id={fieldName}
+              label={arr2[index]}
+              variant="outlined"
+              value={index === 4 ? timings : formValues[fieldName]}
+              type={index === 1 ? "number" : "text"}
+              onChange={handleInputChange}
+              required={index === 4 ? false : true}
+            />
+          </Grid>
+          {index == 4 && <>
+            <Grid size={{ xs: 4 }}>
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={addTiming}
+              >
+                Add
+              </Button>
+            </Grid >
+
+            {formValues.timing.map((time, index) => (
+              <>
+                <Grid size={{ xs: 3 }} />
+                <Grid container size={{ xs: 6 }}>
+                  <Grid  style={{ display: "flex", alignItems: "center" }} size={{ xs: 9 }}>
+                    {time}
+
+                  </Grid>
+                  <Grid size={{ xs: 3 }}>
+                    <IconButton onClick={() => delteTiming(time)}>
+                      <Delete />
+                    </IconButton>
+                  </Grid>
+                </Grid>
+                <Grid size={{ xs: 3 }} />
+              </>
+            ))}
+
+          </>}
+        </>
+      ))
+    )
   }
 
   return (
 
-      <SideBar>
-        <form onSubmit={handleSubmit} autoComplete="off">
-          <Grid container spacing={2}>
-            <Grid size={{xs:12} sm={6}>
-              <Card className="partition" >
-                <CardContent>
-                  <h2>Add New Test</h2>
-                  <Grid container direction="column" spacing={2}>
-                    {makeUI()}
-                    <Grid item>
-                      <Button
-                        type="submit"
-                        variant="contained"
-                        color="primary"
+    <SideBar arr={side_bar}>
+      <form onSubmit={handleSubmit} autoComplete="off">
+        <Grid container spacing={2}>
+          <Grid size={{ xs: 3 }} />
+          <Grid size={{ xs: 6 }}>
+            <Card className="partition" >
+              <CardContent>
+                <h2>Add New Test</h2>
+                <Grid container spacing={2}>
+                  {makeUI()}
 
-                      >
-                        Add Test
-                      </Button>
-                    </Grid>
+                  <Grid size={{ xs: 12 }}>
+                    <Button
+                      type="submit"
+                      variant="contained"
+                      color="secondary"
+                    >
+                      Add Test
+                    </Button>
                   </Grid>
-                </CardContent>
-              </Card>
-            </Grid>
+                </Grid>
+              </CardContent>
+            </Card>
           </Grid>
-        </form>
-      </SideBar>
- 
+        </Grid>
+      </form>
+    </SideBar>
+
   );
 }

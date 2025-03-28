@@ -2,8 +2,8 @@ import Tabs from '@mui/material//Tabs';
 import Tab from '@mui/material//Tab';
 import React, { useState,useEffect } from 'react';
 import TableSortLabel from '@mui/material//TableSortLabel';
+import Grid from '@mui/material/Grid2';
 import {
-    Grid,
     Table,
     TableBody,
     TableCell,
@@ -16,7 +16,7 @@ import {
 } from '@mui/material/';
 import Card from '@mui/material//Card';
 import CardContent from '@mui/material//CardContent';
-import PageLayout from './pageLayout';
+import side_bar from './utils';
 import Modal from './3modal';
 
 import Autocomplete from '@mui/material/lab/Autocomplete';
@@ -61,7 +61,7 @@ export default function App()
       };
     const [fval,setFval]=useState({pid:'',pname:''})
     const autoComp = (property, label) => (
-        <Grid size={{xs:4}>
+        <Grid size={{xs:4}}>
           <Autocomplete
             freeSolo
             options={test[value]&&test[value].map((option) => option[property])}
@@ -158,7 +158,7 @@ export default function App()
         <SideBar>
             <Card className="partition">
         <Grid container spacing={2}>
-                <Grid size={{xs:12}>
+                <Grid size={{xs:12}}>
                 <Tabs
               value={value}
               indicatorColor="primary"
@@ -175,7 +175,7 @@ export default function App()
                     <Grid container spacing={2}>
                         {autoComp('pname', 'Patient Name')}
                         {autoComp('pid', 'Patient ID')}
-                        <Grid size={{xs:12}>
+                        <Grid size={{xs:12}}>
                      
 
                             <TableContainer >

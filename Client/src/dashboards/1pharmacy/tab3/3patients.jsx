@@ -1,9 +1,8 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import CustomTable from '../../../../components/CTable';
+import CustomTable from '../../../components/CTable';
 import { TableRow, TableCell, Button, Card, CardContent, Tab, Tabs } from '@mui/material';
-import AutoComp from '../../../../components/CAutocomplete';
+import AutoComp from '../../../components/CAutocomplete';
 import Grid from '@mui/material/Grid2';
-import PageLayout from './pageLayout';
 import pharmacyServices from '../../services/pharmacyServices';
 
 export default function App() {

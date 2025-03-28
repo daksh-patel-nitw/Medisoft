@@ -1,0 +1,96 @@
+:root {
+    --primary: #1E88E5; /* Strong Blue */
+    --secondary: #B3E5FC; /* Light Blue */
+    --accent: #81C784; /* Soft Green */
+    --background: #F5F5F5; /* Soft Gray */
+    --text: #37474F; /* Dark Gray */
+    --text-light: #666666; /* Lighter Text */
+}
+
+/* Container for Scrollable Table */
+
+
+
+/* Table Styling */
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+
+
+.table td, .table th {
+    text-align: center;
+    padding: 7.5px;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+}
+
+/* Alternating Row Colors */
+.table tr:nth-child(even) {
+    background-color: var(--background);
+}
+/* Row Styling */
+.table tr:hover {
+    background: var(--secondary); /* Light blue on hover */
+    transition: background 0.3s ease-in-out;
+}
+
+/* .table tr:nth-child(odd) {
+    background-color: white;
+} */
+
+/* List inside Table */
+.table li {
+    text-align: left;
+}
+
+/* Scrollbar Styling */
+.scrollable-table::-webkit-scrollbar {
+    width: 8px;
+}
+
+.scrollable-table::-webkit-scrollbar-track {
+    background: var(--background);
+    border-radius: 5px;
+}
+
+.scrollable-table::-webkit-scrollbar-thumb {
+    background: var(--text-light);
+    border-radius: 5px;
+}
+
+.scrollable-table::-webkit-scrollbar-thumb:hover {
+    background: var(--primary);
+}
+
+/* Column Width Adjustments */
+.table td:nth-child(1) { width: 20%; } /* Name column */
+.table td:nth-child(2) { width: 25%; } /* Time column */
+.table td:nth-child(3),
+.table td:nth-child(4),
+.table td:nth-child(5) { width: 15%; } /* Other columns */
+.table td:nth-child(6) { width: 10%; } /* Delete button */
+
+/* Rounded Borders */
+.table{
+    border-radius: 12px;
+}
+
+/* Soft Border for Entire Table */
+.table {
+    border: 1px solid var(--text-light);
+}
+/* Header Styling */
+.table th {
+    position: sticky;
+    background-color: var(--primary);
+    color: white;
+    text-align: center;
+    top: 0;
+    z-index: 2;
+    padding: 7px;
+}
