@@ -20,7 +20,7 @@ export default function App() {
   // Fetch Doctor Details
   const fetchDoctorDetails = async (id) => {
     try {
-      const data = await apis.noTokengetByIdRequest("member/emp", id);
+      const data = await apis.noTokengetByIdRequest("member/getById", id);
       console.log(data);
       setDetails(data);
     } catch (error) {

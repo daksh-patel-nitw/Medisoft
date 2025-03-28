@@ -1,11 +1,12 @@
 import React, { useCallback, useMemo } from 'react';
 import { TableRow, TableCell, IconButton } from '@mui/material';
+import { TableContainer, Table, TableHead, TableBody, CircularProgress } from '@mui/material';
 import { Delete, Edit } from '@mui/icons-material';
-import CustomTable from '../../../components/CTable';
 
-const MedicinesTable = ({ medicines, handleDelete, handleOpenEditModal }) => {
+
+const MedicinesTable = ({ hasMore, lastElementRef, medicines, handleDelete, handleOpenEditModal }) => {
   const columns = useMemo(
-    () => ["Medicine Name", "Type", "Package", "Package Available", "Free Available", "Price", "Action"], 
+    () => ["Medicine Name", "Type", "Package", "Package Available", "Free Pieces", "Price", "Action"],
     []
   );
 
@@ -42,7 +43,32 @@ const MedicinesTable = ({ medicines, handleDelete, handleOpenEditModal }) => {
     ));
   }, [medicines, handleOpenEditModal, handleDelete]);
 
-  return <CustomTable columns={columns} generateRows={generateRows} />;
+  return (
+    <TableContainer>
+      <Table size="small" className="table">
+        <TableHead style={{ backgroundColor: '#1F3F49' }}>
+          <TableRow>
+            {columns.map((element, index) => (
+              <TableCell key={index + "heading"} style={{ color: 'white', fontWeight: 'bold' }}>
+                {element}
+              </TableCell>
+            ))}
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {generateRows()}
+
+          {hasMore && <TableRow ref={lastElementRef}>
+            <TableCell colSpan={7} align="center">
+              <CircularProgress size={24} />
+            </TableCell>
+          </TableRow>}
+
+        </TableBody>
+      </Table>
+    </TableContainer>
+  )
+  // <CustomTable columns={columns} generateRows={generateRows} />;
 };
 
 export default MedicinesTable;

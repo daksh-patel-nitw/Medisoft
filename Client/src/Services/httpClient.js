@@ -30,7 +30,10 @@ client.interceptors.response.use(
           window.location.href = "/";
         }, 1000);
       } else {
-        toast.error(`Error: ${error.response.data.message || error.response.statusText}`);
+        if(error.response.data.warn===true){
+          toast.warn(error.response.data.message);
+        }else
+          toast.error(`Error: ${error.response.data.message || error.response.statusText}`);
       }
       console.log("error interceptors", error.response.status);
     } else if (error.request) {
