@@ -2,6 +2,9 @@ import { useState } from "react";
 import Grid from "@mui/material/Grid2";
 import IconButton from "@mui/material/IconButton";
 import Delete from "@mui/icons-material/Delete";
+import Card from "@mui/material/Card";
+import CardContent from "@mui/material/CardContent";
+import Button from "@mui/material/Button";
 import './styles.css';
 
 export const sidebar_utils = [
@@ -20,7 +23,7 @@ export const sidebar_utils = [
 ]
 
 export const MedicineTable = ({ medicines, handleDelete, height }) => (
-  <Grid className="scrollable-table" size={{ xs: 12 }} sx={{
+  <Grid className="scrollable-element" size={{ xs: 12 }} sx={{
     maxHeight: height,
     overflowY: 'auto'
   }}>
@@ -65,7 +68,7 @@ export const MedicineTable = ({ medicines, handleDelete, height }) => (
 export const TestView = ({ tests, handleDelete, height }) => (
   <>
     <Grid size={{ xs: 3 }} />
-    <Grid size={{ xs: 12 }} className="scrollable-table" sx={{
+    <Grid size={{ xs: 12 }} className="scrollable-element" sx={{
       maxHeight: height,
       overflowY: 'auto'
     }}>
@@ -101,42 +104,79 @@ export const TestView = ({ tests, handleDelete, height }) => (
   </>
 )
 
-export const TestUI = ({ height1,height2,openEditModal }) => {
-  const handleDelete = (value, column) => {
-    setAp((prevAp) => ({
-      ...prevAp,
-      [column]: prevAp[column].filter((item) => item._id !== value),
-    }));
-  };
 
-  (
+/* Lab Tests UI*/
+export const TestUI = ({ Ap, openEditModal, handleDelete,height1,height2 }) => {
+  return (
+      < Grid size={{ xs: 12 }}>
+          <Card className="partition" style={{ height: height1 }}>
+              <Grid container size={{ xs: 12 }}>
+                  <Grid size={{ xs: 6 }} style={{ padding: 8, fontWeight: 'Bold', fontSize: '20px' }}>
+                      Lab Tests:
+                  </Grid>
+                  <Grid size={{ xs: 6 }} container>
+                      <Button
+                          onClick={() => openEditModal(1)}
+                          variant="contained"
+                          color="primary"
+                          fullWidth
+                          sx={{ height: '100%',fontWeight:"bold", borderRadius: 0 }}
+                      >
+                          Add Test
+                      </Button>
+                  </Grid>
+                  <Grid size={{ xs: 12 }}>
+                      <hr style={{ margin: 0 }} />
+                  </Grid>
+              </Grid>
 
-    <Card className="partition" style={{ height: height1 }}>
-      <Grid container size={{ xs: 12 }}>
-        <Grid size={{ xs: 6 }} style={{ padding: 8, fontWeight: 'Bold', fontSize: '20px' }}>
-          Lab Tests:
-        </Grid>
-        <Grid size={{ xs: 6 }} container>
-          <Button
-            onClick={() => openEditModal(1)}
-            variant="contained"
-            color="primary"
-            fullWidth
-            sx={{ height: '100%', borderRadius: 0 }}
-          >
-            Add Test
-          </Button>
-        </Grid>
-        <Grid size={{ xs: 12 }}>
-          <hr style={{ margin: 0 }} />
-        </Grid>
-      </Grid>
-
-      <CardContent style={{ paddingTop: '9px' }}>
-        <Grid container justify="center" xs={12}>
-          <TestView height={height2} tests={Ap.tests} handleDelete={(value) => handleDelete(value, 'tests')} />
-        </Grid>
-      </CardContent>
-    </Card>
+              <CardContent style={{ paddingTop: '9px' }}>
+                  <Grid container justify="center" xs={12}>
+                      <TestView height={height2} tests={Ap.tests} handleDelete={(value) => handleDelete(value, 'tests')} />
+                  </Grid>
+              </CardContent>
+          </Card>
+      </Grid >
   )
+}
+
+// Medicine UI
+export const MedicneUI = ({ Ap, openEditModal, handleDelete,height1,height2 }) => {
+
+  return (<Grid size={{ xs: 12 }}>
+      <Card className="partition" style={{ height: height1 }}>
+
+
+          <Grid container size={{ xs: 12 }}>
+              <Grid size={{ xs: 6 }} style={{ padding: 8, fontWeight: 'Bold', fontSize: '20px' }}>
+                  Medicines:
+              </Grid>
+              <Grid size={{ xs: 6 }} container>
+                  <Button
+                      onClick={() => openEditModal(0)}
+                      variant="contained"
+                      color="primary"
+                      fullWidth
+                      sx={{ height: '100%',fontWeight:"bold", borderRadius: 0 }}
+                  >
+                      Add Medicine
+                  </Button>
+              </Grid>
+              <Grid size={{ xs: 12 }}>
+                  <hr style={{ margin: 0 }} />
+              </Grid>
+          </Grid>
+
+          <CardContent style={{ paddingTop: '9px' }}>
+              <Grid container justify="center" xs={12}>
+                  <MedicineTable
+                      medicines={Ap.medicines}
+                      handleDelete={(value) => handleDelete(value, 'medicines')}
+                      height={height2}
+                  />
+              </Grid>
+          </CardContent>
+
+      </Card>
+  </Grid>)
 }

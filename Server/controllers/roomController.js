@@ -150,6 +150,19 @@ export const bookRoom = async (req, res) => {
     }
 };
 
+//Get room with the specific aid
+export const getRoomWithAid = async (aid) => {
+    try {
+        const room = await roomInventoryModel.findOne({ aid});
+        if (!room) return res.status(404).json({ message: "Room not found" });
+        console.log(room);
+        return room;
+    } catch (err) {
+        console.error(err);
+        return false;
+    }
+};
+
 //Free or discharge room
 export const dischargeRoom = async (req, res) => {
     try {

@@ -1,12 +1,13 @@
 import appointmentModel from '../models/appointment.js'
-import { addTimings, removeTimings} from '../services/getDoctorTimings.js';
+import { addTimings, removeTimings } from '../services/getDoctorTimings.js';
 import generateBill from '../utils/billUtils.js';
-import {updateMember} from './memberController.js';
-import { prescribeTest,getTests } from './labController.js';
-import { prescribeMedicine,getMedicine } from './medicinesController.js';
+import { updateMember } from './memberController.js';
+import { prescribeTest, getTests } from './labController.js';
+import { prescribeMedicine, getMedicine } from './medicinesController.js';
+import { getRoomWithAid } from './roomController.js';
 import mongoose from 'mongoose';
 
-export const bookAppointment = async (type,b) => {
+export const bookAppointment = async (type, b) => {
   try {
     const newA = new appointmentModel({
       pid: b.pid,
@@ -22,11 +23,11 @@ export const bookAppointment = async (type,b) => {
       newA.schedule_date = b.schedule_date;
       newA.time = b.time;
       newA.doctor_qs = b.qs;
-      newA.price=b.price;
-      
+      newA.price = b.price;
+
       //updating the opd status of the patient to avoid multiple bookings.
-      await updateMember(b.pid,{opd:1});
-      
+      await updateMember(b.pid, { opd: 1 });
+
       // Updating the time slots of the doctor after booking
       await addTimings(b.schedule_date, b.did, b.time, b.count - 1);
 
@@ -38,7 +39,7 @@ export const bookAppointment = async (type,b) => {
     await newA.save();
     console.log(newA);
     return newA._id;
-  }catch (error) {
+  } catch (error) {
     console.error(error);
     throw new Error("Error booking appointment");
   }
@@ -49,8 +50,8 @@ export const makeAppointment = async (req, res) => {
   const b = req.body;
   console.log(b);
   const { type } = req.params;
-  try{
-    const aid=await bookAppointment(type,b);
+  try {
+    const aid = await bookAppointment(type, b);
     res.status(200).json({ message: "Booking is Successfull", show: true });
   } catch (error) {
     console.error(error);
@@ -96,11 +97,11 @@ export const confirmAppointment = async (req, res) => {
     console.log(updatedP);
 
     // pid, price, aid, description, type, did = null , date = new Date()
-    
-    await generateBill(updatedP.pid, updatedP.price,updatedP.aid, "Doctor Fees", 'doctor', updatedP.did);
+
+    await generateBill(updatedP.pid, updatedP.price, updatedP.aid, "Doctor Fees", 'doctor', updatedP.did);
     // console.log("Bill in Route:", newBill)
 
-    res.status(200).json({ message: "Confirmed Successfully.",show:true });
+    res.status(200).json({ message: "Confirmed Successfully.", show: true });
 
   } catch (error) {
     console.error(error);
@@ -139,7 +140,7 @@ export const getCounter2app = async (req, res) => {
 //Cancel the appointment
 export const deleteAppointment = async (req, res) => {
   const { id } = req.params;
-  console.log("Received ID in backend:", id); 
+  console.log("Received ID in backend:", id);
   try {
     const { id } = req.params;
     console.log(id);
@@ -157,7 +158,7 @@ export const deleteAppointment = async (req, res) => {
       return res.status(404).json({ message: "Appointment not found" });
     }
 
-    res.status(200).json({ message: "Appointment cancelled successfully", show:true });
+    res.status(200).json({ message: "Appointment cancelled successfully", show: true });
   } catch (error) {
     console.error("Error canceling appointment:", error);
     res.status(500).json({ message: "Error canceling appointment", error });
@@ -209,7 +210,7 @@ export const diagnoseOpd = async (req, res) => {
     await session.commitTransaction();
     session.endSession();
 
-    res.status(200).json({ message: "Diagnosis updated successfully", appointment: updatedAppointment });
+    res.status(200).json({ message: "Diagnosis updated successfully", show: true });
 
   } catch (error) {
     await session.abortTransaction(); // Rollback changes
@@ -219,11 +220,11 @@ export const diagnoseOpd = async (req, res) => {
   }
 };
 
-const getMedicineAndTest = async (aid,index) => {
+const getMedicineAndTest = async (aid, index) => {
   try {
-    const medicines = await getMedicine(aid,index);
-    const tests = await getTests(aid,index);
-    return { medicines:medicines, tests:tests };
+    const medicines = await getMedicine(aid, index);
+    const tests = await getTests(aid, index);
+    return { medicines: medicines, tests: tests };
   }
   catch (error) {
     console.error("Error fetching medicines and tests:", error);
@@ -242,7 +243,7 @@ export const getAllPatientApps = async (req, res) => {
     // Convert to plain objects and fetch medicines/tests in parallel
     const appointmentsWithDetails = await Promise.all(
       appointments.map(async (app) => {
-        const { medicines, tests } = await getMedicineAndTest(app._id,1);
+        const { medicines, tests } = await getMedicineAndTest(app._id, 1);
         return { ...app.toObject(), medicines, tests }; // Convert to object and add properties
       })
     );
@@ -257,7 +258,7 @@ export const getAllPatientApps = async (req, res) => {
 export const getIPDPatients = async (req, res) => {
   try {
     const { did } = req.params;
-    const patients = await appointmentModel.find({ did, status: 'I' },{pname:1,mobile:1,pid:1,createdAt:1});
+    const patients = await appointmentModel.find({ did, status: 'I' }, { pname: 1, mobile: 1, pid: 1, createdAt: 1 });
 
     res.status(200).json(patients);
   }
@@ -268,23 +269,50 @@ export const getIPDPatients = async (req, res) => {
 };
 
 // Get IPD appointment of a patient for the doctor
-export const getIPDAppointment=async(req,res)=>{
+export const getIPDAppointment = async (req, res) => {
+
   try {
     const { did, pid } = req.params;
     const appointment = await appointmentModel.findOne({ did, pid, status: 'I' }).lean();
-
     if (!appointment) {
-      return res.status(404).json({ message: "No IPD appointment found",show:true });
+      return res.status(404).json({ message: "No IPD appointment found", show: true });
     }
 
-    const { medicines, tests } = await getMedicineAndTest(appointment._id,0);
-    res.status(200).json({ _id:appointment._id, medicines, tests });
-  }
-  catch (error) {
+    const aid = appointment._id.toString();
+
+    console.log("Appointment ID:", aid);
+    const { medicines, tests } = await getMedicineAndTest(aid, 0);
+
+    console.log(medicines, tests);
+    // -------- Group by date --------
+    const groupedData = {};
+
+    // First, group medicines by date
+    medicines.forEach(med => {
+      groupedData[med.date] = groupedData[med.date] || { date: med.date, medicines: [], tests: [] };
+      groupedData[med.date].medicines.push(...med.medicines);
+    });
+
+    // Then, group tests by date
+    tests.forEach(test => {
+      groupedData[test.date] = groupedData[test.date] || { date: test.date, medicines: [], tests: [] };
+      groupedData[test.date].tests.push(...test.tests);
+    });
+
+    // Get the room details
+    const room=await getRoomWithAid(aid)
+
+    // Convert groupedData into an array
+    const result = Object.values(groupedData);
+
+    res.status(200).json({dep:room.dep,room:room.room_no,data:result});
+
+  } catch (error) {
     console.error("Error fetching IPD appointment:", error);
     res.status(500).json({ message: "Error fetching IPD appointment", error });
   }
 };
+
 
 // Get OPD appointment for the doctor (First, find 'confirm' status, then 'progress' status)
 export const getOPDappointment = async (req, res) => {
@@ -308,7 +336,7 @@ export const getOPDappointment = async (req, res) => {
       );
       return res.status(200).json(appointmentToUpdate);
     } else {
-      return res.status(404).json({ message: 'No confirmed appointments found for this doctor',warn:true });
+      return res.status(404).json({ message: 'No confirmed appointments found for this doctor', warn: true });
     }
   } catch (error) {
     console.error("Error fetching IPD appointment:", error);
@@ -330,18 +358,63 @@ export const getIpdappointmentList = async (req, res) => {
 
 // Update IPD patient details
 export const updateIPDpat = async (req, res) => {
+
+  const session = await mongoose.startSession(); // Start a transaction session
+  session.startTransaction();
+  console.log(req.body);
   try {
-    const updatedEmployee = req.body; // Get the updated employee data from the request body
-    const updatedAppointment = await appointmentModel.findOneAndUpdate(
-      { _id: updatedEmployee._id },
-      { $set: updatedEmployee },
-      { new: true }
-    );
-    console.log("Update result:", updatedAppointment);
-    res.status(200).json(updatedAppointment);
+    const { notes, medicines, tests, _id } = req.body;
+
+    //Step 1: Update the appointment status
+    if (notes) {
+      console.log("here");
+      const updatedAppointment = await appointmentModel.findOneAndUpdate(
+        { _id: _id },
+        {
+          notes,
+        },
+        { new: true, session } // Use the transaction session
+      );
+
+      if (!updatedAppointment) {
+        await session.abortTransaction();
+        session.endSession();
+        return res.status(404).json({ message: "Appointment not found", show: true });
+      }
+    }
+
+
+    //Step 2: Prescribe Medicines
+    const status1 = await prescribeMedicine(_id, medicines, session);
+    if (!status1) {
+      await session.abortTransaction();
+      session.endSession();
+      return res.status(500).json({ message: "Failure in adding Medicines", show: true });
+    }
+
+    //Step 3: Prescribe Tests
+    const status2 = await prescribeTest(_id, tests, session);
+    if (!status2) {
+      await session.abortTransaction();
+      session.endSession();
+      return res.status(500).json({ message: "Failure in adding Tests", show: true });
+    }
+
+    //Commit the transaction if all steps succeed
+    await session.commitTransaction();
+
+
+    res.status(200).json({ message: "Diagnosis updated successfully", show: true });
+
   } catch (error) {
-    console.error("Update error:", error);
-    res.status(500).json({ message: "Error updating IPD patient", error });
+    if (session.inTransaction()) {
+      await session.abortTransaction();
+    }
+
+    console.error("Error updating diagnosis:", error);
+    res.status(500).json({ message: "Error updating diagnosis", error });
+  } finally {
+    session.endSession(); // Ensure the session is ended in the finally block
   }
 };
 
@@ -352,10 +425,10 @@ export const queuescreen = async (req, res) => {
 
     const appointments = await appointmentModel.aggregate([
       {
-        $match: { dep,status:{ $in: ['confirm', 'progress'] } }, // Filter appointments by department
+        $match: { dep, status: { $in: ['confirm', 'progress'] } }, // Filter appointments by department
       },
       {
-        $sort: { status:-1,ctime: 1 }, // Sort appointments by ctime
+        $sort: { status: -1, ctime: 1 }, // Sort appointments by ctime
       },
       {
         $group: {
