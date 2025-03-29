@@ -179,16 +179,22 @@ export const deleteMedicine = async (req, res) => {
 //Sending the Previous appointment medicines to OPD and IPD doctor
 export const getMedicine = async (aid, index) => {
   try {
+    
     if (index === 1)
-      return await prescriptionModel.find({ aid });
+      return await prescriptionModel.find({  });
     else {
+      console.log("In getMedicine", aid);
       return await prescriptionModel.aggregate([
-        { $match: { aid: aid } },
-        { $project: { name: 1, time: 1, createdAt: 1 } },
+        { $match: { aid:aid } },
         {
           $group: {
-            _id: { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } },
-            medicines: { $push: "$$ROOT" }
+            _id: { $dateToString: { format: "%d-%m-%Y", date: "$createdAt", timezone: "Asia/Kolkata"  } },
+            medicines: { 
+              $push: { 
+                name: "$mname", 
+                time: "$time", 
+              } 
+            }
           }
         },
         { $sort: { "_id": -1 } },
@@ -199,7 +205,8 @@ export const getMedicine = async (aid, index) => {
             _id: 0
           }
         }
-      ]);
+    ]);
+    
 
     }
   } catch (error) {
@@ -207,6 +214,7 @@ export const getMedicine = async (aid, index) => {
     return null;
   }
 }
+
 //Add new prescription
 export const prescribeMedicine = async (aid, medicines, session) => {
   console.log("In medicines")

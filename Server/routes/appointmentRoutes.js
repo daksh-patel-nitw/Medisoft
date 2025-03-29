@@ -14,6 +14,8 @@ router.get('/doctor/:pid/:did',getAllPatientApps);
 //Doctor Diagnosis OPD
 router.put('/diagnose',diagnoseOpd);
 
+//Update appointment details iPD
+router.put('/diagnoseIPD',updateIPDpat);
 
 //Get the appointment of the specific patient for IPD for specific doctor
 router.get('/ipd/:did/:pid',getIPDAppointment);
@@ -63,8 +65,7 @@ router.get('/doctor/:did',getDoctorApps);
 
 //--------------------Routes for Doctor-------------------
 
-//Update appointment details iPD
-router.put('/ipd/update',updateIPDpat);
+
 
 
 

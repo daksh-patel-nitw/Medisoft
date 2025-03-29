@@ -86,11 +86,10 @@ export const getTests = async (aid, index) => {
     else {
       return await labPrescriptionModel.aggregate([
         { $match: { aid: aid } },
-        { $project: { name: 1 } },
         {
           $group: {
-            _id: { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } },
-            tests: { $push: "$$ROOT" }
+            _id: { $dateToString: { format: "%d-%m-%Y", date: "$createdAt", timezone: "Asia/Kolkata"  } },
+            tests: { $push: {name:"$tname"} }
           }
         },
         { $sort: { "_id": -1 } },

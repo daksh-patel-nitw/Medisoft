@@ -13,8 +13,8 @@ import { sidebar_utils, MedicineTable, TestView } from './utils.jsx';
 import { SideBar } from '../../components/sidebar.jsx';
 import { apis } from '../../Services/commonServices.js';
 import { EditModal } from './modalEdit.jsx';
-import { setTests } from '../../redux/slices/doctorPrescriptionSlice.js';
-import { useDispatch } from 'react-redux';
+import { setTests,getTests } from '../../redux/slices/doctorPrescriptionSlice.js';
+import { useDispatch, useSelector } from 'react-redux';
 
 
 export default function App() {
@@ -26,7 +26,7 @@ export default function App() {
   const [Ap, setAp] = useState([]);
   const [p, setP] = useState({});
   const [A, setA] = useState({});
-
+  
   const [column, setCol] = useState('');
   //Categories data fetch
   const fetchData = async (did) => {
@@ -56,14 +56,18 @@ export default function App() {
 
   //Fetching all the lab tests as the records are at most 100
   const fetchTest = async () => {
-    const data3 = await apis.noTokengetRequest('/lab/dScreen');
-    dispatch(setTests(data3));
+    if (useSelector(getTests).length === 0) {
+      const data3 = await apis.noTokengetRequest('/lab/dScreen');
+      dispatch(setTests(data3));
+    }
   }
 
+  //Used to close the modal
   const closeEditModal = () => {
     setOpenEditModal(false);
   };
 
+  //Used to open the modal
   const openEditModal = (index) => {
     setCol(index === 0 ? 'medicines' : 'tests');
     setOpenEditModal(true);
@@ -136,7 +140,7 @@ export default function App() {
                           <AccordionDetails>
                             <Grid container spacing={1}>
 
-                              <Grid style={{ fontSize:20 }} size={{ xs: 12 }}>
+                              <Grid style={{ fontSize: 20 }} size={{ xs: 12 }}>
                                 Medicines:
                               </Grid>
 
@@ -216,7 +220,7 @@ export default function App() {
 
             <Grid container spacing={2} size={{ md: 5, xs: 12 }}>
 
-              {/* Medicine Tests UI*/}
+              {/* Medicine UI*/}
               <Grid size={{ xs: 12 }}>
                 <Card className="partition" style={{ height: "84vh" }}>
 
@@ -323,7 +327,7 @@ export default function App() {
           </>
         }
 
-        <EditModal open={openModal} column={column} handleClose={closeEditModal} arr={column==="tests"?Ap.tests:Ap.medicines} />
+        <EditModal open={openModal} column={column} handleClose={closeEditModal} arr={column === "tests" ? Ap.tests : Ap.medicines} />
       </Grid >
     </SideBar >
 
