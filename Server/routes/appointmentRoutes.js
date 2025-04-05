@@ -1,7 +1,16 @@
-import { confirmAppointment, deleteAppointment, diagnoseOpd, getAllPatientApps, getCounter2app, getDoctorApps, getOPDappointment, getPatientApp, makeAppointment, queuescreen, seeappointment, updateIPDpat,getIPDPatients,getIPDAppointment } from '../controllers/appointmentController.js';
+import { confirmAppointment, deleteAppointment, diagnoseOpd, getAllPatientApps, getCounter2app, getDoctorApps, getOPDappointment, getPatientApp, makeAppointment,confirmTheBill, getAllBill, queuescreen, seeappointment, updateIPDpat,getIPDPatients,getIPDAppointment } from '../controllers/appointmentController.js';
 
 import express from 'express';
 const router = express.Router();
+
+
+//-------------------------Bill Routes -----------------------------
+
+//Get all the bills for the specific appointment
+router.post('/bill',getAllBill);
+
+// confirm the bill for the specific appointment
+router.put('/confirmBill',confirmTheBill);
 
 //--------------------Routes for Doctor -------------------
 
@@ -23,9 +32,13 @@ router.get('/ipd/:did/:pid',getIPDAppointment);
 //Get all the patients IPD for specific doctor
 router.get('/ipd/:did',getIPDPatients);
 
-//-------------------------Create OPD or IPD appointment -----------------------------
-router.post('/:type',makeAppointment);
+//-------------------------Queue Screen -----------------------------
 
+// Queue Screen 
+router.get('/queuescreen/:dep',queuescreen);
+
+//-------------------------Create OPD or IPD appointment -----------------------------
+router.post('/',makeAppointment);
 
 //-------------------------Counter-2 Routes -----------------------------
 
@@ -38,19 +51,9 @@ router.put('/',confirmAppointment);
 //Cancel Appointment on Counter-2
 router.delete('/:id',deleteAppointment);
 
-//-------------------------Queue Screen -----------------------------
-
-// Queue Screen 
-router.get('/queuescreen/:dep',queuescreen);
-
-
 
 
 //------------------------- Unused
-
-
-
-
 
 
 //--------------------Routes for Patient -------------------

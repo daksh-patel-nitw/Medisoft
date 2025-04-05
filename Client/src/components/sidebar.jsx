@@ -87,7 +87,7 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
   }),
 );
 
-export function SideBar({ children, arr }) {
+export function SideBar({ children, arr, title }) {
   const theme = useTheme();
   const open = useSelector(getDrawerState);
   const navigate = useNavigate();
@@ -115,8 +115,8 @@ export function SideBar({ children, arr }) {
           >
             <MenuIcon />
           </IconButton>
-          <Typography variant="h6" noWrap component="div">
-            Pharmacy
+          <Typography variant="h5" noWrap component="div">
+            {title}
           </Typography>
         </Toolbar>
       </AppBar>

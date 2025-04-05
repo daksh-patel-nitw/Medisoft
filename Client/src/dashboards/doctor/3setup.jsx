@@ -11,7 +11,7 @@ import { sidebar_utils } from './utils';
 import { apis } from '../../Services/commonServices';
 
 export default function App() {
-  const doctorId = "E0000003";
+  const doctorId = "E0000002";
 
   const [values, setVal] = useState({ timings: '', questions: '', price: '', pph: '' });
   const [details, setDetails] = useState({});

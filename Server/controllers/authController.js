@@ -26,10 +26,10 @@ export const validateUser = async (req, res) => {
       }
 
       // Create access token
-      const accessToken = jwt.sign({ uname: user.uname, mId:user.mId }, SECRET_KEY, { expiresIn: '1h' });
+      const accessToken = jwt.sign({ name: user.name, id:user.mid }, SECRET_KEY, { expiresIn: '1h' });
 
       // Create refresh token
-      const refreshToken = jwt.sign({ mId:user.mId, uname: user.uname }, REFRESH_SECRET_KEY, { expiresIn: '12h' });
+      const refreshToken = jwt.sign({ mid:user.mid, name: user.name }, REFRESH_SECRET_KEY, { expiresIn: '12h' });
 
       // Store refresh token in httpOnly cookie
       res.cookie('refreshToken', refreshToken, {

@@ -53,7 +53,16 @@ export const addMember = async (req, res) => {
 export const getMemberWithId = async (req, res) => {
     const { id } = req.params;
     try {
-        const employee = await memberModel.findOne({ mid: id }, {});
+        const employee = await memberModel.findOne(
+            { mid: id },
+            {
+              type: 0,
+              mid: 0,
+              createdAt: 0,
+              updatedAt: 0
+            }
+          );
+          ;
         res.status(200).json(employee);
     } catch (e) {
         res.status(500).json({ message: 'Internal server error' });
@@ -72,7 +81,7 @@ export const getDoctorDetails = async (req, res) => {
                 $project: {
                     dname: { $concat: ["$fname", " ", "$lname"] },
                     dep: 1,
-                    eid: "$mid",
+                    did: "$mid",
                     timings: 1,
                     qs: "$questions",
                     pph: 1,
@@ -106,6 +115,64 @@ export const getPatientNamesId = async (req, res) => {
         res.status(500).json({ message: 'Internal server error' });
     }
 }
+
+//Get the patient names 
+export const getFilteredPatientNamesId = async (req, res) => {
+    try {
+        const { search , flag = "1", opd } = req.query;
+
+        if (!search) return res.status(400).json({ message: "Search string required" });
+
+        const regex = new RegExp(search, 'i'); // case-insensitive
+
+        let matchCondition = { type: "patient" };
+
+        // Dynamically build match based on flag
+        if (flag == "1") {
+            matchCondition.$or = [
+                { fname: regex },
+                { lname: regex }
+            ];
+        } 
+        else if (flag == "2") {
+            matchCondition.mid = regex;
+        } 
+        else if (flag == "3") {
+            if (!/^\d+$/.test(search)) {
+                return res.status(400).json({ message: "Mobile search must be numeric", show: true });
+            }
+            matchCondition.$expr = { $regexMatch: { input: { $toString: "$mobile" }, regex: regex } };
+        } 
+        else {
+            return res.status(400).json({ message: "Invalid flag value", show: true });
+        }
+
+        const projectStage = {
+            $project: {
+                pname: { $concat: ["$fname", " ", "$lname"] },
+                pid: "$mid",
+                mobile: 1
+            }
+        };
+
+        // Include opd field only if opd is "1"
+        if (opd == 1) {
+            projectStage.$project.opd = "$opd";
+        }
+
+        const newM = await memberModel.aggregate([
+            { $match: matchCondition },
+            projectStage
+        ]);
+
+        res.status(200).json(newM);
+    } catch (e) {
+        console.error(e);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+};
+
+
 
 // Upodate the role of the employee in the admin panel
 export const updateRole = async (req, res) => {
@@ -188,7 +255,7 @@ export const getDoctorByDepartment = async (req, res) => {
 }
 
 //update the member details
-export const updateMember = async (mid,updateFields) => {
+export const updateMember = async (mid,updateFields,session) => {
     if (!mid || Object.keys(updateFields).length === 0) {
         console.error('Invalid request. Provide mid and at least one field to update.');
         throw new Error('Invalid request. Provide mid and at least one field to update.');
@@ -197,8 +264,8 @@ export const updateMember = async (mid,updateFields) => {
     try {
         const result = await memberModel.findOneAndUpdate(
             { mid },
-            { $set: updateFields },
-            { new: true }
+            updateFields,
+            { new: true,session }
         );
 
         if (!result) {
@@ -217,7 +284,7 @@ export const updateDoctorDetails = async (req, res) => {
     const { mid, ...updateFields } = req.body;
     console.log(req.body);
     try {
-        const result=await updateMember(mid, updateFields);
+        const result=await updateMember(mid, { $set: updateFields});
 
         res.status(200).json({ message: "Update Successfull", show: true, data: result });
 
@@ -261,6 +328,7 @@ export const updateRoleDeps = async (req, res) => {
         res.status(500).json({ message: 'Internal server error' });
     }
 }
+
 //Employee data for admin
 export const getAdminEmployee = async (req, res) => {
     try {
@@ -293,15 +361,4 @@ export const getAdminEmployee = async (req, res) => {
     }
 }
 
-// -------------------------- Patient --------------------------
 
-//get all Patients
-export const getAllPatients = async (req, res) => {
-    try {
-        const result = await memberModel.find({ type: "patient" });
-        res.status(200).json(result);
-
-    } catch (e) {
-        res.status(500).json({ message: 'Internal server error' });
-    }
-}

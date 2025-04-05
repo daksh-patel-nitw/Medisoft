@@ -4,6 +4,11 @@ const { Schema, model } = mongoose;
 const medicinePrescriptionSchema = new Schema(
     {
         aid: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "appointments",
+            required: true
+        },
+        pid:{
             type: String,
             required: true
         },

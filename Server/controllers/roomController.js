@@ -4,6 +4,7 @@ import roomInventoryModel from '../models/roomsInventory.js';
 import generateBill from '../utils/billUtils.js';
 import { getItem } from '../utils/helperUtils.js';
 import {bookAppointment} from './appointmentController.js';
+import mongoose from 'mongoose';
 
 //--------------------- Rooms ---------------------
 
@@ -98,68 +99,51 @@ export const getAllRoomsByDep = async (req, res) => {
 
 //Book Room 
 export const bookRoom = async (req, res) => {
-    const body = req.body;
-    try {
-        // making the appointment
-        const aid=await bookAppointment('ipd',body);
+    const session = await mongoose.startSession();
+    session.startTransaction();
 
-        // Fetching only required fields
-        const room = await roomModel.findOne(
-            { room_no: body.room_no, dep: body.dep },
-            { maxPatients: 1, number_of_patients: 1 }
+    try {
+        const { room_no, dep, type, pname } = req.body;
+
+        // Booking the appointment inside the transaction
+        const aid = await bookAppointment("ipd", req.body, session);
+
+        // Updating room occupancy in one step (Optimized!)
+        const bookedRoom = await roomModel.findOneAndUpdate(
+            { room_no, dep, number_of_patients: { $lt: "$maxPatients" } }, // Ensure room is not full
+            {
+                $inc: { number_of_patients: 1 },
+                $set: { occupied: { $cond: { if: { $eq: ["$number_of_patients", "$maxPatients"] }, then: "Yes", else: "No" } } }
+            },
+            { new: true, session }
         );
-        
-        if (room && room.number_of_patients < room.maxPatients) {
-            const bookedRoom = await roomModel.findOneAndUpdate(
-                { room_no: body.room_no, dep: body.dep },
-                {
-                    $inc: { number_of_patients: 1 }, // Increment patient count
-                    $set: { 
-                        occupied: room.number_of_patients + 1 === room.maxPatients ? "Yes" : "No",
-                    }
-                },
-                { new: true }
-            );
-            
-            // console.log("Room updated:", bookedRoom);
-            // console.log("Appointment ID:", aid);
 
-            const bookedRoomInventory = new roomInventoryModel({
-                type: body.type,
-                dep: body.dep,
-                room_no: body.room_no,
-                dname: body.dname,
-                did: body.did,
-                pid: body.pid,
-                aid: aid,
-                pname: body.pname,
-                mobile: body.mobile,
-                status: "P"
-            });
-            bookedRoomInventory.save();
-            
-            // console.log("Room booked:", bookedRoom);
-        } else {
-            res.status(400).json({ message: "Room is already full." });
+        if (!bookedRoom) {
+            await session.abortTransaction();
+            session.endSession();
+            return res.status(400).json({ message: "Room is already full." });
         }
-        
-        res.status(200).json({message: `Room ${body.room_no} Booked for ${body.pname} `, show: true });
-    } catch (err) {
-        console.log(err);
-        res.status(500).json({ message: "Server Error" });
-    }
-};
 
-//Get room with the specific aid
-export const getRoomWithAid = async (aid) => {
-    try {
-        const room = await roomInventoryModel.findOne({ aid});
-        if (!room) return res.status(404).json({ message: "Room not found" });
-        console.log(room);
-        return room;
+        // Inserting room inventory for this booking (Single `save()` instead of insertMany)
+        const bookedRoomInventory = new roomInventoryModel({
+            type,
+            dep,
+            room_no,
+            aid
+        });
+
+        await bookedRoomInventory.save({ session });
+
+        await session.commitTransaction();
+        session.endSession();
+
+        res.status(200).json({ message: `Room ${room_no} Booked for ${pname}`, show: true });
+
     } catch (err) {
+        await session.abortTransaction();
+        session.endSession();
         console.error(err);
-        return false;
+        res.status(500).json({ message: "Server Error" });
     }
 };
 
@@ -189,6 +173,8 @@ export const dischargeRoom = async (req, res) => {
 
         await roomInventory.save(); // Save changes to DB
 
+        await generateBill(roomInventory, "room", roomInventory.charge);
+
         res.status(200).json({ message: `Patient ${roomInventory.pname} discharged successfully.`, show: true });
     } catch (err) {
         console.error(err);
@@ -196,3 +182,39 @@ export const dischargeRoom = async (req, res) => {
     }
 };
 
+// -------------------- Functions to be used in another files ---------------------
+
+//Get room with the specific aid
+export const getRoomWithAid = async (aid) => {
+    try {
+        const room = await roomInventoryModel.findOne({ aid});
+        if (!room) return res.status(404).json({ message: "Room not found" });
+        console.log(room);
+        return room;
+    } catch (err) {
+        console.error(err);
+        return false;
+    }
+};
+
+//Confirm Bill for room
+export const confirmBillRoom = async (req, res) => {
+    try {
+        const {aid} = req.body;
+        const room = await getRoomWithAid(aid);
+        if (!room) return res.status(404).json({ message: "Room not found" });
+
+        // Generate bill
+        const bill = await generateBill(room, "room", room.charge);
+        if (!bill) return res.status(500).json({ message: "Error generating bill" });
+
+        // Update the status of the bill to confirmed
+        room.status = true;
+        await room.save();
+
+        res.status(200).json({ message: "Bill confirmed successfully", show: true });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: "Server Error" });
+    }
+};

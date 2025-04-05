@@ -7,3 +7,29 @@ body{
 }
    
   
+/* WebKit Browsers (Chrome, Edge, Safari) */
+::-webkit-scrollbar {
+    width: 10px; /* Set the scrollbar width */
+    height: 10px; /* Set the scrollbar height for horizontal scrollbars */
+}
+
+::-webkit-scrollbar-track {
+    background: rgba(218, 216, 216, 0.1); /* Light gray track */
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #0c2f54; /* Blue color from your invoice.css */
+    border-radius: 10px;
+    border: 2px solid rgba(255, 255, 255, 0.3); /* Optional: Adds contrast */
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #979a9d; /* Darker shade on hover */
+}
+
+/* For Firefox */
+* {
+    scrollbar-width: thin;
+    scrollbar-color: #0c2f54 rgba(0, 0, 0, 0.1);
+}

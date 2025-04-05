@@ -22,16 +22,18 @@ import I3 from "../dashboards/ipd-reception/3Patients";
 
 import T1 from "../dashboards/laboratory/1newtest";
 import T2 from "../dashboards/laboratory/2tests";
+
+import B1 from "../dashboards/billDesk/1billshow";
 // import T3 from "../dashboards/laboratory/3patients";
 
+// import Pat1 from "../dashboards/patient/1view";
+import Pat2 from "../dashboards/patient/patientBookApp";
 /*
 import I4 from "../dashboards/ipd-reception/4AddCharge";
 
 
-import B1 from "../dashboards/billDesk/1billshow";
 
-import Pat1 from "../dashboards/patient/1view";
-import Pat2 from "../dashboards/patient/patientBookApp";
+
 
 import L from "../dashboards/login";
 
@@ -72,26 +74,22 @@ const routes = [
   { path: "/tests", element: <T2 /> },
   // { path: "/labpatients", element: <T3 /> },
 
-  /*// IPD
+  // Bill
+  { path: "/bill", element: <B1 /> },
+
+  //Patient
+  // { path: "/patientView", element: <Pat1 /> },
+  { path: "/patientbook", element: <Pat2 /> }, 
+  /*
+  // IPD
   { path: "/addipdcharge", element: <I4 /> },
-
-
-  
-  // Doctor
-  
-  
-
   
   // Login
   { path: "/", element: <L /> },
 
-  
-  // Bill
-  { path: "/bill", element: <B1 /> },
+
    
-  // Patients
-  { path: "/patientView", element: <Pat1 /> },
-  { path: "/patientBook", element: <Pat2 /> }, 
+  
    */
 ];
 

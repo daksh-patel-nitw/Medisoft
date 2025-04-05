@@ -19,7 +19,7 @@ import { KeyboardArrowDown, KeyboardArrowUp } from '@mui/icons-material';
 const initialState = { _id: '', medicines: [], tests: [] }
 
 export default function App() {
-  const doctorId = "E0000003";
+  const doctorId = "E0000002";
   const [openModal, setOpenEditModal] = useState(false);
   const [Ap, setAp] = useState(initialState);
   const [column, setCol] = useState('');

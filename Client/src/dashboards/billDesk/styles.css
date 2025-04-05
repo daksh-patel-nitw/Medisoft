@@ -1,0 +1,99 @@
+.bill-container {
+    /* text-align: center; */
+    font-family: Arial, sans-serif;
+}
+
+.head2 {
+    text-align: right;
+}
+
+.head1,
+.head2 {
+    font-size: 1.3rem;
+}
+
+.bill-table,.h-table {
+    width: 100%;
+    border-collapse: collapse;
+    /* margin-top: 5px; */
+}
+
+
+.bill-table th,
+.bill-table td,.h-table th {
+    border: 1px solid black;
+    padding: 4px;
+    text-align: center;
+}
+.h-table th{
+    border-bottom: 0px;
+}
+.bill-table th {
+    background-color: #f2f2f2;
+}
+
+.bill-table .subCategory {
+    font-size: 1.1rem;
+    color: #010101;
+    text-align: left;
+    font-weight: bold;
+    background-color: transparent;
+
+}
+
+
+
+
+
+.bill-table th:nth-child(1),
+.bill-table td:nth-child(1) {
+    width: 8%;
+}
+
+.bill-table th:nth-child(2),
+.bill-table td:nth-child(2) {
+    width: 20%;
+}
+
+.bill-table th:nth-child(3),
+.bill-table td:nth-child(3) {
+    width: 50%;
+}
+
+.bill-table th:nth-child(4),
+.bill-table td:nth-child(4) {
+    width: 20%;
+}
+.printable-bill {
+    padding: 20px;
+    border: 2px solid black;
+    margin-top: 20px;
+    text-align: center;
+}
+
+
+.h-table .head1 {
+    width:8%
+}
+/* Hide unnecessary elements when printing */
+@media print{
+    #print-area{
+        visibility: visible;
+        width: 100%;
+        position: absolute;
+        left: 0;
+        top: 0;
+        overflow: hidden;
+    }
+
+    .overflow-view{
+        overflow-x: hidden;
+    }
+
+    .invoice-btns{
+        display: none;
+    }
+}
+  
+  
+
