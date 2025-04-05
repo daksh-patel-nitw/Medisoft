@@ -7,7 +7,7 @@ const initialState = {
   page:1
 };
 
-const authSlice = createSlice({
+const medicinesTabSlice = createSlice({
   name: 'medicineTab2',
   initialState,
   reducers: {
@@ -31,6 +31,6 @@ export const getDynamicShow = (state) => (state.medicineTab2.dynamicShow);
 export const getHasMore = (state) => (state.medicineTab2.hasMore);
 export const getPage = (state) => (state.medicineTab2.page);
 
-export const { setAutoCompVal,setDynamicShow,setHasMore,setPage } = authSlice.actions;
+export const { setAutoCompVal,setDynamicShow,setHasMore,setPage } = medicinesTabSlice.actions;
 
-export default authSlice.reducer;
+export default medicinesTabSlice.reducer;

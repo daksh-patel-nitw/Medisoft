@@ -1,196 +1,73 @@
 import Tabs from '@mui/material//Tabs';
 import Tab from '@mui/material//Tab';
-import React, { useState,useEffect } from 'react';
-import TableSortLabel from '@mui/material//TableSortLabel';
-import {
-    Grid,
-    Table,
-    TableBody,
-    TableCell,
-    TableContainer,
-    TableHead,
-    TableRow,
-    Button,
-    TextField,
- 
-    TablePagination,
-} from '@mui/material/';
+import React, { useState } from 'react';
+import Grid from '@mui/material//Grid2';
 import Card from '@mui/material//Card';
-import CardContent from '@mui/material//CardContent';
-import PageLayout from './pageLayout';
+import { SideBar } from '../../components/sidebar';
+import { side_bar } from './utils';
+import Part1 from './part1';
 
+export default function App() {
 
-import Autocomplete from '@mui/material/lab/Autocomplete';
-export default function App()
-{
-
-    const arr2 = ["Patient ID","Date","Type", "Price","Action"];
-
-   
-
-    const fetchdata=async()=>await fetch(`http://localhost:5000/api/getallBills`)
-          .then((res) => res.json())
-          .then((data) => { console.log(data); 
-            setBill(data)
-            })
-          .catch((err) => console.error(err));
-
-    const[bill,setBill]=useState([]);
-  
-    useEffect(() => {
-        fetchdata();
-    },[]);
-
-    const [filtered,setFilter]=useState([]);
-   
-     const handleSearch = (newValue, property) => {
-        if (newValue) {
-          setFilter(
-             bill[value].filter((m) =>
-              m[property].toLowerCase().includes(newValue.toLowerCase())
-            )
-          );
-        } else {   
-          setFilter([]);
-          
-        }
-      };
-    
-    const autoComp = (property, label) => (
-        <Grid size={{xs:4}>
-          <Autocomplete
-            freeSolo
-            options={bill[value]&&bill[value].map((option) => option[property])}
-            onChange={(event, newValue) => handleSearch(newValue, property)}
-            
-            renderInput={(params) => (
-              <TextField
-                {...params}
-                label={`Search by ${label}`}
-                margin='normal'
-                variant='outlined'
-              />
-            )}
-          />
-        </Grid>
-      );
-    
-     
-    //Check Tabs 
+  //Check Tabs 
   const [value, setValue] = useState(0);
-    
-  //Track tabs value
-  const handleChange = (event, newValue) => {
-    setValue(newValue);
-  };
 
-  useEffect(() => {
-    console.log("value",value);
-    
-    setFilter([]);
-  }, [value]);
+  //Setting Bill
+  const [bill1, setBill1] = useState(null);
+  //Which tab are we.
+  const [nextTab1, setNextTab1] = useState(0);
+  //Setting Patient in Undone
+  const [patient1, setPatient1] = useState(null);
 
-  const confirmT=async(description)=>{
-    var newWindow = window.open("", "Description", "width=500,height=500");
-    newWindow.document.body.innerHTML = description;
-  }
-  
+  //Setting Bill
+  const [bill2, setBill2] = useState(null);
+  //Which tab are we.
+  const [nextTab2, setNextTab2] = useState(0);
+  //Setting Patient in Undone
+  const [patient2, setPatient2] = useState(null);
 
-  
-  const rowsPerPageOptions = [5,7];
-  const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(rowsPerPageOptions[0]);
+  return (
 
-  const handleChangePage = (event, newPage) => {
-    setPage(newPage);
-  };
+    <SideBar arr={side_bar} title="Bill Desk">
 
-  const[id_,getId]=useState();
-;
+      <Grid justifyContent="center" container spacing={2} >
+        <Card className="partition" sx={{ position: "relative", width: { md: "50%", xs: "100%" }, height: "82vh" }}>
+          <Tabs
+            value={value}
+            indicatorColor="primary"
+            textColor="primary"
+            onChange={(e, n) => setValue(n)}
+            aria-label="disabled tabs example"
+          >
+            <Tab label="Pending Bills" />
+            <Tab label="Done" />
 
+          </Tabs>
 
-  const handleChangeRowsPerPage = (event) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(0);
-  };
-    return (
+          {value ?
+            <Part1
+              setBill={setBill1}
+              setNextTab={setNextTab1}
+              patient={patient1}
+              setPatient={setPatient1}
+              nextTab={nextTab1}
+              bill={bill1}
+              value={true}
+            /> :
+            <Part1
+              setBill={setBill2}
+              setNextTab={setNextTab2}
+              patient={patient2}
+              setPatient={setPatient2}
+              nextTab={nextTab2}
+              bill={bill2}
+              value={false}
+            /> 
+          }
 
-        <SideBar>
-            <Card className="partition">
-        <Grid container spacing={2}>
-                <Grid size={{xs:12}>
-                <Tabs
-              value={value}
-              indicatorColor="primary"
-              textColor="primary"
-              onChange={handleChange}
-              aria-label="disabled tabs example"
-            >
-              <Tab label="Pending Bills" />
-              <Tab label="Done" />
-           
-            </Tabs>
-                <CardContent>
-                
-                    <Grid container spacing={2}>
-                        {autoComp('type', 'Bill Type')}
-                        {autoComp('pid', 'Patient ID')}
-                        <Grid size={{xs:12}>
-                     
-
-                            <TableContainer >
-                            <Table size="small">
-                                <TableHead  style={{ backgroundColor: '#1F3F49' }}>
-                                    <TableRow>
-                                      {arr2.map(e=>(
-                                        <TableCell>
-                                          {e}
-                                        </TableCell>
-                                      ))
-                                        }
-                                    </TableRow>
-                                </TableHead>
-                                <TableBody>
-                                {bill[value] &&(filtered.length?filtered:bill[value]).map((e,index)=> (
-                                      <TableRow>
-                                        <TableCell>{e.pid}</TableCell>
-                                          <TableCell>{(new Date(e.date)).toLocaleString('en-US', { timeZone: 'Asia/Kolkata', year: 'numeric', month: 'long', day: 'numeric' })} </TableCell>
-                                          <TableCell>{e.type} </TableCell>
-                                          <TableCell>{e.price}</TableCell>
-                                          
-                                        <TableCell>
-                                          <Button onClick={()=>confirmT(e.description)} variant="contained" color="primary">
-                                            View Details
-                                          </Button>
-                                         
-                                        </TableCell>
-                                      </TableRow>
-                                    ))}
-                                </TableBody>
-                            </Table>
-                           
-                            <TablePagination
-                            rowsPerPageOptions={rowsPerPageOptions}
-                            component="div"
-                            count={bill[value]&& bill[value].length}
-                            rowsPerPage={rowsPerPage}
-                            page={page}
-                            onPageChange={handleChangePage}
-                            onRowsPerPageChange={handleChangeRowsPerPage}
-                            />
-                            </TableContainer>
-
-                        </Grid>
-                    </Grid>
-                    </CardContent>
-                    <CardContent>
-                    
-                
-                </CardContent>
-                </Grid>
-        </Grid>
         </Card>
-      </SideBar>
-    
-    );
+      </Grid>
+    </SideBar>
+
+  );
 }

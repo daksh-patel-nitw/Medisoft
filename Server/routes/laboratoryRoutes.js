@@ -22,12 +22,12 @@ router.delete('/:id', controller.deleteTest);
 
 //---------------- Prescription of Tests----------------
 
+//Send All laboratory tests of the patient
+router.post('/prescription', controller.getAllPrescribedTests);
 
 
 //-----------------Unused-------------------
 
-//Send All laboratory tests status 
-router.get('/prescribe', controller.getAllPrescribedTests);
 
 //Take patient details, here type is out/in
 router.put('/details/:id/:type', controller.updatePatientDetails);

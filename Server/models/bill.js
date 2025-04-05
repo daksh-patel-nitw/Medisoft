@@ -5,11 +5,9 @@ const { Schema, model } = mongoose;
 const BillSchema = new Schema(
   {
     name:String,
-    pid: {
-      type: String,
-      required: true,
-    },
-    aid: String,
+    
+    aid: { type: mongoose.Schema.Types.ObjectId, ref: "appointment" },
+    id: { type: mongoose.Schema.Types.ObjectId },
     date: {
       type: Date,
       required: true,
@@ -27,11 +25,11 @@ const BillSchema = new Schema(
       required: true,
       enum: ['pharmacy', 'doctor', 'lab','room','other'],
     },
-    did: String,
     status: {
       type: Boolean,
       default: false,
     },
+    billed_date:Date,
   },
   {
     versionKey: false,

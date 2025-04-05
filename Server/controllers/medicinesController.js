@@ -1,7 +1,6 @@
 import medicineModel from '../models/medicineInventory.js';
 import prescriptionModel from '../models/medicinePrescription.js';
-import { groupByValueMedicines } from '../utils/groupByValue.js';
-import generateBill from '../utils/billUtils.js';
+import generateBill, { confirmBill } from '../utils/billUtils.js';
 import { getItem, updateOnlyContentHelper, removeContentHelper } from '../utils/helperUtils.js';
 
 
@@ -65,17 +64,6 @@ export const getMedicineDoctor = async (req, res) => {
     res.status(500).json({ message: "Internal Server Error." });
   }
 };
-
-//Send all mediciene to pharmacy
-// export const getAllMedicines = async (req, res) => {
-//   try {
-//     const allMedicines = await medicineModel.find().lean();
-//     res.status(200).json(allMedicines);
-//   } catch (err) {
-//     console.log(err);
-//     res.status(500).json({ message: "Internal Server Error." });
-//   }
-// };
 
 //Send all medicines to the pharmacy with pagination
 export const getAllMedicines = async (req, res) => {
@@ -175,85 +163,33 @@ export const deleteMedicine = async (req, res) => {
 };
 
 //------------------------------Medicines----------------------
-
-//Sending the Previous appointment medicines to OPD and IPD doctor
-export const getMedicine = async (aid, index) => {
+export const getPatientPrescription= async (req, res) => {
+  const { pid } = req.body;
   try {
-    
-    if (index === 1)
-      return await prescriptionModel.find({  });
-    else {
-      console.log("In getMedicine", aid);
-      return await prescriptionModel.aggregate([
-        { $match: { aid:aid } },
-        {
-          $group: {
-            _id: { $dateToString: { format: "%d-%m-%Y", date: "$createdAt", timezone: "Asia/Kolkata"  } },
-            medicines: { 
-              $push: { 
-                name: "$mname", 
-                time: "$time", 
-              } 
-            }
-          }
-        },
-        { $sort: { "_id": -1 } },
-        {
-          $project: {
-            date: "$_id",
-            medicines: 1,
-            _id: 0
-          }
+    const medicines = await prescriptionModel.aggregate([
+      { $match: { pid ,status:"B"} }, // Filter by patient id
+      {
+        $group: {
+          _id: "$aid",
+          medicines: { $push: "$$ROOT" }
         }
+      },
+      {
+        $project: {
+          _id: 0,
+          aid: "$_id",
+          medicines: 1
+        }
+      }
     ]);
     
-
-    }
+    res.status(200).json(medicines);
   } catch (error) {
-    console.error("Error in getMedicine:", error);
-    return null;
+    console.error(error);
+    res.status(500).json({ message: "Internal Server Error." });
   }
 }
 
-//Add new prescription
-export const prescribeMedicine = async (aid, medicines, session) => {
-  console.log("In medicines")
-  try {
-    for (const m of medicines) {
-      const b = await medicineModel.findById(m._id).session(session);
-      const quantity = Number(m.ps_c) + Number(b.ps) * Number(m.ps_u);
-      const newM = new prescriptionModel({
-        aid: aid,
-        mname: b.name,
-        quantity,
-        ps: b.ps,
-        price: b.price * quantity,
-        time: m.time.join(',')
-      });
-
-      await newM.save({ session });
-    }
-    return true;
-  } catch (error) {
-    console.error("Error in prescribeMedicine:", error);
-    return false;
-  }
-};
-
-
-//Get all prescriptions medicines
-export const getAllPrescriptions = async (req, res) => {
-  try {
-    const data = await prescriptionModel.find().lean();
-    const fieldsToExtract = ["pid", "aid", "pname", "did"];
-    const grouped = groupByValueMedicines(data, "aid", fieldsToExtract);
-    res.status(200).json(grouped);
-
-  } catch (error) {
-    console.log(error);
-    res.status(500).json({ message: "Internal Server Error." });
-  }
-};
 
 //Sell Medicine to Customer
 export const sellMedicine = async (req, res) => {
@@ -289,4 +225,100 @@ export const sellMedicine = async (req, res) => {
   }
 };
 
+//------------------------------- exporting the functions used in another files ------------------
+
+//Sending the Previous appointment medicines to OPD and IPD doctor
+export const getMedicine = async (aid, index) => {
+  try {
+
+    if (index === 1)
+      return await prescriptionModel.find({ aid });
+    else {
+      console.log("In getMedicine", aid);
+      return await prescriptionModel.aggregate([
+        { $match: { aid: aid } },
+        {
+          $group: {
+            _id: { $dateToString: { format: "%d-%m-%Y", date: "$createdAt", timezone: "Asia/Kolkata" } },
+            medicines: {
+              $push: {
+                name: "$mname",
+                time: "$time",
+              }
+            }
+          }
+        },
+        { $sort: { "_id": -1 } },
+        {
+          $project: {
+            date: "$_id",
+            medicines: 1,
+            _id: 0
+          }
+        }
+      ]);
+
+
+    }
+  } catch (error) {
+    console.error("Error in getMedicine:", error);
+    return null;
+  }
+}
+
+//Add new prescription
+export const prescribeMedicine = async (aid,pid, medicines, session) => {
+  console.log("In medicines")
+  try {
+    for (const m of medicines) {
+      const b = await medicineModel.findById(m._id).session(session);
+      const quantity = Number(m.ps_c) + Number(b.ps) * Number(m.ps_u);
+      const newM = new prescriptionModel({
+        aid,
+        pid,
+        mname: b.name,
+        quantity,
+        ps: b.ps,
+        price: b.price * quantity,
+        time: m.time.join(',')
+      });
+
+      await newM.save({ session });
+      await generateBill(b.price * quantity, aid, b.name, "pharmacy", newM._id, session);
+    }
+    return true;
+  } catch (error) {
+    console.error("Error in prescribeMedicine:", error);
+    return false;
+  }
+};
+
+//Confirm the bill of the medicine
+export const confirmBillMedicine = async (arr, session) => {
+  try {
+    console.log("In Confirm Bill", arr);
+
+    //Extracting the ids from the array of objects
+    const idsToUpdate = arr.map(item => item.id);
+    // console.log("Updation:",idsToUpdate);
+    const idsForConfirm = arr.map(item => item._id);
+    // console.log("Confirmation:",idsToUpdate);
+
+    //Updating the status of the medicines in the prescription model
+    await prescriptionModel.updateMany(
+      { _id: { $in: idsToUpdate } },
+      { $set: { status: "B" } },
+      { session }
+    );
+
+    //Updating the status of the bills in the bill model
+    await confirmBill(1, idsForConfirm, null, null, session);
+
+    
+
+  } catch (error) {
+    console.error("Transaction rolled back:", error);
+    return false;
+  }
+};
 

@@ -16,13 +16,15 @@ const UserSchema=new Schema(
             required:true
         },
         charge:Number,
-        status:String,
-        dname:String,
-        did:String,
-        pid:String,
-        aid:String,
-        pname:String,
-        mobile:Number,
+        status:{
+            enum: ['Pending','Billed','Discharge','Cancel'],
+            type:String,
+            default:'Pending'
+        },
+        aid:{
+            type:Schema.Types.ObjectId,
+            ref:'appointments'
+        },
     },{
         versionKey:false,
         timestamps:true

@@ -7,129 +7,122 @@ import Pharmacy from "./pharmacy/1newMedicine";
 // import OPD2 from "./opd-2-reception/1confirmP";
 // import Doc from "./doctor/2.patDoc";
 // import Bill from "./billDesk/1billshow";
-// import Admin from "./admin/1newAdmin";
+import Admin from "./admin/1newAdmin";
 // import Patient from "./patient/1view";
 // import { useNavigate } from 'react-router-dom';
 
 
-import Grid from '@mui/material//Grid2;
+import Grid from '@mui/material//Grid2';
 import TextField from '@mui/material//TextField';
 import Button from '@mui/material//Button';
 import { Card, CardContent } from '@mui/material/';
 
-function LoginWithLocalStorage(){
-    const handleInputChange=(event)=>{
-        const { name, value } = event.target;
-        setFormValues({ ...formValues, [name]: value });
-    }
-   
-    const getId=localStorage.getItem("id")
-    const getType=localStorage.getItem("type")
-    const [formValues, setFormValues] = useState({ uname: '',  password: '',  });
-    const navigate = useNavigate();
+function LoginWithLocalStorage() {
+  const handleInputChange = (event) => {
+    const { name, value } = event.target;
+    setFormValues({ ...formValues, [name]: value });
+  }
 
-    const getTarget=()=>{
-        switch (getType) {
-            case 'pharmacy':
-              // history.push('/pharmacy');
-              return 1;
-            case 'ipd':
-              return <IPD/>;
-            case "opd1":
-              navigate('/newregister');
-              // return <OPD1/>;
-            case "opd2":
-              return <OPD2/>;
-            case "doctor":
-              return <Doc/>;
-            case "lab":
-              return <Lab/>;
-            case "admin":
-              return <Admin/>;
-            case "patient":
-              return <Patient/>;
-            case "bill":
-              return <Bill/>;
-            default:
-              return alert('This is default');
-          }
+  const getId = localStorage.getItem("id")
+  const getType = localStorage.getItem("type")
+  const [formValues, setFormValues] = useState({ uname: '', password: '', });
+  const navigate = useNavigate();
+
+  const getTarget = () => {
+    switch (getType) {
+      case 'pharmacy':
+        // history.push('/pharmacy');
+        return 1;
+      case 'ipd':
+        return <IPD />;
+      case "opd1":
+        navigate('/newregister');
+      // return <OPD1/>;
+      case "opd2":
+        return <OPD2 />;
+      case "doctor":
+        return <Doc />;
+      case "lab":
+        return <Lab />;
+      case "admin":
+        return <Admin />;
+      case "patient":
+        return <Patient />;
+      case "bill":
+        return <Bill />;
+      default:
+        return alert('This is default');
     }
-    const handleSubmit=async(e)=>{
-        e.preventDefault();
-        console.log(e);
-        const response = await fetch('http://localhost:5000/api/login', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(formValues)
-          });         
-       
-        if (response.status === 200) {
-            const user = await response.json();
-            localStorage.setItem("id",user.id);
-            localStorage.setItem("type",user.type);
-            if(user.dep){
-              localStorage.setItem('dep',user.dep);
-            }
-            window.location.reload();
-          } else if (response.status === 401) {
-            console.error('Invalid username or password');
-          } else {
-            console.error('Something went wrong');
-          }
+  }
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    console.log(e);
+    const response = await fetch('http://localhost:5000/api/login', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(formValues)
+    });
+
+    if (response.status === 200) {
+      const user = await response.json();
+      localStorage.setItem("id", user.id);
+      localStorage.setItem("type", user.type);
+      if (user.dep) {
+        localStorage.setItem('dep', user.dep);
+      }
+      window.location.reload();
+    } else if (response.status === 401) {
+      console.error('Invalid username or password');
+    } else {
+      console.error('Something went wrong');
     }
-   
-    return(
-        
-            
-                getId&&getType?
-                getTarget():
-           
-           
-                
-                <Grid container style={{width:'400px',margin:'auto',heigth:'400px'}} justifyContent="center" alignItems="center" spacing={2}> <form onSubmit={handleSubmit}>
-                    <Card className="partition">
-                        <CardContent>
-                            <Grid container style={{marginTop:8}}   spacing={2}>
-                            <Grid item ><h1 align="center">Login Here</h1></Grid>
-                            <Grid size={{xs:12}>
-                                    <TextField
-                                    fullWidth
-                                    name="uname"
-                                    id="uname"
-                                    label="Username"
-                                    variant="outlined"
-                                    value={formValues['uname']}
-                                    onChange={handleInputChange}
-                                />
-                            </Grid>
-                            <Grid size={{xs:12}>
-                                    <TextField
-                                    fullWidth
-                                    name="password"
-                                    id="password"
-                                    label="Password"
-                                    variant="outlined"
-                                    value={formValues['password']}
-                                    onChange={handleInputChange}
-                                />
-                            </Grid>
-                            <Grid size={{xs:12}>
-                            <Button type="submit" color="primary" size="medium" variant="contained">
-                                Login
-                            </Button></Grid>
-                            </Grid>
-                        </CardContent>
-                    </Card>
-                    </form>
-                </Grid>
-               
-               
-          
-            
-        
-    )
+  }
+
+  return (
+
+
+    getId && getType ?
+      getTarget() :
+
+      <Grid container style={{ width: '400px', margin: 'auto', heigth: '400px' }} justifyContent="center" alignItems="center" spacing={2}> <form onSubmit={handleSubmit}>
+        <Card className="partition">
+          <CardContent>
+            <Grid container style={{ marginTop: 8 }} spacing={2}>
+              <Grid item ><h1 align="center">Login Here</h1></Grid>
+              <Grid size={{ xs: 12 }}>
+                <TextField
+                  fullWidth
+                  name="uname"
+                  id="uname"
+                  label="Username"
+                  variant="outlined"
+                  value={formValues['uname']}
+                  onChange={handleInputChange}
+                />
+              </Grid>
+              <Grid size={{ xs: 12 }}>
+                <TextField
+                  fullWidth
+                  name="password"
+                  id="password"
+                  label="Password"
+                  variant="outlined"
+                  value={formValues['password']}
+                  onChange={handleInputChange}
+                />
+              </Grid>
+              <Grid size={{ xs: 12 }}>
+                <Button type="submit" color="primary" size="medium" variant="contained">
+                  Login
+                </Button></Grid>
+            </Grid>
+          </CardContent>
+        </Card>
+      </form>
+      </Grid>
+  )
 }
 export default LoginWithLocalStorage;
 

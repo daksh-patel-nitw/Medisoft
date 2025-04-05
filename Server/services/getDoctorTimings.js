@@ -16,10 +16,8 @@ export const getDocTimings=async(did,date)=>{
 }
 
 
-export const addTimings = async (date, did, time, count) => {
-    const session = await mongoose.startSession(); // Start a transaction session
-    session.startTransaction();
-
+export const addTimings = async (date, did, time, count, session) => {
+  
     try {
         const data = await timingModel.findOne({ did, date, timing: time }).session(session);
         
@@ -31,21 +29,14 @@ export const addTimings = async (date, did, time, count) => {
             await newTiming.save({ session });
         }
 
-        await session.commitTransaction(); // Commit the transaction
-        session.endSession(); // End session
         return true;
     } catch (error) {
-        await session.abortTransaction(); // Rollback on failure
-        session.endSession();
         console.error("Error updating timings:", error);
         throw error;
     }
 };
 
-export const removeTimings =async (date, did, time) => {
-    const session = await mongoose.startSession(); // Start a transaction session
-    session.startTransaction();
-
+export const removeTimings =async (date, did, time,session) => {
     try {
         const data = await timingModel.findOne({ did, date, timing: time }).session(session);
         
@@ -54,12 +45,8 @@ export const removeTimings =async (date, did, time) => {
             await data.save({ session });
         }
 
-        await session.commitTransaction(); // Commit the transaction
-        session.endSession(); // End session
         return true;
     } catch (error) {
-        await session.abortTransaction(); // Rollback on failure
-        session.endSession();
         console.error("Error updating timings:", error);
         throw error;
     }

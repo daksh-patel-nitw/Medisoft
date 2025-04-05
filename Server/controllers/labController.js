@@ -1,6 +1,6 @@
 import labModel from "../models/laboratoryInventory.js";
 import labPrescriptionModel from "../models/laboratoryPrescription.js";
-import generateBill from '../utils/billUtils.js';
+import generateBill,{confirmBill} from '../utils/billUtils.js';
 
 //------------LABORATORY Inventory -------------------
 
@@ -78,76 +78,28 @@ export const deleteTest = async (req, res) => {
 
 //-----------------Tests-------------------------
 
-//Sending the Previous appointment tests to OPD and IPD doctor
-export const getTests = async (aid, index) => {
-  try {
-    if (index === 1)
-      return await labPrescriptionModel.find({ aid });
-    else {
-      return await labPrescriptionModel.aggregate([
-        { $match: { aid: aid } },
-        {
-          $group: {
-            _id: { $dateToString: { format: "%d-%m-%Y", date: "$createdAt", timezone: "Asia/Kolkata"  } },
-            tests: { $push: {name:"$tname"} }
-          }
-        },
-        { $sort: { "_id": -1 } },
-        {
-          $project: {
-            date: "$_id",
-            tests: 1,
-            _id: 0
-          }
-        }
-      ]);
-    }
-  } catch (err) {
-    console.error(err);
-    return false;
-  }
-}
-//add Test from doctor
-export const prescribeTest = async (aid, tests, session) => {
-  console.log("In Tests")
-  try {
-    for (const body of tests) {
-      const { price, pat_details, name, normal } = await labModel.findById(body._id).session(session);
-      const newT = new labPrescriptionModel({
-        aid,
-        price,
-        pat_details,
-        tname: name,
-        n_range: normal,
-      });
-
-      await newT.save({ session });
-    }
-    return true;
-  } catch (error) {
-    console.error("Error in prescribeTest:", error);
-    return false;
-  }
-};
-
 //Send All laboratory tests status 
 export const getAllPrescribedTests = async (req, res) => {
+  const {pid}=req.body;
   try {
-
-    const allTests = await labPrescriptionModel.aggregate([
-      {
-        $facet: {
-          pending: [{ $match: { details: "P" } }],
-          intermediate: [{ $match: { details: "D", status: "F" } }],
-          completed: [{ $match: { status: "D" } }]
-        }
-      }
-    ]);
-
-    // Output: { pending: [...], intermediate: [...], completed: [...] }
-    console.log(allTests[0]);
-
-    res.status(200).json(arrTests);
+    const tests = await labPrescriptionModel.aggregate([
+          { $match: { pid ,status:"B"} }, // Filter by patient id
+          {
+            $group: {
+              _id: "$aid",
+              tests: { $push: "$$ROOT" }
+            }
+          },
+          {
+            $project: {
+              _id: 0,
+              aid: "$_id",
+              tests: 1
+            }
+          }
+        ]);
+    
+        res.status(200).json(tests);
   } catch (error) {
     console.log(error);
     res.status(500).json({ message: "Server error" });
@@ -187,5 +139,88 @@ export const updateTestResults = async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Server error" });
+  }
+};
+
+//-------------------- Exporting the functions for other files -------------------
+
+//Sending the Previous appointment tests to OPD and IPD doctor
+export const getTests = async (aid, index) => {
+  try {
+    if (index === 1)
+      return await labPrescriptionModel.find({ aid });
+    else {
+      return await labPrescriptionModel.aggregate([
+        { $match: { aid: aid } },
+        {
+          $group: {
+            _id: { $dateToString: { format: "%d-%m-%Y", date: "$createdAt", timezone: "Asia/Kolkata"  } },
+            tests: { $push: {name:"$tname"} }
+          }
+        },
+        { $sort: { "_id": -1 } },
+        {
+          $project: {
+            date: "$_id",
+            tests: 1,
+            _id: 0
+          }
+        }
+      ]);
+    }
+  } catch (err) {
+    console.error(err);
+    return false;
+  }
+}
+
+//add Test from doctor
+export const prescribeTest = async (aid, tests, session) => {
+  console.log("In Tests")
+  try {
+    for (const body of tests) {
+      const { price, pat_details, name, normal } = await labModel.findById(body._id).session(session);
+      const newT = new labPrescriptionModel({
+        aid,
+        price,
+        pat_details,
+        tname: name,
+        n_range: normal,
+      });
+      await generateBill(price, aid, name, "lab",newT._id, session);
+      await newT.save({ session });
+    }
+    return true;
+  } catch (error) {
+    console.error("Error in prescribeTest:", error);
+    return false;
+  }
+};
+
+
+//confirm the bill of the test
+export const confirmBillLab = async (arr,session) => {
+  try {
+    console.log("In Confirm Bill", arr);
+
+    //Extracting the ids from the array of objects
+    const idsToUpdate = arr.map(item => item.id);
+    const idsForConfirm = arr.map(item => item._id);
+
+    //Updating the status of the medicines in the prescription model
+    await labPrescriptionModel.updateMany(
+      { _id: { $in: idsToUpdate } },
+      { $set: { status: "B" } },
+      { session }
+    );
+
+    //Updating the status of the bills in the bill model
+    await confirmBill(1, idsForConfirm, null, null, session);
+
+    console.log("Transaction committed successfully in lab");
+
+  } catch (error) {
+    console.error("Transaction rolled back:", error);
+    return false;
   }
 };

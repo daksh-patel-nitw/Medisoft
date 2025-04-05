@@ -22,6 +22,15 @@ router.get('/', controller.getAllMedicines);
 
 //Filter medicine
 router.get('/search', controller.filterMedicine);
+
+
+//====================== Prescription Routes ============================
+
+//Get all prescriptions
+router.post('/prescription', controller.getPatientPrescription);
+
+
+
 //---------------------- Unused ----------------------------
 //Send all medicine to doctor
 router.get('/d', controller.getMedicineDoctor);
@@ -33,10 +42,8 @@ router.put('/:value', controller.updateMedicine);
 
 
 
-//====================== Prescription Routes ============================
 
-//Get all prescriptions
-router.get('/prescription', controller.getAllPrescriptions);
+
 
 //Sell Medicine to Customer
 router.post('/sell', controller.sellMedicine);

@@ -1,13 +1,13 @@
 import appointmentModel from '../models/appointment.js'
 import { addTimings, removeTimings } from '../services/getDoctorTimings.js';
-import generateBill from '../utils/billUtils.js';
+import generateBill, { confirmBill } from '../utils/billUtils.js';
 import { updateMember } from './memberController.js';
-import { prescribeTest, getTests } from './labController.js';
-import { prescribeMedicine, getMedicine } from './medicinesController.js';
+import { prescribeTest, getTests, confirmBillLab } from './labController.js';
+import { prescribeMedicine, getMedicine, confirmBillMedicine } from './medicinesController.js';
 import { getRoomWithAid } from './roomController.js';
 import mongoose from 'mongoose';
 
-export const bookAppointment = async (type, b) => {
+export const bookAppointment = async (type, b, session) => {
   try {
     const newA = new appointmentModel({
       pid: b.pid,
@@ -19,25 +19,25 @@ export const bookAppointment = async (type, b) => {
     });
 
     if (type === "opd") {
+
       newA.status = 'P';
       newA.schedule_date = b.schedule_date;
       newA.time = b.time;
       newA.doctor_qs = b.qs;
-      newA.price = b.price;
 
       //updating the opd status of the patient to avoid multiple bookings.
-      await updateMember(b.pid, { opd: 1 });
+      await updateMember(b.pid, {$set:{opd: b.dname} }, session);
 
       // Updating the time slots of the doctor after booking
-      await addTimings(b.schedule_date, b.did, b.time, b.count - 1);
+      await addTimings(b.schedule_date, b.did, b.time, b.count - 1, session);
 
     } else {
       newA.status = 'I';
       newA.schedule_date = Date.now();
     }
 
-    await newA.save();
-    console.log(newA);
+    await newA.save({ session });
+    // console.log(newA);
     return newA._id;
   } catch (error) {
     console.error(error);
@@ -48,14 +48,33 @@ export const bookAppointment = async (type, b) => {
 
 export const makeAppointment = async (req, res) => {
   const b = req.body;
-  console.log(b);
-  const { type } = req.params;
+  // console.log(b);
+  const session = await mongoose.startSession(); // Start a transaction session
+  session.startTransaction();
   try {
-    const aid = await bookAppointment(type, b);
+
+    //booking the appointment by calling another function
+    const aid = await bookAppointment("opd", b, session);
+    if (!aid) {
+      await session.abortTransaction();
+      session.endSession();
+      return res.status(500).json({ message: "Error booking appointment", show: true });
+    }
+
+    //Generate the bill for the appointment
+    await generateBill(b.price, aid, "Doctor Fees", 'doctor', null, session);
+    await session.commitTransaction();
+
     res.status(200).json({ message: "Booking is Successfull", show: true });
   } catch (error) {
+    if (session.inTransaction()) {
+      await session.abortTransaction();
+    }
     console.error(error);
     res.status(500).json({ message: "Internal server error" });
+  } finally {
+
+    session.endSession(); // End the session
   }
 };
 
@@ -94,12 +113,7 @@ export const confirmAppointment = async (req, res) => {
       { status: 'confirm', ctime: Date.now(), selected_doctor_qs, weight, height },
       { new: true }
     );
-    console.log(updatedP);
-
-    // pid, price, aid, description, type, did = null , date = new Date()
-
-    await generateBill(updatedP.pid, updatedP.price, updatedP.aid, "Doctor Fees", 'doctor', updatedP.did);
-    // console.log("Bill in Route:", newBill)
+    // console.log(updatedP);
 
     res.status(200).json({ message: "Confirmed Successfully.", show: true });
 
@@ -140,28 +154,38 @@ export const getCounter2app = async (req, res) => {
 //Cancel the appointment
 export const deleteAppointment = async (req, res) => {
   const { id } = req.params;
-  console.log("Received ID in backend:", id);
+  // console.log("Received ID in backend:", id);
+  const session = await mongoose.startSession(); // Start a transaction session
+  session.startTransaction();
   try {
     const { id } = req.params;
-    console.log(id);
+    // console.log(id);
 
     const updatedAppointment = await appointmentModel.findOneAndUpdate(
       { _id: id },
       { status: "cancel" },
-      { new: true }
+      { new: true, session }
     );
 
     //updating the count of the doctor after cancelling the appointment
-    await removeTimings(updatedAppointment.schedule_date, updatedAppointment.did, updatedAppointment.time);
+    await removeTimings(updatedAppointment.schedule_date, updatedAppointment.did, updatedAppointment.time, session);
 
     if (!updatedAppointment) {
       return res.status(404).json({ message: "Appointment not found" });
     }
 
+    session.commitTransaction(); // Commit the transaction
+
     res.status(200).json({ message: "Appointment cancelled successfully", show: true });
   } catch (error) {
+    if (session.inTransaction()) {
+      await session.abortTransaction(); // Rollback changes
+    }
+    // Handle the error and send a response
     console.error("Error canceling appointment:", error);
     res.status(500).json({ message: "Error canceling appointment", error });
+  } finally {
+    session.endSession(); // End the session
   }
 };
 
@@ -191,7 +215,7 @@ export const diagnoseOpd = async (req, res) => {
     }
 
     //Step 2: Prescribe Medicines
-    const status1 = await prescribeMedicine(_id, medicines, session);
+    const status1 = await prescribeMedicine(updatedAppointment._id,updatedAppointment.pid, medicines, session);
     if (!status1) {
       await session.abortTransaction();
       session.endSession();
@@ -199,12 +223,15 @@ export const diagnoseOpd = async (req, res) => {
     }
 
     //Step 3: Prescribe Tests
-    const status2 = await prescribeTest(_id, tests, session);
+    const status2 = await prescribeTest(updatedAppointment._id,updatedAppointment.pid, tests, session);
     if (!status2) {
       await session.abortTransaction();
       session.endSession();
       return res.status(500).json({ message: "Failure in adding Tests", show: true });
     }
+
+    //Step 4: Update the appointment status of the patient to avoid multiple bookings.
+    await updateMember(updatedAppointment.pid, { $unset: { opd: "" } }, session);
 
     //Commit the transaction if all steps succeed
     await session.commitTransaction();
@@ -278,9 +305,9 @@ export const getIPDAppointment = async (req, res) => {
       return res.status(404).json({ message: "No IPD appointment found", show: true });
     }
 
-    const aid = appointment._id.toString();
+    const aid = appointment._id;
 
-    console.log("Appointment ID:", aid);
+    // console.log("Appointment ID:", aid);
     const { medicines, tests } = await getMedicineAndTest(aid, 0);
 
     console.log(medicines, tests);
@@ -300,12 +327,12 @@ export const getIPDAppointment = async (req, res) => {
     });
 
     // Get the room details
-    const room=await getRoomWithAid(aid)
+    const room = await getRoomWithAid(aid)
 
     // Convert groupedData into an array
     const result = Object.values(groupedData);
 
-    res.status(200).json({dep:room.dep,room:room.room_no,data:result});
+    res.status(200).json({ dep: room.dep, room: room.room_no, data: result });
 
   } catch (error) {
     console.error("Error fetching IPD appointment:", error);
@@ -318,7 +345,7 @@ export const getIPDAppointment = async (req, res) => {
 export const getOPDappointment = async (req, res) => {
   try {
     const { did } = req.params;
-    console.log(did);
+    // console.log(did);
 
     // Run both queries in parallel to reduce database calls
     const [appointmentToUpdate, inProgress] = await Promise.all([
@@ -361,31 +388,25 @@ export const updateIPDpat = async (req, res) => {
 
   const session = await mongoose.startSession(); // Start a transaction session
   session.startTransaction();
-  console.log(req.body);
+  // console.log(req.body);
   try {
     const { notes, medicines, tests, _id } = req.body;
+    const appointment = await appointmentModel.findOne({ _id }).session(session);
+    if (!appointment) {
+      await session.abortTransaction();
+      session.endSession();
+      return res.status(404).json({ message: "Appointment not found", show: true });
+    }
 
     //Step 1: Update the appointment status
     if (notes) {
-      console.log("here");
-      const updatedAppointment = await appointmentModel.findOneAndUpdate(
-        { _id: _id },
-        {
-          notes,
-        },
-        { new: true, session } // Use the transaction session
-      );
-
-      if (!updatedAppointment) {
-        await session.abortTransaction();
-        session.endSession();
-        return res.status(404).json({ message: "Appointment not found", show: true });
-      }
+      appointment.notes = notes;
+      await appointment.save({ session });
     }
 
 
     //Step 2: Prescribe Medicines
-    const status1 = await prescribeMedicine(_id, medicines, session);
+    const status1 = await prescribeMedicine(_id,appointment.pid, medicines, session);
     if (!status1) {
       await session.abortTransaction();
       session.endSession();
@@ -393,7 +414,7 @@ export const updateIPDpat = async (req, res) => {
     }
 
     //Step 3: Prescribe Tests
-    const status2 = await prescribeTest(_id, tests, session);
+    const status2 = await prescribeTest(_id,appointment.pid, tests, session);
     if (!status2) {
       await session.abortTransaction();
       session.endSession();
@@ -402,8 +423,6 @@ export const updateIPDpat = async (req, res) => {
 
     //Commit the transaction if all steps succeed
     await session.commitTransaction();
-
-
     res.status(200).json({ message: "Diagnosis updated successfully", show: true });
 
   } catch (error) {
@@ -473,3 +492,170 @@ export const seeappointment = async (req, res) => {
     res.status(500).json({ message: "Error fetching appointments", error });
   }
 };
+
+//------------------ Bill Desk -------------------
+
+// Get all bills for a specific patient
+export const getAllBill = async (req, res) => {
+  try {
+    const { pid, status } = req.body;
+    // console.log(status, pid);
+    if (!pid || pid.trim() === "" || pid === undefined) {
+      return res.status(400).json({ message: "Invalid request: Please provide valid details" });
+    }
+
+    const bills = await appointmentModel.aggregate([
+      { $match: { pid: pid } }, // Step 1: Get all appointments for the given pid
+      {
+        $lookup: {
+          from: "bills",
+          let: { aidObjId: "$_id" }, // Use _id as ObjectId
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $and: [
+                    { $eq: ["$aid", "$$aidObjId"] },  // Match _id directly with aid
+                    { $eq: ["$status", status === "true"] }  // ✅ Move status check here in bills table
+                  ]
+                }
+              }
+            }
+          ],
+          as: "bills"
+        }
+      },
+      {
+        $match: { "bills.0": { $exists: true } } // Step 2: Remove appointments without bills
+      },
+      {
+        $unwind: "$bills" // Step 3: Unwind bills
+      },
+      {
+        $project: { // Step 4: Format the output
+          _id: 0,
+          aid: "$_id",
+          schedule_date: {
+            $dateToString: { // Convert schedule_date to formatted string
+              format: "%d %B %Y",
+              date: "$schedule_date",
+              timezone: "Asia/Kolkata"
+            }
+          },
+          dname: 1,
+          bill_type: "$bills.type", // Group bills by type (pharmacy, lab, doctor)
+          bill: {
+            _id: "$bills._id",
+            date: {
+              $ifNull: [
+                {
+                  $dateToString: {
+                    format: "%d %B %Y",
+                    date: "$bills.date",
+                    timezone: "Asia/Kolkata"
+                  }
+                },
+                "No Date Available"
+              ]
+            },
+            name: "$bills.description",
+            price: "$bills.price",
+            id: "$bills.id",
+          }
+        }
+      },
+      {
+        $group: { // Step 5: Group bills by type inside each appointment
+          _id: { aid: "$aid", bill_type: "$bill_type" },
+          schedule_date: { $first: "$schedule_date" },
+          dname: { $first: "$dname" },
+          bills: { $push: "$bill" }
+        }
+      },
+      {
+        $group: { // Step 6: Convert grouped bills into key-value pairs (type-wise)
+          _id: "$_id.aid",
+          schedule_date: { $first: "$schedule_date" },
+          dname: { $first: "$dname" },
+          bills: {
+            $push: { k: "$_id.bill_type", v: "$bills" }
+          }
+        }
+      },
+      {
+        $project: { // Step 7: Convert array of key-value pairs into an object
+          _id: 0,
+          aid: "$_id",
+          schedule_date: 1,
+          dname: 1,
+          bills: { $arrayToObject: "$bills" }
+        }
+      }
+    ]);
+
+
+    // console.log(bills);
+
+    if (bills.length === 0) {
+      return res.status(200).json({ flag: 0 });
+    }
+
+    res.status(200).json({ flag: 1, data: bills });
+  } catch (error) {
+    console.error("Error fetching all bills:", error);
+    res.status(500).json({ message: "Error fetching all bills", error });
+  }
+};
+
+// Confirm the bill for doctor, pharmacy, and lab
+export const confirmTheBill = async (req, res) => {
+  const session = await mongoose.startSession();
+  session.startTransaction(); // Start the transaction
+
+  try {
+    const { pharmacy, doctor, lab, room, aid } = req.body;
+
+    if (!aid) {
+      await session.abortTransaction();
+      session.endSession();
+      return res.status(400).json({ message: "Missing required fields", show: true });
+    }
+
+    // Confirm the bill for doctor
+    if (doctor) {
+      // console.log("Doctor", doctor);
+      const idsForConfirm = doctor.map(item => item._id);
+      // console.log("Doctor to confirm",idsForConfirm);
+      appointmentModel.updateOne(
+        { _id: aid},
+        { bill:true},
+        { session }
+      )
+
+      await confirmBill(0, null, idsForConfirm,"doctor", session);
+
+    }
+
+    //Confirm the bill for pharmacy and lab
+    if (pharmacy) await confirmBillMedicine( pharmacy, session);
+    if (lab) await confirmBillLab( lab, session);
+
+    if (room) {
+      // Add room-specific logic if needed
+    }
+
+    await session.commitTransaction(); // Commit transaction if everything is successful
+    session.endSession();
+
+    res.status(200).json({ message: "Bill Confirmed Successfully", show: true });
+  } catch (error) {
+
+    await session.abortTransaction(); // Rollback transaction in case of failure
+    session.endSession();
+    console.error("Error confirming bill:", error);
+    res.status(500).json({ message: "Error confirming bill", error });
+  }
+};
+
+
+

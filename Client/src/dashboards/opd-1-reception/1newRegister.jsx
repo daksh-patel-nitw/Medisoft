@@ -1,6 +1,6 @@
 import React from 'react';
 import {SideBar} from "../../components/sidebar.jsx";
-import { useState} from 'react';
+import { useEffect, useState} from 'react';
 import Grid from '@mui/material/Grid2';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
@@ -12,12 +12,14 @@ import Tab from '@mui/material/Tab';
 import { sidebar_utils, patientForm, patLabels, empForm, empLabels } from './utils.js';
 
 import { usePatientForm, useEmployeeForm, handleFormSubmit } from "./formHandlers";
-
+import Autocomplete from '@mui/material/Autocomplete';
 export default function App() {
 
   const { patValues, setPatValues, handlePatChange } = usePatientForm();
   const { empValues, setEmp, handleEmpChange } = useEmployeeForm();
-
+  const [rolesDeps, setRolesDeps] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [patError, setPatError] = useState(false);
 
   // Patient and Employee Form UI
   function formCard(components, labels, handleInputChange, formValues, handleSubmit, tracker) {
@@ -76,11 +78,28 @@ export default function App() {
     setValue(newValue);
   };
 
+   const autocomp = (index, label, name,value) => (
+      <Autocomplete
+        options={rolesDeps[index]}
+        onChange={(event, newValue) => handleSearch(newValue, name, index)}
+        value={value}
+        renderInput={(params) => (
+          <TextField
+            {...params}
+            label={label}
+            margin="normal"
+            variant="outlined"
+          />
+        )}
+      />
+    );
+
   return (
 
     <SideBar arr={sidebar_utils}>
-      <Grid container spacing={2} >
-        <Grid size={{ xs: 12 }}>
+      <Grid container justifyContent="center" spacing={2} >
+        
+
           <Card className="partition" style={{ width:'85%', height: 600 }}>
             <Tabs
               value={value}
@@ -97,7 +116,7 @@ export default function App() {
               : formCard(empForm, empLabels, handleEmpChange, empValues, handleFormSubmit, 2)}
 
           </Card>
-        </Grid>
+        
 
       </Grid>
     </SideBar>

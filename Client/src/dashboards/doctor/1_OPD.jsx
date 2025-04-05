@@ -18,7 +18,7 @@ import { useDispatch, useSelector } from 'react-redux';
 
 
 export default function App() {
-  const doctorId = "E0000003"
+  const doctorId = "E0000002"
   const [checkErr, setErr] = useState(1);
   const [openModal, setOpenEditModal] = useState(false);
   const dispatch = useDispatch();
@@ -54,9 +54,12 @@ export default function App() {
     }
   };
 
+  const tests = useSelector(getTests);
   //Fetching all the lab tests as the records are at most 100
   const fetchTest = async () => {
-    if (useSelector(getTests).length === 0) {
+    // console.log("Fetching tests from Redux store");
+    if (tests.length === 0) {
+      // console.log("Fetching tests from API");
       const data3 = await apis.noTokengetRequest('/lab/dScreen');
       dispatch(setTests(data3));
     }

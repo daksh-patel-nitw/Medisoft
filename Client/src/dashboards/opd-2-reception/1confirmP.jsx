@@ -75,7 +75,9 @@ export default function App() {
 
   );
 
+  //control Open Close of Modal
   const [openEditModal, setOpenEditModal] = useState(false);
+  
   const [selectedApp, setSelectedApp] = useState(null);
 
   const handleDelete = async (id) => {

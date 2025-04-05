@@ -1,5 +1,5 @@
 import express from 'express';
-import { updateDoctorDetails, getPatientNamesId,addMember, getAdminEmployee, getAllPatients, updateRole,getDoctorByDepartment, getDoctortimings, getDoctorDetails, deleteRole, getMemberWithId,getRolesDeps,updateRoleDeps } from '../controllers/memberController.js';
+import { updateDoctorDetails, getPatientNamesId,addMember, getAdminEmployee, updateRole,getDoctorByDepartment, getDoctortimings, getDoctorDetails, deleteRole, getMemberWithId,getRolesDeps,updateRoleDeps,getFilteredPatientNamesId } from '../controllers/memberController.js';
 const router = express.Router();
 
 //adding new members
@@ -9,6 +9,7 @@ router.post('/',addMember);
 
 router.get('/doctors',getDoctorDetails);
 router.get('/patient/reception',getPatientNamesId);
+router.get('/patient',getFilteredPatientNamesId);
 
 // --------------------------------- Reception 2 ----------------------------------------------
 
@@ -21,7 +22,6 @@ router.get('/getById/:id',getMemberWithId);
 
 //updating the doctor details. ----Update this route
 router.post('/updateDetails',updateDoctorDetails);
-
 
 // --------------------------------- Admin Panel -------------------------------------------
 
@@ -38,18 +38,11 @@ router.get('/admin',getAdminEmployee);
 router.post('/role',updateRole);
 router.delete('/role/:id',deleteRole);
 
-
-
 // --------------------------------- Unused ------------------------------------------------
 
 //Queue Screen
 router.get('/doctor/:dep',getDoctorByDepartment);
 
 
-
-
-
-//get all patients
-router.get('/patient',getAllPatients);
 
 export default router;
