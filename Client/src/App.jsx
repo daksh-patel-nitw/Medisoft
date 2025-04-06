@@ -12,7 +12,18 @@ function App() {
           <Route key={path} path={path} element={element} />
         ))}
       </Routes>
-      <ToastContainer />
+      <ToastContainer 
+        position="top-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        closeOnClick={false}
+        rtl={false}
+        pauseOnFocusLoss={false}
+        draggable={false}
+        pauseOnHover={false}
+        theme="light"
+        
+      />
     </div>
   );
 }

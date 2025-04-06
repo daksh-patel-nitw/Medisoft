@@ -1,4 +1,4 @@
-import React, { useState,useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Dialog,
   DialogActions,
@@ -11,14 +11,14 @@ import {
 } from '@mui/material/';
 import { toast } from 'react-toastify';
 import { Delete } from '@mui/icons-material';
-import { apis } from '../../Services/commonServices';
-
+import { apis } from '../../../Services/commonServices';
+import TimingsPicker from '../../../components/TimingsAutoComp';
 const arr2 = { pat_details: "Patient Details", normal: "Normal", price: "Price", timing: "Timing" };
 
 const EditModal = ({ open, column, handleClose, test }) => {
   const [f, updateValue] = useState("");
   const [timings, setTiming] = useState([]);
-  
+
   const title = test.name;
   useEffect(() => {
     if (open) {
@@ -32,14 +32,9 @@ const EditModal = ({ open, column, handleClose, test }) => {
     updateValue(event.target.value);
   };
 
-  const addTiming = () => {
-    if(f === "") {
-      toast.error("Please enter a valid timing");
-      return;
-    }
-    
-    setTiming([f,...timings]);
-    updateValue("");
+  const addTiming = (time) => {
+    setTiming([time, ...timings]);
+
   }
 
   const deleteTiming = (value) => {
@@ -48,17 +43,17 @@ const EditModal = ({ open, column, handleClose, test }) => {
 
   const handleSubmit = async () => {
     //Validation for empty fields
-    if(column!=='timing' && f === "") {
+    if (column !== 'timing' && f === "") {
       toast.error("Please enter a valid value");
       return;
     }
 
     const value = column === 'timing' ? timings : f;
-    if(value===test[column]){
+    if (value === test[column]) {
       toast.warn("Value is same as previous");
       return;
     }
-    const status = await apis.noTokenStatusPutRequest('/lab', {column: column, value: value, id: test._id});
+    const status = await apis.noTokenStatusPutRequest('/lab', { column: column, value: value, id: test._id });
     if (status === 200) {
       test[column] = value;
 
@@ -70,34 +65,14 @@ const EditModal = ({ open, column, handleClose, test }) => {
     <Dialog open={open} onClose={handleClose}>
       <DialogTitle>{title}</DialogTitle>
       <DialogContent>
-        <Grid container spacing={2} style={{ width: '400px' }}> 
-          <Grid size={{ xs: column === 'timing' ? 8 : 12 }}>
-            <TextField
-              fullWidth
-              margin="dense"
-              label={arr2[column]}
-              value={f}
-              variant="outlined"
-              onChange={handleInputChange}
-            />
-          </Grid>
-          {column === 'timing' && <>
-            <Grid size={{ xs: 4 }} style={{ display: "flex", alignItems: "center" }}>
-              <Button
-                variant="contained"
-                color="primary"
-                onClick={addTiming}
-                fullWidth
-                
-              >
-                Add
-              </Button>
-            </Grid >
+        <Grid container spacing={2} style={{ width: '400px' }}>
 
+          {column === 'timing' ? <>
+            <TimingsPicker handleAdd={addTiming} />
             {timings.map((time, index) => (
               < >
-                <Grid size={{ xs: 3 }} />
-                <Grid container size={{ xs: 6 }}>
+                <Grid size={{ xs: 2 }} />
+                <Grid container size={{ xs: 8 }}>
                   <Grid style={{ display: "flex", alignItems: "center" }} size={{ xs: 9 }}>
                     {time}
 
@@ -108,11 +83,19 @@ const EditModal = ({ open, column, handleClose, test }) => {
                     </IconButton>
                   </Grid>
                 </Grid>
-                <Grid size={{ xs: 3 }} />
+                <Grid size={{ xs: 2 }} />
               </>
             ))}
-
-          </>}
+          </>
+            :
+            <TextField
+              fullWidth
+              margin="dense"
+              label={arr2[column]}
+              value={f}
+              variant="outlined"
+              onChange={handleInputChange}
+            />}
 
         </Grid>
 

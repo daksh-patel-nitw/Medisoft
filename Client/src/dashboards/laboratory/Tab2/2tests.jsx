@@ -17,9 +17,9 @@ import Autocomplete from '@mui/material/Autocomplete';
 import Card from '@mui/material//Card';
 import CardContent from '@mui/material//CardContent';
 import { Delete, Edit } from '@mui/icons-material';
-import { SideBar } from '../../components/sidebar';
-import { side_bar } from './utils';
-import { apis } from '../../Services/commonServices';
+import { SideBar } from '../../../components/sidebar';
+import { side_bar } from '../utils';
+import { apis } from '../../../Services/commonServices';
 import EditModal from './modalEdit';
 
 
@@ -69,7 +69,7 @@ export default function App() {
         console.log(tests);
     }
 
-    const rowsPerPageOptions = [7];
+    const rowsPerPageOptions = [8];
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(rowsPerPageOptions[0]);
 
@@ -86,7 +86,7 @@ export default function App() {
         <SideBar arr={side_bar}>
             <Grid container spacing={2}>
                 <Grid size={{ xs: 12 }}>
-                    <Card className="partition">
+                    <Card className="partition" sx={{ position:" relative",height: "83vh" }}>
                         <CardContent>
                             <Autocomplete
                                 freeSolo
@@ -138,14 +138,14 @@ export default function App() {
                                                 </TableCell>
 
                                                 <TableCell>
-                                                    <Grid container spacing ={1}>
+                                                    <Grid container spacing={1}>
                                                         <Grid container direction='column' spacing={1}>
-                                                            {m.timing.map((t,index) => (
+                                                            {m.timing.map((t, index) => (
                                                                 <Grid>
-                                                                    {index+1+'. '+t}
+                                                                    <b> {index + 1}) </b> {t}
                                                                 </Grid>
                                                             ))}
-                                                        </Grid> 
+                                                        </Grid>
                                                         <Grid>
                                                             <IconButton onClick={() => handleOpenEditModal(m, 'timing')}>
                                                                 <Edit />
@@ -168,15 +168,7 @@ export default function App() {
                                         ))}
                                     </TableBody>
                                 </Table>
-                                <TablePagination
-                                    rowsPerPageOptions={rowsPerPageOptions}
-                                    component="div"
-                                    count={tests && tests.length}
-                                    rowsPerPage={rowsPerPage}
-                                    page={page}
-                                    onPageChange={handleChangePage}
-                                    onRowsPerPageChange={handleChangeRowsPerPage}
-                                />
+
                                 {selectedMedicine && (
                                     <EditModal
                                         open={openEditModal}
@@ -187,6 +179,17 @@ export default function App() {
                                 )}
                             </TableContainer>
                         </CardContent>
+                        <Grid size={{ xs: 12 }} sx={{ position: "absolute", bottom: "2px" }}>
+                            <TablePagination
+                                rowsPerPageOptions={rowsPerPageOptions}
+                                component="div"
+                                count={tests && tests.length}
+                                rowsPerPage={rowsPerPage}
+                                page={page}
+                                onPageChange={handleChangePage}
+                                onRowsPerPageChange={handleChangeRowsPerPage}
+                            />
+                        </Grid>
                     </Card>
                 </Grid>
             </Grid>

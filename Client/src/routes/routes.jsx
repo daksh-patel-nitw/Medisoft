@@ -20,11 +20,11 @@ import I1 from "../dashboards/ipd-reception/1newRoom";
 import I2 from "../dashboards/ipd-reception/2RegisterPatients";
 import I3 from "../dashboards/ipd-reception/3Patients";
 
-import T1 from "../dashboards/laboratory/1newtest";
-import T2 from "../dashboards/laboratory/2tests";
+import T1 from "../dashboards/laboratory/Tab1/1newtest";
+import T2 from "../dashboards/laboratory/Tab2/2tests";
+import T3 from "../dashboards/laboratory/Tab3/main";
 
 import B1 from "../dashboards/billDesk/1billshow";
-// import T3 from "../dashboards/laboratory/3patients";
 
 // import Pat1 from "../dashboards/patient/1view";
 import Pat2 from "../dashboards/patient/patientBookApp";
@@ -72,7 +72,7 @@ const routes = [
   // Lab
   { path: "/newtest", element: <T1 /> },
   { path: "/tests", element: <T2 /> },
-  // { path: "/labpatients", element: <T3 /> },
+  { path: "/labpatients", element: <T3 /> },
 
   // Bill
   { path: "/bill", element: <B1 /> },

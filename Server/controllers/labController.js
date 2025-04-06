@@ -1,6 +1,14 @@
 import labModel from "../models/laboratoryInventory.js";
 import labPrescriptionModel from "../models/laboratoryPrescription.js";
-import generateBill,{confirmBill} from '../utils/billUtils.js';
+import generateBill, { confirmBill } from '../utils/billUtils.js';
+
+// FileUpload 
+import path from 'path';
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 //------------LABORATORY Inventory -------------------
 
@@ -80,26 +88,14 @@ export const deleteTest = async (req, res) => {
 
 //Send All laboratory tests status 
 export const getAllPrescribedTests = async (req, res) => {
-  const {pid}=req.body;
+  const { pid, status } = req.body;
+  const fields = { createdAt: 1, tname: 1, n_range: 1, pat_details: 1 };
+  if (status === 'T') {
+    fields.report = 1;
+  }
   try {
-    const tests = await labPrescriptionModel.aggregate([
-          { $match: { pid ,status:"B"} }, // Filter by patient id
-          {
-            $group: {
-              _id: "$aid",
-              tests: { $push: "$$ROOT" }
-            }
-          },
-          {
-            $project: {
-              _id: 0,
-              aid: "$_id",
-              tests: 1
-            }
-          }
-        ]);
-    
-        res.status(200).json(tests);
+    const tests = await labPrescriptionModel.find({ pid, status }, fields).lean();
+    res.status(200).json(tests);
   } catch (error) {
     console.log(error);
     res.status(500).json({ message: "Server error" });
@@ -108,34 +104,37 @@ export const getAllPrescribedTests = async (req, res) => {
 
 //Take patient details
 export const updatePatientDetails = async (req, res) => {
+  const { id, status, details,p_range } = req.body;
   try {
 
-    const test = await test.findByIdAndUpdate(id, { details: 'D' }, { useFindAndModify: false });
+    if (!id || !status) {
+      return res.status(400).json({ message: "Missing required fields" });
+    }
 
-    //When someone wants to do direct test without doctor
-    const status = (req.params.type === 'out') ? false : true;
+    let fields = { status };
 
-    const newBill = await generateBill(allT.pid, allT.price, allT.aid, allT.tname, 'lab', allT.did);
-    console.log("Bill in Route:", newBill)
+    // If details are provided
+    if (details) fields.details = details;
 
-    res.status(200).json({ message: "Patient details updated successfully" });
-  } catch (error) {
-    console.log(error);
-    res.status(500).json({ message: "Server error" });
-  }
-};
+    // If p_range is provided
+    if (p_range) fields.p_range = p_range;
 
-// update the results of the test
-export const updateTestResults = async (req, res) => {
-  try {
+    // If a file is uploaded, save it
+    if (req.files && req.files.report) {
+      const report = req.files.report;
+      const filePath = path.join(__dirname,'..', 'uploads', `${id}.pdf`);
+      await report.mv(filePath);
+      fields.report = `/uploads/${id}.pdf`; // Save path to DB if needed
+    }
 
-    const allT = await test.findByIdAndUpdate(
-      req.params.id,
-      { p_range: req.params.value, status: 'D' },
-      { new: true, useFindAndModify: false }
-    );
+    const updatedTest = await labPrescriptionModel.findByIdAndUpdate(id, fields, { new: true });
 
-    res.status(200).json(allT);
+    if (!updatedTest) {
+      return res.status(404).json({ message: "Test not found" });
+    }
+
+    res.status(200).json({ message: "Patient details updated successfully", show: true });
+
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Server error" });
@@ -154,8 +153,8 @@ export const getTests = async (aid, index) => {
         { $match: { aid: aid } },
         {
           $group: {
-            _id: { $dateToString: { format: "%d-%m-%Y", date: "$createdAt", timezone: "Asia/Kolkata"  } },
-            tests: { $push: {name:"$tname"} }
+            _id: { $dateToString: { format: "%d-%m-%Y", date: "$createdAt", timezone: "Asia/Kolkata" } },
+            tests: { $push: { name: "$tname" } }
           }
         },
         { $sort: { "_id": -1 } },
@@ -187,7 +186,7 @@ export const prescribeTest = async (aid, tests, session) => {
         tname: name,
         n_range: normal,
       });
-      await generateBill(price, aid, name, "lab",newT._id, session);
+      await generateBill(price, aid, name, "lab", newT._id, session);
       await newT.save({ session });
     }
     return true;
@@ -199,7 +198,7 @@ export const prescribeTest = async (aid, tests, session) => {
 
 
 //confirm the bill of the test
-export const confirmBillLab = async (arr,session) => {
+export const confirmBillLab = async (arr, session) => {
   try {
     console.log("In Confirm Bill", arr);
 
@@ -222,5 +221,38 @@ export const confirmBillLab = async (arr,session) => {
   } catch (error) {
     console.error("Transaction rolled back:", error);
     return false;
+  }
+};
+
+export const getAllTestsStatus = async (req, res) => {
+  try {
+    // Parse page & limit from query params, with defaults
+    const page = parseInt(req.query.page) || 1;
+    const limit = 10;
+
+    // Calculate how many documents to skip
+    const skip = (page - 1) * limit;
+
+    // Fetch the paginated and sorted data
+    const allTests = await labPrescriptionModel
+      .find({ status: "D" })
+      .sort({ updatedAt: -1 }) // Sort by latest update first
+      .skip(skip)
+      .limit(limit)
+      .lean();
+
+    // Optional: total count for frontend pagination
+    const total = await labPrescriptionModel.countDocuments({ status: "D" });
+
+    res.status(200).json({
+      data: allTests,
+      page,
+      totalPages: Math.ceil(total / limit),
+      total,
+    });
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error" });
   }
 };

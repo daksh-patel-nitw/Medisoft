@@ -1,0 +1,12 @@
+.low-button{
+    height: 8vh !important;
+    font-weight: bold !important;
+    font-size: 1.2rem !important;
+}
+
+.grid-button{
+    position: absolute !important;
+    bottom: 4px !important;
+    padding:20px !important;
+
+}
