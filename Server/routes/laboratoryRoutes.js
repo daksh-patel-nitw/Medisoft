@@ -25,14 +25,11 @@ router.delete('/:id', controller.deleteTest);
 //Send All laboratory tests of the patient
 router.post('/prescription', controller.getAllPrescribedTests);
 
+//Update the status of the test
+router.put('/details', controller.updatePatientDetails);
 
-//-----------------Unused-------------------
+//Send All laboratory tests status Done
+router.get('/completed', controller.getAllTestsStatus);
 
-
-//Take patient details, here type is out/in
-router.put('/details/:id/:type', controller.updatePatientDetails);
-
-// Finish the test 
-router.get('/results/:id/:value', controller.updateTestResults);
 
 export default router;

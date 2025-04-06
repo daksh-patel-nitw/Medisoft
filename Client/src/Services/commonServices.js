@@ -55,6 +55,11 @@ const getByIdRequest = (url, id) => {
   return httpClient.execute("get", `${url}/${id}`, null, null, header, true);
 };
 
+//------------------------ File Upload Requests --------------------------------
+const uploadFileRequest = (url, formData) => {
+  return httpClient.executeFileUpload("put", url, formData, null, {}, false); // false = no token
+};
+
 export const apis = {
   noTokenPostRequest,
   getRequest,
@@ -67,7 +72,10 @@ export const apis = {
   noTokenStatusDeleteRequest,
   noTokenStatusPutRequest,
   noTokenputRequest,
-  noTokengetByIdRequest
+  noTokengetByIdRequest,
+
+  //Using for file upload
+  uploadFileRequest,
 };
 
 

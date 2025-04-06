@@ -12,6 +12,7 @@ import labRoutes from './routes/laboratoryRoutes.js';
 import roomRoutes from './routes/roomRoutes.js';
 import memberRoutes from './routes/memberRoutes.js';
 import appointmentRoutes from './routes/appointmentRoutes.js';
+import fileUpload from 'express-fileupload';
 
 // Load environment variables
 dotenv.config();
@@ -20,6 +21,11 @@ const app = express();
 
 app.use(cookieParser());
 app.use(express.json());
+app.use(fileUpload({
+    limits: { fileSize: 1000 * 1024 }, // 1MB
+    abortOnLimit: true,
+    responseOnLimit: 'File too large',
+  }));
 
 // Enable all CORS requests
 app.use(cors());
